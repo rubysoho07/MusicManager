@@ -5,6 +5,7 @@ from .models import Album, AlbumTrack
 
 import music_parser
 import re
+import json
 
 # Create your views here.
 
@@ -52,8 +53,22 @@ def add_result(request):
 
         if m:
             parsed_data = music_parser.get_naver_music_data(new_url)
+    
+    # TODO: JSON data -> HTML data (for user)
+    json_data = json.loads(parsed_data)
 
-    return render(request, 'manager_core/add_album_confirm.html', {'original_url': original_url, 'parsed_data': parsed_data})
+    album_title = json_data['album_title']
+    album_cover = json_data['album_cover']
+    album_artist = json_data['artist']
+    album_track = json_data['tracks']
+
+    return render(request, 'manager_core/add_album_confirm.html', 
+                    {'original_url': original_url, 
+                     'parsed_data': parsed_data,
+                     'album_artist': album_artist,
+                     'album_title': album_title,
+                     'album_cover': album_cover,
+                     'tracks': album_track})
 
 # Add album information to database.
 def add_action(request):

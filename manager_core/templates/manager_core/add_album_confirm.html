@@ -9,4 +9,17 @@
 </form>
 
 <!-- 결과 출력 -->
-<p>{{ parsed_data }}</p>
+<p>아티스트: {{ album_artist }}</p>
+<p>앨범명: {{ album_title}}</p>
+<img src="{{ album_cover }}">
+<p>Track:</p>
+
+<p>Disk / Track / Title / Artist</p>
+{% for track in tracks %}
+    <p>{{ track.disk }} / {{ track.track_num }} / {{ track.track_title }} / {{ track.track_artist}} </p>
+{% endfor %}
+
+
+<hr>
+<p>Original data</p>
+<p><p>{{ parsed_data }}</p></p>
