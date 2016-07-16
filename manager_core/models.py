@@ -9,7 +9,7 @@ class Album(models.Model):
     album_cover_file = models.CharField(max_length=200)
     album_url = models.CharField(max_length=200)
 
-class AlbumTracks(models.Model):
+class AlbumTrack(models.Model):
     album = models.ForeignKey(Album, on_delete=models.CASCADE)
     disk = models.IntegerField()
     track_num = models.IntegerField()
