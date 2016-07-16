@@ -1,0 +1,17 @@
+<!-- Menu (Temporary) -->
+<a href="{% url 'manager_core:add_album' %}">앨범 추가</a>
+<br>
+{% if album_list|length == 0 %}
+    <h1>No album information uploaded. </h1>
+{% else %}
+    {% for album in album_list %}
+        <!-- Show album cover -->
+        <img src="{{ album.album_cover_file }}" width="200px" height="200px">
+
+        <!-- Show artist -->
+        <h4>Artist: {{ album.album_artist }}</h4>
+
+        <!-- Show album title -->
+        <h4>Title: {{ album.album_title }}</h4>
+    {% endfor %}
+{% endif %}

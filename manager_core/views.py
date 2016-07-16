@@ -1,11 +1,18 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 
+from .models import Album, AlbumTrack
+
+import music_parser
+import re
+
 # Create your views here.
 
 # First page. (List of albums I've bought.)
 def index(request):
-    return HttpResponse("This is first page. You will see list of albums I have bought.")
+    # Get all albums (to List).
+    album_list = Album.objects.all()
+    return render(request, 'manager_core/index.html', {'album_list': album_list})
 
 # Search albums from database. (by Artist/Album title)
 def search(request):
@@ -17,11 +24,36 @@ def search_result(request):
 
 # Add album from Bugs/Naver music.
 def add_album(request):
-    return HttpResponse("Add album from Bugs/Naver music.")
+    return render(request, 'manager_core/add_album.html')
 
 # Add result and confirm add this information or cancel.
 def add_result(request):
-    return HttpResponse("Confirm parsed album information and add it to database.")
+
+    # Original URL from submitted value.
+    original_url = request.POST['album_url']
+
+    # Parse URL and make JSON values.
+    new_url = music_parser.check_input (original_url)
+
+    if new_url == "":
+        parsed_data = ""
+    else:
+        bugs_pattern = re.compile("bugs[.]co[.]kr")
+        naver_music_pattern = re.compile("music[.]naver[.]com")
+
+        # if Bugs URL, run get_bugs_data()
+        m = bugs_pattern.search(new_url)
+
+        if m:
+            parsed_data = music_parser.get_bugs_data(new_url)
+        
+        # if Naver Music URL, run get_naver_music_data()
+        m = naver_music_pattern.search(new_url)
+
+        if m:
+            parsed_data = music_parser.get_naver_music_data(new_url)
+
+    return render(request, 'manager_core/add_album_confirm.html', {'original_url': original_url, 'parsed_data': parsed_data})
 
 # Add album information to database.
 def add_action(request):

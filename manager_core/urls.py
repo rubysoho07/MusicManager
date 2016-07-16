@@ -2,6 +2,10 @@ from django.conf.urls import url
 
 from . import views
 
+# Register application namespace
+app_name = 'manager_core'
+
+# URL patterns
 urlpatterns = [
     url(r'^$', views.index, name='index'),
     url(r'^search/', views.search, name='search'),
