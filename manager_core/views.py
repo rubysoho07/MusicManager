@@ -54,7 +54,7 @@ def add_result(request):
         if m:
             parsed_data = music_parser.get_naver_music_data(new_url)
     
-    # TODO: JSON data -> HTML data (for user)
+    # JSON data -> HTML data (for user)
     json_data = json.loads(parsed_data)
 
     album_title = json_data['album_title']

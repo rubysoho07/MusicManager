@@ -1,3 +1,4 @@
+{% load staticfiles %}
 <h1>Add Album (확인)</h1>
 
 <p>주소를 입력하세요 (네이버 뮤직/벅스 지원)</p>
@@ -11,7 +12,7 @@
 <!-- 결과 출력 -->
 <p>아티스트: {{ album_artist }}</p>
 <p>앨범명: {{ album_title}}</p>
-<img src="{{ album_cover }}">
+<img src="{% static 'manager_core/images/'|add:album_cover %}">
 <p>Track:</p>
 
 <p>Disk / Track / Title / Artist</p>

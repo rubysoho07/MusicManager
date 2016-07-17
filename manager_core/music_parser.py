@@ -39,7 +39,8 @@ def save_image (source, target):
         response = requests.get(source, stream=True)
 
         if not response.ok:
-            print "Getting image error"
+            #print "Getting image error"
+            return
             
         for block in response.iter_content(1024):
             handle.write(block)
@@ -78,7 +79,7 @@ def get_naver_music_data (album_url):
 
     # Save album cover image.
     # ex) http://musicmeta.phinf.naver.net/album/000/645/645112.jpg?type=r204Fll&v=20160623150347
-    save_image(album_cover, "naver_"+album_cover.split("/")[-1].split("?")[0])
+    save_image(album_cover, "manager_core/static/manager_core/images/naver_"+album_cover.split("/")[-1].split("?")[0])
 
     # Default number of disk = 1
     disk_num = 1
@@ -165,7 +166,7 @@ def get_bugs_data (album_url):
 
     # Save album cover image.
     # ex) http://image.bugsm.co.kr/album/images/200/5712/571231.jpg
-    save_image(album_cover, "bugs_"+album_cover.split("/")[-1])
+    save_image(album_cover, "manager_core/static/manager_core/images/bugs_"+album_cover.split("/")[-1])
 
     # Default number of disk = 1
     disk_num = 1
