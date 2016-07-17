@@ -1,0 +1,9 @@
+{% load staticfiles %}
+<h1>앨범 등록 완료</h1>
+
+<!-- 결과 출력 -->
+<p>아티스트: {{ album_artist }}</p>
+<p>앨범명: {{ album_title}}</p>
+<img src="{% static 'manager_core/images/'|add:album_cover %}">
+
+<p>앨범 등록이 완료되었습니다.</p>

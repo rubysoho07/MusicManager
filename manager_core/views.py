@@ -72,7 +72,35 @@ def add_result(request):
 
 # Add album information to database.
 def add_action(request):
-    return HttpResponse("Add action!")
+    
+    # Get JSON data
+    parsed_data = request.POST['album_data']
+    
+    # Add JSON data to database
+    json_data = json.loads(parsed_data)
+
+    new_album_title = json_data['album_title']
+    new_album_cover = json_data['album_cover']
+    new_album_artist = json_data['artist']
+
+    album = Album(album_artist=new_album_artist, album_title=new_album_title, 
+                  album_cover_file=new_album_cover, album_url=request.POST['album_url'])
+    album.save()
+
+    # Add track data to database
+    new_album_track = json_data['tracks']
+
+    for track in new_album_track:
+        new_track = AlbumTrack(album=album, disk=track['disk'], 
+                            track_num=track['track_num'], track_title=track['track_title'], 
+                            track_artist=track['track_artist'])
+        new_track.save()
+
+
+    return render(request, 'manager_core/add_album_complete.html', 
+                    {'album_artist': new_album_artist,
+                     'album_title': new_album_title,
+                     'album_cover': new_album_cover})
 
 # See album detail information
 def see_album(request):

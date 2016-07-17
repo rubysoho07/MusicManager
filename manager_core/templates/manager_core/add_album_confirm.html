@@ -20,7 +20,15 @@
     <p>{{ track.disk }} / {{ track.track_num }} / {{ track.track_title }} / {{ track.track_artist}} </p>
 {% endfor %}
 
-
 <hr>
 <p>Original data</p>
-<p><p>{{ parsed_data }}</p></p>
+<p>{{ parsed_data }}</p>
+
+<hr>
+<p>이 앨범을 등록하시겠습니까?</p>
+<form action="{% url 'manager_core:add_action' %}" method="POST">
+{% csrf_token %}
+    <input type="hidden" name="album_data" id="album_data" value="{{ parsed_data }}" />
+    <input type="hidden" name="album_url" id="album_url" value="{{ original_url }}" />
+    <input type="submit" value="등록" />
+</form>
