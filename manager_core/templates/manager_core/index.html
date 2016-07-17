@@ -13,6 +13,6 @@
         <h4>Artist: {{ album.album_artist }}</h4>
 
         <!-- Show album title -->
-        <h4>Title: {{ album.album_title }}</h4>
+        <h4>Title: <a href="{% url 'manager_core:album' album.id %}">{{ album.album_title }}</a></h4>
     {% endfor %}
 {% endif %}

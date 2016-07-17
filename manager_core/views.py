@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse
 
 from .models import Album, AlbumTrack
@@ -103,8 +103,11 @@ def add_action(request):
                      'album_cover': new_album_cover})
 
 # See album detail information
-def see_album(request):
-    return HttpResponse("View detail information of selected album")
+def see_album(request, album_id):
+    album = get_object_or_404(Album, pk=album_id)
+    track_list = album.albumtrack_set.all()
+
+    return render(request, 'manager_core/album_detail.html', {'album': album, 'tracks': track_list})
 
 # Confirm delete information from database.
 def confirm_delete(request):
