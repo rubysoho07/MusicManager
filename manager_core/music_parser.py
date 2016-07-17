@@ -55,27 +55,18 @@ def get_naver_music_data (album_url):
     # If encoding is None, you'll get UnicodeError (-_-)
     soup.prettify(encoding="utf-8")
 
-    #print "==============================================="
-    #print "This is result"
-
     # Get and print artist information.
     artist_data = soup.find('dd', class_='artist')
     if (artist_data.find('a')):
         artist = artist_data.find('a').text
     else:
         artist = artist_data.find('span').text
-    
-    #print "Artist:", artist
 
     # Get and print album title.
     album_title = soup.find('div', class_='info_txt').h2.text
 
-    #print "Album Title:", album_title
-
     # Get and print album cover image.
     album_cover = soup.find('div', class_='thumb').img['src']
-
-    #print "Album Cover:", album_cover
 
     # Save album cover image.
     # ex) http://musicmeta.phinf.naver.net/album/000/645/645112.jpg?type=r204Fll&v=20160623150347
@@ -88,7 +79,6 @@ def get_naver_music_data (album_url):
     tracks = []
 
     # Get track list
-    #print "Track List:"
 
     # For supporting multiple disks
     track_list_body = soup.find('tbody')
@@ -107,17 +97,14 @@ def get_naver_music_data (album_url):
 
             # Get track number
             track_num = row.find ('td', class_='order')
-            #print track_num.text,
             
             # Get track title
             track_title = row.find('td', class_='name')
             # Get only song title (exclude '19' sign and 'title' mark)
-            #print "/", track_title.find('span', class_='ellipsis').text,
 
             # Get track artist
             track_artist = row.find('td', class_='artist')
             # Song artist name needs to be striped.
-            #print "/", track_artist.span.text.strip()
 
             # Add to track list
             tracks.append({"disk": disk_num, "track_num": int(track_num.text), 
@@ -141,9 +128,6 @@ def get_bugs_data (album_url):
     # If encoding is None, you'll get UnicodeError (-_-)
     soup.prettify(encoding="utf-8")
 
-    #print "==============================================="
-    #print "This is result"
-
     # Get and print artist information.
     basic_info = soup.find('table', class_='info').tr
 
@@ -152,17 +136,11 @@ def get_bugs_data (album_url):
     else:
         artist = basic_info.find('td').text.strip()
 
-    #print "Artist:", artist
-
     # Get and print album title.
     album_title = soup.find('header', class_='pgTitle').h1.text
 
-    #print "Album Title:", album_title
-
     # Get and print album cover image.
     album_cover = soup.find('div', class_='photos').img['src']
-
-    #print "Album Cover:", album_cover
 
     # Save album cover image.
     # ex) http://image.bugsm.co.kr/album/images/200/5712/571231.jpg
@@ -172,8 +150,6 @@ def get_bugs_data (album_url):
     disk_num = 1
     
     # Get track list
-    #print "Track List:"
-
     # Initialize track lists
     tracks = []
 
@@ -188,25 +164,20 @@ def get_bugs_data (album_url):
         if row.find('th', attrs={'scope': 'col'}):
             # Get disk number
             disk = row.find('th', attrs={'scope': 'col'})
-            #print disk.text
             disk_num = int(disk.text.split(' ')[1])
         else:
             # Get track number
             track_num = row.find ('p', class_='trackIndex')
-            #print track_num.em.text,
             
             # Get track title
             track_title_data = row.find('p', class_='title')
             if track_title_data.find('a'):
                 track_title = track_title_data.a.text
-                #print "/", track_title,
             else:
                 track_title = track_title_data.span.text
-                #print "/", track_title,
 
             # Get track artist
             track_artist = row.find('p', class_='artist')
-            #print "/", track_artist.a.text
 
             # Add to track list
             tracks.append({"disk": disk_num, "track_num": int(track_num.em.text), 
