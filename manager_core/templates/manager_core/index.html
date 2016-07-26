@@ -7,6 +7,7 @@
 {% if album_list|length == 0 %}
     <h1>No album information uploaded. </h1>
 {% else %}
+    <h1>앨범 목록 ({{ album_list|length }} albums found) </h1>
     {% for album in album_list %}
         <!-- Show album cover -->
         <img src="{% static 'manager_core/images/'|add:album.album_cover_file %}" width="200px" height="200px">
