@@ -1,7 +1,12 @@
 {% load staticfiles %}
+<!-- Header -->
+{% include "manager_core/header.html" %}
+<!-- End of Header -->
+
+<!-- Body start -->
 <h1>앨범 확인하기</h1>
 
-<!-- 결과 출력 -->
+<!-- Start of printing result -->
 <p>아티스트: {{ album.album_artist }}</p>
 <p>앨범명: {{ album.album_title}}</p>
 <img src="{% static 'manager_core/images/'|add:album.album_cover_file %}">
@@ -11,3 +16,9 @@
 {% for track in tracks %}
     <p>{{ track.disk }} / {{ track.track_num }} / {{ track.track_title }} / {{ track.track_artist}} </p>
 {% endfor %}
+<!-- End of printing result -->
+<!-- Body end -->
+
+<!-- Footer -->
+{% include "manager_core/footer.html" %}
+<!-- End of footer -->

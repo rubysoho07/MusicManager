@@ -1,0 +1,21 @@
+@import url(http://fonts.googleapis.com/earlyaccess/notosanskr.css);
+
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+/* navbar custom. */
+.navbar {
+  background: #454545;
+}
+
+.navbar a { 
+  color: white;
+}
+
+/* To customizing footer. */
+.gonifooter {
+  background: #454545;
+  color: white;
+  vertical-align: middle;
+}

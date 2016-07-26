@@ -1,4 +1,9 @@
 {% load staticfiles %}
+<!-- Header -->
+{% include "manager_core/header.html" %}
+<!-- End of Header -->
+
+<!-- Body start -->
 <h1>Add Album (확인)</h1>
 
 <p>주소를 입력하세요 (네이버 뮤직/벅스 지원)</p>
@@ -9,7 +14,7 @@
     <input type="submit" value="Get!" />
 </form>
 
-<!-- 결과 출력 -->
+<!-- Start of printing result -->
 <p>아티스트: {{ album_artist }}</p>
 <p>앨범명: {{ album_title}}</p>
 <img src="{% static 'manager_core/images/'|add:album_cover %}">
@@ -32,3 +37,9 @@
     <input type="hidden" name="album_url" id="album_url" value="{{ original_url }}" />
     <input type="submit" value="등록" />
 </form>
+<!-- End of printing result -->
+<!-- Body end -->
+
+<!-- Footer -->
+{% include "manager_core/footer.html" %}
+<!-- End of footer -->

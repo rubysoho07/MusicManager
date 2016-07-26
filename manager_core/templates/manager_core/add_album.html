@@ -1,3 +1,9 @@
+{% load staticfiles %}
+<!-- Header -->
+{% include "manager_core/header.html" %}
+<!-- End of Header -->
+
+<!-- Body start -->
 <h1>Add Album</h1>
 
 <p>주소를 입력하세요 (네이버 뮤직/벅스 지원)</p>
@@ -7,3 +13,8 @@
     <input type="text" name="album_url" id="album_url"/>
     <input type="submit" value="Get!" />
 </form>
+<!-- Body end -->
+
+<!-- Footer -->
+{% include "manager_core/footer.html" %}
+<!-- End of footer -->

@@ -1,9 +1,20 @@
 {% load staticfiles %}
+<!-- Header -->
+{% include "manager_core/header.html" %}
+<!-- End of Header -->
+
+<!-- Body start -->
 <h1>앨범 등록 완료</h1>
 
-<!-- 결과 출력 -->
+<!-- Start of printing result -->
 <p>아티스트: {{ album_artist }}</p>
 <p>앨범명: {{ album_title}}</p>
 <img src="{% static 'manager_core/images/'|add:album_cover %}">
 
 <p>앨범 등록이 완료되었습니다.</p>
+<!-- End of printing result -->
+<!-- Body end -->
+
+<!-- Footer -->
+{% include "manager_core/footer.html" %}
+<!-- End of footer -->

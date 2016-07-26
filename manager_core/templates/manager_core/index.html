@@ -1,7 +1,9 @@
 {% load staticfiles %}
-<!-- Menu (Temporary) -->
-<a href="{% url 'manager_core:add_album' %}">앨범 추가</a>
-<br>
+<!-- Header -->
+{% include "manager_core/header.html" %}
+<!-- End of Header -->
+
+<!-- List of my albums. -->
 {% if album_list|length == 0 %}
     <h1>No album information uploaded. </h1>
 {% else %}
@@ -16,3 +18,8 @@
         <h4>Title: <a href="{% url 'manager_core:album' album.id %}">{{ album.album_title }}</a></h4>
     {% endfor %}
 {% endif %}
+<!-- End of list. -->
+
+<!-- Footer -->
+{% include "manager_core/footer.html" %}
+<!-- End of footer -->
