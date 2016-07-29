@@ -20,14 +20,22 @@
 <img src="{% static 'manager_core/images/'|add:album_cover %}">
 <p>Track:</p>
 
-<p>Disk / Track / Title / Artist</p>
+<table style="width:100%">
+  <tr>
+    <th>D#</th>
+    <th>T#</th>
+    <th>Title</th>
+    <th>Artist</th>
+  </tr>
 {% for track in tracks %}
-    <p>{{ track.disk }} / {{ track.track_num }} / {{ track.track_title }} / {{ track.track_artist}} </p>
+  <tr>
+    <td>{{ track.disk }}</td>
+    <td>{{ track.track_num }}</td>
+    <td>{{ track.track_title }}</td>
+    <td>{{ track.track_artist}}</td>
+  </tr>
 {% endfor %}
-
-<hr>
-<p>Original data</p>
-<p>{{ parsed_data }}</p>
+</table>
 
 <hr>
 <p>이 앨범을 등록하시겠습니까?</p>
