@@ -6,6 +6,7 @@ from .models import Album, AlbumTrack
 import music_parser
 import re
 import json
+import os
 
 # Create your views here.
 
@@ -152,7 +153,8 @@ def delete(request):
 
     album.delete()
 
-    # TODO: remove cover file from static directory.
+    # remove cover file from static directory.
+    os.remove("manager_core/static/manager_core/images/"+album_cover_file)
 
     return render(request, 'manager_core/delete_album_complete.html', 
                  {
