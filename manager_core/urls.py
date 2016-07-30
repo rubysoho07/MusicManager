@@ -14,6 +14,6 @@ urlpatterns = [
     url(r'^add_result/', views.add_result, name='add_result'),
     url(r'^add_action/', views.add_action, name='add_action'),
     url(r'^album/(?P<album_id>[0-9]+)/$', views.see_album, name='album'),
-    url(r'^confirm_delete/', views.confirm_delete, name='confirm_delete'),
+    url(r'^confirm_delete/(?P<album_id>[0-9]+)/$', views.confirm_delete, name='confirm_delete'),
     url(r'^delete/', views.delete, name='delete'),
 ]

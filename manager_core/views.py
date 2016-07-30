@@ -128,9 +128,34 @@ def see_album(request, album_id):
     return render(request, 'manager_core/album_detail.html', {'album': album, 'tracks': track_list})
 
 # Confirm delete information from database.
-def confirm_delete(request):
-    return HttpResponse("Confirm to delete album from database")
+def confirm_delete(request, album_id):
+    album = get_object_or_404(Album, pk=album_id)
+    album_title = album.album_title
+    album_artist = album.album_artist
+    album_cover = album.album_cover_file
+
+    return render(request, 'manager_core/delete_album_confirm.html', 
+                 {
+                     'album_title': album_title,
+                     'album_artist': album_artist,
+                     'album_cover': album_cover,
+                     'album_id': album_id
+                 })
 
 # Delete album information from database.
 def delete(request):
-    return HttpResponse("Delete album")
+    album_id = request.POST['album_id']
+    album = get_object_or_404(Album, pk=album_id)
+    album_artist = album.album_artist
+    album_title = album.album_title
+    album_cover_file = album.album_cover_file
+
+    album.delete()
+
+    # TODO: remove cover file from static directory.
+
+    return render(request, 'manager_core/delete_album_complete.html', 
+                 {
+                     'album_artist': album_artist,
+                     'album_title': album_title
+                 })

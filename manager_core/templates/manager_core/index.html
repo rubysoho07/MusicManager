@@ -23,7 +23,11 @@
                 <tr>
                     <td class="col-md-2 col-sm-2"><b>Title</b></td>
                     <td class="col-md-10 col-sm-10"><a href="{% url 'manager_core:album' album.id %}">{{ album.album_title }}</a></td>
+                </tr>
                 <tr>
+                    <td class="col-md-2 col-sm-2"><a href="{% url 'manager_core:confirm_delete' album.id %}">Delete!</a></td>
+                    <td class="col-md-10 col-sm-10"></td>
+                </tr>
             </table>
         </div>
     {% endfor %}

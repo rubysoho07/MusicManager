@@ -1,0 +1,38 @@
+{% load staticfiles %}
+<!-- Header -->
+{% include "manager_core/header.html" %}
+<!-- End of Header -->
+
+<!-- Body start -->
+<h1>앨범 삭제 완료</h1>
+
+<!-- Start of printing result -->
+<div class="goni_padding"></div>
+<div class="album_cover col-md-2 col-sm-2">
+    <!-- Show album cover -->
+    <!--
+    No Cover
+    -->
+</div>
+<div class="album_basicinfo col-md-10 col-sm-10">
+    <!-- Show artist and title-->
+    <table class="table">
+        <tr>
+            <td class="col-md-2 col-sm-2"><b>Artist</b></td>
+            <td class="col-md-10 col-sm-10">{{ album_artist }}</td>
+        <tr>
+        <tr>
+            <td class="col-md-2 col-sm-2"><b>Title</b></td>
+            <td class="col-md-10 col-sm-10">{{ album_title }}</td>
+        <tr>
+    </table>
+</div>
+
+<p>앨범 삭제가 완료되었습니다.</p>
+<div class="goni_padding"></div>
+<!-- End of printing result -->
+<!-- Body end -->
+
+<!-- Footer -->
+{% include "manager_core/footer.html" %}
+<!-- End of footer -->
