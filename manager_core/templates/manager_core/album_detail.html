@@ -5,14 +5,28 @@
 
 <!-- Body start -->
 <h1>앨범 확인하기</h1>
-
+<div class="goni_padding"></div>
 <!-- Start of printing result -->
-<p>아티스트: {{ album.album_artist }}</p>
-<p>앨범명: {{ album.album_title}}</p>
-<img src="{% static 'manager_core/images/'|add:album.album_cover_file %}">
-<p>Track:</p>
+<div class="album_cover col-md-2 col-sm-2">
+    <!-- Show album cover -->
+    <img src="{% static 'manager_core/images/'|add:album.album_cover_file %}" width="120px" height="120px"></div>
+<div class="album_basicinfo col-md-10 col-sm-10">
+    <!-- Show artist and title-->
+    <table class="table">
+        <tr>
+            <td class="col-md-2 col-sm-2"><b>Artist</b></td>
+            <td class="col-md-10 col-sm-10">{{ album.album_artist }}</td>
+        <tr>
+        <tr>
+            <td class="col-md-2 col-sm-2"><b>Title</b></td>
+            <td class="col-md-10 col-sm-10">{{ album.album_title }}</td>
+        <tr>
+    </table>
+</div>
 
-<table style="width:100%">
+<p>Track List</p>
+
+<table class="table">
   <tr>
     <th>D#</th>
     <th>T#</th>
@@ -30,6 +44,7 @@
 </table>
 <p></p>
 <!-- End of printing result -->
+<div class="goni_padding"></div>
 <!-- Body end -->
 
 <!-- Footer -->

@@ -19,3 +19,19 @@ body {
   color: white;
   vertical-align: middle;
 }
+
+/* Album information */
+.album_cover {
+  float: left;
+  height: 150px;
+  padding: 5px;
+}
+
+.album_basicinfo {
+  float: right;
+  height: 150px;
+}
+
+.goni_padding {
+  height: 30px;
+}
