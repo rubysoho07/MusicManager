@@ -7,11 +7,27 @@
 <h1>앨범 등록 완료</h1>
 
 <!-- Start of printing result -->
-<p>아티스트: {{ album_artist }}</p>
-<p>앨범명: {{ album_title}}</p>
-<img src="{% static 'manager_core/images/'|add:album_cover %}">
+<div class="goni_padding"></div>
+<div class="album_cover col-md-2 col-sm-2">
+    <!-- Show album cover -->
+    <img src="{% static 'manager_core/images/'|add:album_cover %}" width="120px" height="120px">
+</div>
+<div class="album_basicinfo col-md-10 col-sm-10">
+    <!-- Show artist and title-->
+    <table class="table">
+        <tr>
+            <td class="col-md-2 col-sm-2"><b>Artist</b></td>
+            <td class="col-md-10 col-sm-10">{{ album_artist }}</td>
+        <tr>
+        <tr>
+            <td class="col-md-2 col-sm-2"><b>Title</b></td>
+            <td class="col-md-10 col-sm-10">{{ album_title }}</td>
+        <tr>
+    </table>
+</div>
 
 <p>앨범 등록이 완료되었습니다.</p>
+<div class="goni_padding"></div>
 <!-- End of printing result -->
 <!-- Body end -->
 

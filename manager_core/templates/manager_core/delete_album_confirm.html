@@ -30,7 +30,7 @@
 <form action="{% url 'manager_core:delete' %}" method="POST">
 {% csrf_token %}
     <input type="hidden" name="album_id" id="album_id" value="{{ album_id }}" />
-    <input class="btn btn-primary" type="submit" value="삭제" />
+    <input class="btn btn-danger" type="submit" value="삭제" />
 </form>
 <!-- End of printing result -->
 <div class="goni_padding"></div>

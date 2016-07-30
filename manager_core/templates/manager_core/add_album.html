@@ -8,10 +8,10 @@
 
 <p>주소를 입력하세요 (네이버 뮤직/벅스 지원)</p>
 
-<form action="{% url 'manager_core:add_result' %}" method="POST">
+<form class="form-inline" role="form" action="{% url 'manager_core:add_result' %}" method="POST">
 {% csrf_token %}
-    <input type="text" name="album_url" id="album_url"/>
-    <input type="submit" value="Get!" />
+    <input class="form-control" type="text" name="album_url" id="album_url"/>
+    <input class="btn" type="submit" value="Get!" />
 </form>
 <div class="goni_padding"></div>
 <!-- Body end -->

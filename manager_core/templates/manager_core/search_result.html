@@ -8,9 +8,9 @@
 
 <p>Artist/Album title 기준으로 검색 가능합니다</p>
 
-<form action="{% url 'manager_core:search_result' %}" method="POST">
+<form class="form-inline" role="form" action="{% url 'manager_core:search_result' %}" method="POST">
 {% csrf_token %}
-    <select name="search_type">
+    <select class="form-control" name="search_type">
         {% if search_type == "artist" %}
         <option value="artist" selected>아티스트</option>
         {% else %}
@@ -22,8 +22,8 @@
         <option value="album">앨범명</option>
         {% endif %}
     </select>
-    <input type="text" name="search_keyword" id="search_keyword" value="{{ keyword }}"/>
-    <input type="submit" value="검색" />
+    <input class="form-control" type="text" name="search_keyword" id="search_keyword" value="{{ keyword }}"/>
+    <input class="btn" type="submit" value="검색" />
 </form>
 <div class="goni_padding"></div>
 
@@ -48,6 +48,10 @@
                     <td class="col-md-2 col-sm-2"><b>Title</b></td>
                     <td class="col-md-10 col-sm-10"><a href="{% url 'manager_core:album' album.id %}">{{ album.album_title }}</a></td>
                 <tr>
+                <tr>
+                    <td class="col-md-2 col-sm-2"><a href="{% url 'manager_core:confirm_delete' album.id %}">Delete!</a></td>
+                    <td class="col-md-10 col-sm-10"></td>
+                </tr>
             </table>
         </div>
     {% endfor %}

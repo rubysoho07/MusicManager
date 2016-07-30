@@ -8,10 +8,10 @@
 
 <p>주소를 입력하세요 (네이버 뮤직/벅스 지원)</p>
 
-<form action="{% url 'manager_core:add_result' %}" method="POST">
+<form class="form-inline" role="form" action="{% url 'manager_core:add_result' %}" method="POST">
 {% csrf_token %}
-    <input type="text" name="album_url" id="album_url" value="{{ original_url }}"/>
-    <input type="submit" value="Get!" />
+    <input class="form-control" type="text" name="album_url" id="album_url" value="{{ original_url }}"/>
+    <input class="btn" type="submit" value="Get!" />
 </form>
 <div class="goni_padding"></div>
 <!-- Start of printing result -->
@@ -53,11 +53,11 @@
 
 <hr>
 <p>이 앨범을 등록하시겠습니까?</p>
-<form action="{% url 'manager_core:add_action' %}" method="POST">
+<form class="form-inline" role="form" action="{% url 'manager_core:add_action' %}" method="POST">
 {% csrf_token %}
     <input type="hidden" name="album_data" id="album_data" value="{{ parsed_data }}" />
     <input type="hidden" name="album_url" id="album_url" value="{{ original_url }}" />
-    <input type="submit" value="등록" />
+    <input class="btn btn-success" type="submit" value="등록" />
 </form>
 <!-- End of printing result -->
 <div class="goni_padding"></div>
