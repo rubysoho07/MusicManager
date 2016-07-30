@@ -1,0 +1,62 @@
+{% load staticfiles %}
+<!-- Header -->
+{% include "manager_core/header.html" %}
+<!-- End of Header -->
+
+<!-- Body start -->
+<h1>Search Album - Result</h1>
+
+<p>Artist/Album title 기준으로 검색 가능합니다</p>
+
+<form action="{% url 'manager_core:search_result' %}" method="POST">
+{% csrf_token %}
+    <select name="search_type">
+        {% if search_type == "artist" %}
+        <option value="artist" selected>아티스트</option>
+        {% else %}
+        <option value="artist">아티스트</option>
+        {% endif %}
+        {% if search_type == "album" %}
+        <option value="album" selected>앨범명</option>
+        {% else %}
+        <option value="album">앨범명</option>
+        {% endif %}
+    </select>
+    <input type="text" name="search_keyword" id="search_keyword" value="{{ keyword }}"/>
+    <input type="submit" value="검색" />
+</form>
+<div class="goni_padding"></div>
+
+<!-- Start of printing result -->
+{% if search_result|length == 0 %}
+    <h4>Can't find album. </h4>
+{% else %}
+    <h4>앨범 목록 ({{ search_result|length }} albums found) </h4>
+    <div class="goni_padding"></div>
+    {% for album in search_result %}
+        <div class="album_cover col-md-2 col-sm-2">
+            <!-- Show album cover -->
+            <img src="{% static 'manager_core/images/'|add:album.album_cover_file %}" width="120px" height="120px"></div>
+        <div class="album_basicinfo col-md-10 col-sm-10">
+            <!-- Show artist and title-->
+            <table class="table">
+                <tr>
+                    <td class="col-md-2 col-sm-2"><b>Artist</b></td>
+                    <td class="col-md-10 col-sm-10">{{ album.album_artist }}</td>
+                <tr>
+                <tr>
+                    <td class="col-md-2 col-sm-2"><b>Title</b></td>
+                    <td class="col-md-10 col-sm-10"><a href="{% url 'manager_core:album' album.id %}">{{ album.album_title }}</a></td>
+                <tr>
+            </table>
+        </div>
+    {% endfor %}
+{% endif %}
+<!-- End of printing result -->
+
+<div class="goni_padding"></div>
+<!-- Body end -->
+
+<!-- Footer -->
+{% include "manager_core/footer.html" %}
+<!-- End of footer -->

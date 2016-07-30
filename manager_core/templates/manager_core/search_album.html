@@ -1,0 +1,25 @@
+{% load staticfiles %}
+<!-- Header -->
+{% include "manager_core/header.html" %}
+<!-- End of Header -->
+
+<!-- Body start -->
+<h1>Search Album</h1>
+
+<p>Artist/Album title 기준으로 검색 가능합니다</p>
+
+<form action="{% url 'manager_core:search_result' %}" method="POST">
+{% csrf_token %}
+    <select name="search_type">
+        <option value="artist">아티스트</option>
+        <option value="album">앨범명</option>
+    </select>
+    <input type="text" name="search_keyword" id="search_keyword"/>
+    <input type="submit" value="검색" />
+</form>
+<div class="goni_padding"></div>
+<!-- Body end -->
+
+<!-- Footer -->
+{% include "manager_core/footer.html" %}
+<!-- End of footer -->

@@ -17,11 +17,29 @@ def index(request):
 
 # Search albums from database. (by Artist/Album title)
 def search(request):
-    return HttpResponse("Search album by Artist/Album title.")
+    return render(request, 'manager_core/search_album.html')
 
 # See search result.
 def search_result(request):
-    return HttpResponse("Search result.")
+    # Get search keywords.
+    search_type = request.POST['search_type']
+    keyword = request.POST['search_keyword']
+
+    # Search album from database.
+    if search_type == "artist":
+        result = Album.objects.filter(album_artist__icontains=keyword)
+    elif search_type == "album":
+        result = Album.objects.filter(album_title__icontains=keyword)
+    else:
+        return render(request, 'manager_core/search_result.html',
+                 {'search_type': search_type, 
+                  'keyword': keyword,
+                  'search_result': []})
+
+    return render(request, 'manager_core/search_result.html',
+                 {'search_type': search_type, 
+                  'keyword': keyword,
+                  'search_result': result})
 
 # Add album from Bugs/Naver music.
 def add_album(request):
