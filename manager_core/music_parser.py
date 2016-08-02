@@ -70,6 +70,9 @@ def get_naver_music_data (album_url):
 
     # Save album cover image.
     # ex) http://musicmeta.phinf.naver.net/album/000/645/645112.jpg?type=r204Fll&v=20160623150347
+    if os.path.exists("manager_core/static/manager_core/images") == False:
+        os.mkdir("manager_core/static/manager_core/images")
+    
     save_image(album_cover, "manager_core/static/manager_core/images/naver_"+album_cover.split("/")[-1].split("?")[0])
 
     # Default number of disk = 1
@@ -144,6 +147,9 @@ def get_bugs_data (album_url):
 
     # Save album cover image.
     # ex) http://image.bugsm.co.kr/album/images/200/5712/571231.jpg
+    if os.path.exists("manager_core/static/manager_core/images") == False:
+        os.mkdir("manager_core/static/manager_core/images")
+
     save_image(album_cover, "manager_core/static/manager_core/images/bugs_"+album_cover.split("/")[-1])
 
     # Default number of disk = 1
