@@ -13,7 +13,7 @@ import os
 # First page. (List of albums I've bought.)
 def index(request):
     # Get all albums (to List).
-    album_list = Album.objects.all()
+    album_list = Album.objects.all().order_by('-id')
     return render(request, 'manager_core/index.html', {'album_list': album_list})
 
 # Search albums from database. (by Artist/Album title)
