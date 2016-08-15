@@ -20,3 +20,6 @@ urlpatterns = [
     url(r'^musicmanager/', include('manager_core.urls')),
     url(r'^admin/', admin.site.urls),
 ]
+
+handler404 = 'manager_core.views.custom_page_not_found'
+hanlder500 = 'manager_core.views.custom_internal_server_error'
