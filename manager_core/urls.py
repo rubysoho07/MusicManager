@@ -17,3 +17,6 @@ urlpatterns = [
     url(r'^confirm_delete/(?P<album_id>[0-9]+)/$', views.confirm_delete, name='confirm_delete'),
     url(r'^delete/', views.delete, name='delete'),
 ]
+
+handler404 = 'manager_core.views.custom_page_not_found'
+hanlder500 = 'manager_core.views.custom_internal_server_error'

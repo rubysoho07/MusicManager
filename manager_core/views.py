@@ -189,3 +189,11 @@ def delete(request):
                      'album_artist': album_artist,
                      'album_title': album_title
                  })
+
+# View for 404 error
+def custom_page_not_found(request):
+    return render(request, 'manager_core/404.html')
+
+# View for 500 error 
+def custom_internal_server_error(request):
+    return render(request, 'manager_core/500.html')
