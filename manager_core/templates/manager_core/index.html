@@ -5,9 +5,9 @@
 
 <!-- List of my albums. -->
 {% if album_list|length == 0 %}
-    <h1>No album information uploaded. </h1>
+    <h1>No album information uploaded. {{ start_num }}</h1>
 {% else %}
-    <h1>앨범 목록 ({{ album_list|length }} albums found) </h1>
+    <h1>앨범 목록</h1>
     <div class="goni_padding"></div>
     {% for album in album_list %}
         <div class="album_cover col-md-2 col-sm-2 col-xs-3">
@@ -32,6 +32,19 @@
             </table>
         </div>
     {% endfor %}
+
+    <!-- Page selector. -->
+    <ul class="pagination">
+{% for i in pages_list %}
+    {% if i == current_page %}
+        <li class="active"><a href="#">{{ i }}</a></li>
+    {% else %}
+        <li><a href="?page={{ i }}">{{ i }}</a></li>
+    {% endif %}
+{% endfor %}
+    </ul>
+
+    <!-- End of page selector. -->
 {% endif %}
 <!-- End of list. -->
 <div class="goni_padding"></div>

@@ -13,8 +13,36 @@ import os
 # First page. (List of albums I've bought.)
 def index(request):
     # Get all albums (to List).
-    album_list = Album.objects.all().order_by('-id')
-    return render(request, 'manager_core/index.html', {'album_list': album_list})
+    all_album_list = Album.objects.all().order_by('-id')
+
+    albums_number = len(all_album_list)
+
+    # Get data of current page. (Default is first page.)
+    current_page = int(request.GET.get('page', '1'))
+
+    if (current_page != 1):
+        start_num = (current_page - 1) * 10
+    else:
+        start_num = 0
+
+    if (albums_number - start_num < 10):
+        end_num = albums_number
+    else:
+        end_num = start_num + 10
+    
+    album_list = all_album_list[start_num:end_num]
+
+    # Get number of total pages.
+    if (albums_number % 10 == 0):
+        total_pages = (albums_number / 10)
+    else:
+        total_pages = (albums_number / 10) + 1
+
+    return render(request, 'manager_core/index.html', 
+                    {'album_list': album_list,
+                     'current_page': current_page,
+                     'start_num': start_num,
+                     'pages_list': range(1, total_pages + 1)})
 
 # Search albums from database. (by Artist/Album title)
 def search(request):
