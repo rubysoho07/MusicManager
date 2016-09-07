@@ -8,6 +8,7 @@
     <h1>No album information uploaded.</h1>
 {% else %}
     <h1>앨범 목록</h1>
+    <p>현재 {{ albums_number }} 장의 앨범을 관리하고 있습니다.</p>
     <div class="goni_padding"></div>
     {% for album in album_list %}
         <div class="album_cover col-md-2 col-sm-2 col-xs-3">

@@ -42,7 +42,8 @@ def index(request):
                     {'album_list': album_list,
                      'current_page': current_page,
                      'start_num': start_num,
-                     'pages_list': range(1, total_pages + 1)})
+                     'pages_list': range(1, total_pages + 1),
+                     'albums_number': albums_number})
 
 # Search albums from database. (by Artist/Album title)
 def search(request):
