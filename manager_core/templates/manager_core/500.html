@@ -1,14 +1,10 @@
-{% load staticfiles %}
-<!-- Header -->
-{% include "manager_core/header.html" %}
-<!-- End of Header -->
+{% extends 'manager_core/page_base.html' %}
 
+{% block content %}
 <!-- For 500 error message. -->
 <h1>500 Internal Server Error</h1>
 <hr>
 <p>서버에서 오류가 발생 했습니다.</p>
 <!-- End of 500 error message. -->
 <div class="goni_padding"></div>
-<!-- Footer -->
-{% include "manager_core/footer.html" %}
-<!-- End of footer -->
+{% endblock content %}

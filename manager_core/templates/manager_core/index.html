@@ -1,8 +1,6 @@
-{% load staticfiles %}
-<!-- Header -->
-{% include "manager_core/header.html" %}
-<!-- End of Header -->
+{% extends 'manager_core/page_base.html' %}
 
+{% block content %}
 <!-- List of my albums. -->
 {% if album_list|length == 0 %}
     <h1>No album information uploaded.</h1>
@@ -29,6 +27,4 @@
 {% endif %}
 <!-- End of list. -->
 <div class="goni_padding"></div>
-<!-- Footer -->
-{% include "manager_core/footer.html" %}
-<!-- End of footer -->
+{% endblock content %}

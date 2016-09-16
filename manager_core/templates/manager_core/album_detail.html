@@ -1,8 +1,6 @@
-{% load staticfiles %}
-<!-- Header -->
-{% include "manager_core/header.html" %}
-<!-- End of Header -->
+{% extends 'manager_core/page_base.html' %}
 
+{% block content %}
 <!-- Body start -->
 <h1>앨범 확인하기</h1>
 <div class="goni_padding"></div>
@@ -31,7 +29,4 @@
 <!-- End of printing result -->
 <div class="goni_padding"></div>
 <!-- Body end -->
-
-<!-- Footer -->
-{% include "manager_core/footer.html" %}
-<!-- End of footer -->
+{% endblock content %}
