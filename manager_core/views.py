@@ -73,7 +73,7 @@ def search_result(request):
 
 # Add album from Bugs/Naver music.
 def add_album(request):
-    return render(request, 'manager_core/add_album.html')
+    return render(request, 'manager_core/add_album.html', {'error': False})
 
 # Add result and confirm add this information or cancel.
 def add_result(request):
@@ -86,6 +86,7 @@ def add_result(request):
 
     if new_url == "":
         parsed_data = ""
+        return render(request, 'manager_core/add_album.html', {'error': True, 'req_url': original_url})
     else:
         bugs_pattern = re.compile("bugs[.]co[.]kr")
         naver_music_pattern = re.compile("music[.]naver[.]com")

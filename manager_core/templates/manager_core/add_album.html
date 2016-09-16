@@ -6,9 +6,17 @@
 
 <p>주소를 입력하세요 (네이버 뮤직/벅스 지원)</p>
 
+{% if error == True %}
+<div class="alert alert-danger" role="alert">잘못된 URL을 입력하셨습니다!</div>
+{% endif %}
+
 <form class="form-inline" role="form" action="{% url 'manager_core:add_result' %}" method="POST">
 {% csrf_token %}
+{% if error == True %}
+    <input class="form-control" type="text" name="album_url" id="album_url" value="{{ req_url }}"/>
+{% else %}
     <input class="form-control" type="text" name="album_url" id="album_url"/>
+{% endif %}
     <input class="btn" type="submit" value="Get!" />
 </form>
 <div class="goni_padding"></div>
