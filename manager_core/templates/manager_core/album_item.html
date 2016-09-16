@@ -1,0 +1,34 @@
+{% load staticfiles %}
+<div class="album_cover col-md-2 col-sm-2 col-xs-3">
+    <!-- Show album cover -->
+    {% if link == True %}
+    <a href="{% url 'manager_core:album' id %}">
+    {% endif %}
+    <img class="img-responsive" src="{% static 'manager_core/images/'|add:cover_file %}" width="120px" height="120px">
+    {% if link == True %}
+    </a>
+    {% endif %}
+</div>
+<div class="album_basicinfo col-md-10 col-sm-10 col-xs-9">
+    <!-- Show artist and title-->
+    <table class="table">
+        <tr>
+            <td class="col-md-2 col-sm-2 col-xs-3"><b>Artist</b></td>
+            <td class="col-md-10 col-sm-10 col-xs-9">{{ artist }}</td>
+        <tr>
+        <tr>
+            <td class="col-md-2 col-sm-2 col-xs-3"><b>Title</b></td>
+            {% if link == True %}
+            <td class="col-md-10 col-sm-10 col-xs-9"><a href="{% url 'manager_core:album' id %}">{{ title }}</a></td>
+            {% else %}
+            <td class="col-md-10 col-sm-10 col-xs-9">{{ title }}</td>
+            {% endif %}
+        </tr>
+        <tr>
+        {% if delete == True %}
+            <td class="col-md-2 col-sm-2 col-xs-3"><a href="{% url 'manager_core:confirm_delete' id %}">Delete!</a></td>
+            <td class="col-md-10 col-sm-10 col-xs-9"></td>
+        {% endif %}
+        </tr>
+    </table>
+</div>
