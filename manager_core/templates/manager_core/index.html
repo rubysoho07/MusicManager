@@ -1,5 +1,9 @@
 {% extends 'manager_core/page_base.html' %}
 
+{% block title %}
+MusicManager
+{% endblock %}
+
 {% block content %}
 <!-- List of my albums. -->
 {% if album_list|length == 0 %}
