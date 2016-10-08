@@ -91,6 +91,7 @@ def add_result(request):
         bugs_pattern = re.compile("bugs[.]co[.]kr")
         naver_music_pattern = re.compile("music[.]naver[.]com")
         melon_pattern = re.compile("melon[.]com")
+        allmusic_pattern = re.compile("allmusic[.]com")
 
         # if Bugs URL, run get_bugs_data()
         m = bugs_pattern.search(new_url)
@@ -109,6 +110,12 @@ def add_result(request):
 
         if m:
             parsed_data = music_parser.get_melon_data(new_url)
+
+        # if AllMusic URL, run get_allmusic_data()
+        m = allmusic_pattern.search(new_url)
+
+        if m:
+            parsed_data = music_parser.get_allmusic_data(new_url)
     
     # JSON data -> HTML data (for user)
     json_data = json.loads(parsed_data)

@@ -10,7 +10,7 @@ MusicManager :: Add album
 <div class="alert alert-danger" role="alert"><b>오류 발생:</b> 잘못된 URL을 입력하셨습니다!</div>
 {% endif %}
 <h1>Add Album</h1>
-<p>주소를 입력하세요 (네이버 뮤직/벅스/멜론 지원)</p>
+<p>주소를 입력하세요 (네이버 뮤직/벅스/멜론/AllMusic 지원)</p>
 
 <form class="form-inline" role="form" action="{% url 'manager_core:add_result' %}" method="POST">
 {% csrf_token %}

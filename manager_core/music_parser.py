@@ -286,16 +286,94 @@ def get_melon_data(album_url):
                        "tracks": tracks},
                       ensure_ascii=False)
 
+# Get album data from AllMusic. (JSON data)
+def get_allmusic_data(album_url):
+    # Get original data
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:49.0) Gecko/20100101 Firefox/49.0'
+    }
+    data = requests.get(album_url, headers=headers)
+    soup = BeautifulSoup(data.text, "html.parser")
+
+    # If encoding is None, you'll get UnicodeError (-_-)
+    soup.prettify(encoding="utf-8")
+
+    # Get sidebar. (To get album cover)
+    sidebar = soup.find('div', class_='sidebar')
+
+    # Get contents. (To get artist, album title, track lists)
+    content = soup.find('div', class_='content')
+    
+    # Get artist from content. 
+    artist = content.find('h2').find('a').text
+
+    # get album title from content.
+    album_title = content.find('h1', class_='album-title').text
+
+    # Get and print album cover image. 
+    album_cover_thumb = sidebar.find('div', class_='album-contain')
+    album_cover = album_cover_thumb.find('img', class_='media-gallery-image')['src']
+
+    # Save album cover image. 
+    # ex) http://cps-static.rovicorp.com/3/JPG_500/MI0002/416/MI0002416076.jpg?partner=allrovi.com
+    if not os.path.exists("manager_core/static/manager_core/images"):
+        os.mkdir("manager_core/static/manager_core/images")
+
+    save_image(album_cover, "manager_core/static/manager_core/images/allmusic_" + album_cover.split("/")[-1].split("?")[0])
+
+    # Get track list
+    # Initialize track lists
+    tracks = []
+
+    # For supporting multiple disks
+    track_list_table = content.find_all('div', class_='disc')
+
+    for disk in track_list_table:
+        # Get disk number.
+        if len(track_list_table) == 1:
+            disk_num = 1
+        else:
+            disk_num = int(disk.find('div', class_='headline').h3.text.split(" ")[-1])
+
+        track_list_body = disk.find('tbody')
+
+        table_row_list = track_list_body.find_all('tr')
+
+        for row in table_row_list:
+
+            # Get track number
+            track_num = row.find('td', class_='tracknum').text
+
+            # Get track title
+            track_title = row.find('div', class_='title').find('a').text
+
+            # Get track artist
+            track_artist = row.find('td', class_='performer').find('a').text
+
+            # Add to track list
+            tracks.append({"disk": disk_num, "track_num": int(track_num),
+                           "track_title": track_title,
+                           "track_artist": track_artist})
+
+    # Make JSON data and return it.
+    return json.dumps({"artist": artist,
+                       "album_title": album_title,
+                       "album_cover": "allmusic_" + album_cover.split("/")[-1].split("?")[0],
+                       "tracks": tracks},
+                      ensure_ascii=False)
+
 
 # Check if input URL is valid.
 def check_input(url_input):
     # Bugs URL pattern: bugs[.]co[.]kr\/album\/[0-9]{1,6}
     # Naver music URL pattern: music[.]naver[.]com\/album\/index.nhn[?]albumId=[0-9]{1,6}
     # Melon URL pattern: melon[.]com\/album\/detail[.]htm[?]albumId=[0-9]{1,8}
+    # AllMusic URL pattern: allmusic[.]com\/album\/.*mw[0-9]{10}
 
     bugs_pattern = re.compile("bugs[.]co[.]kr\/album\/[0-9]{1,8}")
     naver_music_pattern = re.compile("music[.]naver[.]com\/album\/index.nhn[?]albumId=[0-9]{1,8}")
     melon_pattern = re.compile("melon[.]com\/album\/detail[.]htm[?]albumId=[0-9]{1,8}")
+    allmusic_pattern = re.compile("allmusic[.]com\/album\/.*mw[0-9]{10}")
 
     # Check bugs pattern
     m = bugs_pattern.search(url_input)
@@ -315,6 +393,12 @@ def check_input(url_input):
     if m:
         return "http://www." + m.group()
 
+    # Check AllMusic pattern.
+    m = allmusic_pattern.search(url_input)
+
+    if m:
+        return "http://www." + m.group()
+
     return ""
 
 
@@ -330,6 +414,7 @@ if __name__ == "__main__":
         bugs_pattern = re.compile("bugs[.]co[.]kr")
         naver_music_pattern = re.compile("music[.]naver[.]com")
         melon_pattern = re.compile("melon[.]com")
+        allmusic_pattern = re.compile("allmusic[.]com")
 
         # if Bugs URL, run get_bugs_data()
         m = bugs_pattern.search(new_input)
@@ -348,3 +433,9 @@ if __name__ == "__main__":
 
         if m:
             print get_melon_data(new_input)
+
+        # if AllMusic URL, run get_allmusic_data()
+        m = allmusic_pattern.search(new_input)
+
+        if m:
+            print get_allmusic_data(new_input)
