@@ -88,34 +88,7 @@ def add_result(request):
         parsed_data = ""
         return render(request, 'manager_core/add_album.html', {'error': True, 'req_url': original_url})
     else:
-        bugs_pattern = re.compile("bugs[.]co[.]kr")
-        naver_music_pattern = re.compile("music[.]naver[.]com")
-        melon_pattern = re.compile("melon[.]com")
-        allmusic_pattern = re.compile("allmusic[.]com")
-
-        # if Bugs URL, run get_bugs_data()
-        m = bugs_pattern.search(new_url)
-
-        if m:
-            parsed_data = music_parser.get_bugs_data(new_url)
-        
-        # if Naver Music URL, run get_naver_music_data()
-        m = naver_music_pattern.search(new_url)
-
-        if m:
-            parsed_data = music_parser.get_naver_music_data(new_url)
-
-        # if Melon URL, run get_melon_url()
-        m = melon_pattern.search(new_url)
-
-        if m:
-            parsed_data = music_parser.get_melon_data(new_url)
-
-        # if AllMusic URL, run get_allmusic_data()
-        m = allmusic_pattern.search(new_url)
-
-        if m:
-            parsed_data = music_parser.get_allmusic_data(new_url)
+        parsed_data = music_parser.get_parsed_data(new_url)
     
     # JSON data -> Data for user.
     json_data = json.loads(parsed_data)

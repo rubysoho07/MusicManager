@@ -401,41 +401,42 @@ def check_input(url_input):
 
     return ""
 
+# Get JSON data from music sites.
+def get_parsed_data(input_url):
+    bugs_pattern = re.compile("bugs[.]co[.]kr")
+    naver_music_pattern = re.compile("music[.]naver[.]com")
+    melon_pattern = re.compile("melon[.]com")
+    allmusic_pattern = re.compile("allmusic[.]com")
+
+    # if Bugs URL, run get_bugs_data()
+    m = bugs_pattern.search(input_url)
+    if m:
+        parsed_data = get_bugs_data(input_url)
+    
+    # if Naver Music URL, run get_naver_music_data()
+    m = naver_music_pattern.search(input_url)
+    if m:
+        parsed_data = get_naver_music_data(input_url)
+
+    # if Melon URL, run get_melon_url()
+    m = melon_pattern.search(input_url)
+    if m:
+        parsed_data = get_melon_data(input_url)
+
+    # if AllMusic URL, run get_allmusic_data()
+    m = allmusic_pattern.search(input_url)
+    if m:
+        parsed_data = get_allmusic_data(input_url)
+    
+    return parsed_data
 
 # For Testing.
 if __name__ == "__main__":
-    input_val = raw_input("Write album URL (supporting Bugs/Naver Music/Melon): ")
+    input_val = raw_input("Write album URL (supporting Bugs/Naver Music/Melon/AllMusic): ")
 
     new_input = check_input(input_val)
 
     if new_input == "":
         print "ERROR: Invalid input"
     else:
-        bugs_pattern = re.compile("bugs[.]co[.]kr")
-        naver_music_pattern = re.compile("music[.]naver[.]com")
-        melon_pattern = re.compile("melon[.]com")
-        allmusic_pattern = re.compile("allmusic[.]com")
-
-        # if Bugs URL, run get_bugs_data()
-        m = bugs_pattern.search(new_input)
-
-        if m:
-            print get_bugs_data(new_input)
-
-        # if Naver Music URL, run get_naver_music_data()
-        m = naver_music_pattern.search(new_input)
-
-        if m:
-            print get_naver_music_data(new_input)
-
-        # if Melon URL, run get_melon_data()
-        m = melon_pattern.search(new_input)
-
-        if m:
-            print get_melon_data(new_input)
-
-        # if AllMusic URL, run get_allmusic_data()
-        m = allmusic_pattern.search(new_input)
-
-        if m:
-            print get_allmusic_data(new_input)
+        print get_parsed_data(new_input)
