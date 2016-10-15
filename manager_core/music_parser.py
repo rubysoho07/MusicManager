@@ -33,6 +33,15 @@ http://m.app.melon.com/album/music.htm?albumId=99237
 http://www.melon.com/album/detail.htm?albumId=2681984
 """
 
+# Get original data from web.
+def get_original_data(album_url):
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:49.0) Gecko/20100101 Firefox/49.0'
+    }
+    data = requests.get(album_url, headers=headers)
+
+    # Need to encoding UTF-8. (For unicode text)
+    return BeautifulSoup(data.text, "html.parser", from_encoding="utf-8")
 
 # Save album cover image (with requests library)
 def save_image(source, target):
@@ -55,11 +64,7 @@ def save_image(source, target):
 # Get album data from Naver Music (JSON data)
 def get_naver_music_data(album_url):
     # Get original data
-    data = requests.get(album_url)
-    soup = BeautifulSoup(data.text, "html.parser")
-
-    # If encoding is None, you'll get UnicodeError (-_-)
-    soup.prettify(encoding="utf-8")
+    soup = get_original_data(album_url)
 
     # Get and print artist information.
     artist_data = soup.find('dd', class_='artist')
@@ -131,11 +136,7 @@ def get_naver_music_data(album_url):
 # Get album data from Bugs. (JSON data)
 def get_bugs_data(album_url):
     # Get original data
-    data = requests.get(album_url)
-    soup = BeautifulSoup(data.text, "html.parser")
-
-    # If encoding is None, you'll get UnicodeError (-_-)
-    soup.prettify(encoding="utf-8")
+    soup = get_original_data(album_url)
 
     # Get and print artist information.
     basic_info = soup.find('table', class_='info').tr
@@ -207,11 +208,7 @@ def get_bugs_data(album_url):
 # Get album data from Melon. (JSON data)
 def get_melon_data(album_url):
     # Get original data
-    data = requests.get(album_url)
-    soup = BeautifulSoup(data.text, "html.parser")
-
-    # If encoding is None, you'll get UnicodeError (-_-)
-    soup.prettify(encoding="utf-8")
+    soup = get_original_data(album_url)
 
     # Get and print artist information. (Finished)
     basic_info = soup.find('dl', class_='song_info clfix')
@@ -289,14 +286,7 @@ def get_melon_data(album_url):
 # Get album data from AllMusic. (JSON data)
 def get_allmusic_data(album_url):
     # Get original data
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:49.0) Gecko/20100101 Firefox/49.0'
-    }
-    data = requests.get(album_url, headers=headers)
-    soup = BeautifulSoup(data.text, "html.parser")
-
-    # If encoding is None, you'll get UnicodeError (-_-)
-    soup.prettify(encoding="utf-8")
+    soup = get_original_data(album_url)
 
     # Get sidebar. (To get album cover)
     sidebar = soup.find('div', class_='sidebar')
