@@ -168,9 +168,17 @@ def add_action(request):
 # See album detail information
 def see_album(request, album_id):
     album = get_object_or_404(Album, pk=album_id)
-    track_list = album.albumtrack_set.all()
+    disk_num = 1
+    disks = []
 
-    return render(request, 'manager_core/album_detail.html', {'album': album, 'tracks': track_list})
+    track_list = album.albumtrack_set.filter(disk=disk_num)
+
+    while len(track_list) != 0:
+        disks.append(track_list)
+        disk_num = disk_num + 1
+        track_list = album.albumtrack_set.filter(disk=disk_num)
+
+    return render(request, 'manager_core/album_detail.html', {'album': album, 'disks': disks})
 
 # Confirm delete information from database.
 def confirm_delete(request, album_id):
