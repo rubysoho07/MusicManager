@@ -328,11 +328,6 @@ def get_allmusic_data(album_url):
 
 # Check if input URL is valid.
 def check_input(url_input):
-    # Bugs URL pattern: bugs[.]co[.]kr\/album\/[0-9]{1,6}
-    # Naver music URL pattern: music[.]naver[.]com\/album\/index.nhn[?]albumId=[0-9]{1,6}
-    # Melon URL pattern: melon[.]com\/album\/detail[.]htm[?]albumId=[0-9]{1,8}
-    # AllMusic URL pattern: allmusic[.]com\/album\/.*mw[0-9]{10}
-
     bugs_pattern = re.compile("bugs[.]co[.]kr\/album\/[0-9]{1,8}")
     naver_music_pattern = re.compile("music[.]naver[.]com\/album\/index.nhn[?]albumId=[0-9]{1,8}")
     melon_pattern = re.compile("melon[.]com\/album\/detail[.]htm[?]albumId=[0-9]{1,8}")
