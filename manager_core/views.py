@@ -117,13 +117,28 @@ def add_result(request):
         if m:
             parsed_data = music_parser.get_allmusic_data(new_url)
     
-    # JSON data -> HTML data (for user)
+    # JSON data -> Data for user.
     json_data = json.loads(parsed_data)
 
+    # Album title, cover, artist: unicode data.
     album_title = json_data['album_title']
     album_cover = json_data['album_cover']
     album_artist = json_data['artist']
+
+    # Album track: a list. 
+    # (A track of track list is to an dict, because a track is JSON object.)
     album_track = json_data['tracks']
+
+    # Dividing all tracks per disk.
+    disk_num = 1
+    disks = []
+
+    track_list = list(track for track in album_track if track['disk'] == disk_num)
+
+    while len(track_list) != 0:
+        disks.append(track_list)
+        disk_num = disk_num + 1
+        track_list = list(track for track in album_track if track['disk'] == disk_num)
 
     return render(request, 'manager_core/add_album_confirm.html', 
                     {'original_url': original_url, 
@@ -131,7 +146,7 @@ def add_result(request):
                      'album_artist': album_artist,
                      'album_title': album_title,
                      'album_cover': album_cover,
-                     'tracks': album_track})
+                     'disks': disks})
 
 # Add album information to database.
 def add_action(request):
@@ -168,6 +183,8 @@ def add_action(request):
 # See album detail information
 def see_album(request, album_id):
     album = get_object_or_404(Album, pk=album_id)
+
+    # Dividing all tracks per disk.
     disk_num = 1
     disks = []
 

@@ -19,24 +19,28 @@ MusicManager :: Add album confirm
 <!-- Start of printing result -->
 {% include "manager_core/album_item.html" with link=False id=-1 cover_file=album_cover artist=album_artist title=album_title delete=False %}
 
-<p>Track list</p>
-
-<table class="table">
-  <tr>
-    <th>D#</th>
-    <th>T#</th>
-    <th>Title</th>
-    <th>Artist</th>
-  </tr>
-{% for track in tracks %}
-  <tr>
-    <td>{{ track.disk }}</td>
-    <td>{{ track.track_num }}</td>
-    <td>{{ track.track_title }}</td>
-    <td>{{ track.track_artist}}</td>
-  </tr>
+<!-- Track list -->
+{% for disk in disks %}
+  {% comment "Get disk number" %}
+    Get disk number from first track. disk is a QuerySet object for an actual disk. 
+    You can access first element of list using '.0'.
+  {% endcomment %}
+  <h4>Disk {{ disk.0.disk }}</h4>
+  <table class="table">
+    <tr>
+      <th>#</th>
+      <th>Title</th>
+      <th>Artist</th>
+    </tr>
+  {% for track in disk %}
+    <tr>
+      <td>{{ track.track_num }}</td>
+      <td>{{ track.track_title }}</td>
+      <td>{{ track.track_artist}}</td>
+    </tr>
+  {% endfor %}
+  </table>
 {% endfor %}
-</table>
 
 <hr>
 <p>이 앨범을 등록하시겠습니까?</p>
