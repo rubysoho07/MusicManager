@@ -323,7 +323,7 @@ def get_allmusic_data(album_url):
         if len(track_list_table) == 1:
             disk_num = 1
         else:
-            disk_num = int(disk.find('div', class_='headline').h3.text.split(" ")[-1])
+            disk_num = int(disk.find('div', class_='headline').h3.text.strip().split(" ")[-1])
 
         track_list_body = disk.find('tbody')
 
