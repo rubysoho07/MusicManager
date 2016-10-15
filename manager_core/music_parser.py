@@ -8,31 +8,6 @@ import os
 import json
 from bs4 import BeautifulSoup
 
-test_url_naver = "http://music.naver.com/album/index.nhn?albumId=645112"
-test_url_bugs = "http://music.bugs.co.kr/album/571231"
-test_url_naver_2disk = "http://music.naver.com/album/index.nhn?albumId=210850"
-test_url_bugs_2disk = "http://music.bugs.co.kr/album/311371"
-test_url_melon = "http://www.melon.com/album/detail.htm?albumId=99237"
-test_url_melon_2disk = "http://www.melon.com/album/detail.htm?albumId=2681984"
-
-"""
-Test URL patterns.
-------------------
-http://music.bugs.co.kr/album/179142?wl_ref=list_tr_11
-http://music.naver.com/album/index.nhn?albumId=36231
-http://m.music.naver.com/album/index.nhn?albumId=503711&type=
-http://m.bugs.co.kr/album/553073
-http://music.bugs.co.kr/album/1
-http://music.bugs.co.kr/album/10
-http://music.naver.com/album/index.nhn?albumId=10
-http://music.naver.com/album/index.nhn?albumId=1
-http://music.bugs.co.kr/album/20032982?wl_ref=list_tr_11
-http://music.naver.com/album/index.nhn?albumId=634351
-http://www.melon.com/album/detail.htm?albumId=99237
-http://m.app.melon.com/album/music.htm?albumId=99237
-http://www.melon.com/album/detail.htm?albumId=2681984
-"""
-
 # Get original data from web.
 def get_original_data(album_url):
     headers = {
@@ -54,7 +29,6 @@ def save_image(source, target):
         response = requests.get(source, stream=True)
 
         if not response.ok:
-            # print "Getting image error"
             return
 
         for block in response.iter_content(1024):
@@ -93,7 +67,6 @@ def get_naver_music_data(album_url):
     tracks = []
 
     # Get track list
-
     # For supporting multiple disks
     track_list_body = soup.find('tbody')
 
