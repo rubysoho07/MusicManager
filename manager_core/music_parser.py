@@ -8,6 +8,7 @@ import os
 import json
 from bs4 import BeautifulSoup
 
+
 # Get original data from web.
 def get_original_data(album_url):
     headers = {
@@ -17,6 +18,7 @@ def get_original_data(album_url):
 
     # Need to encoding UTF-8. (For unicode text)
     return BeautifulSoup(data.text, "html.parser", from_encoding="utf-8")
+
 
 # Save album cover image (with requests library)
 def save_image(source, target):
@@ -256,6 +258,7 @@ def get_melon_data(album_url):
                        "tracks": tracks},
                       ensure_ascii=False)
 
+
 # Get album data from AllMusic. (JSON data)
 def get_allmusic_data(album_url):
     # Get original data
@@ -266,7 +269,7 @@ def get_allmusic_data(album_url):
 
     # Get contents. (To get artist, album title, track lists)
     content = soup.find('div', class_='content')
-    
+
     # Get artist from content. 
     artist = content.find('h2').find('a').text
 
@@ -282,7 +285,8 @@ def get_allmusic_data(album_url):
     if not os.path.exists("manager_core/static/manager_core/images"):
         os.mkdir("manager_core/static/manager_core/images")
 
-    save_image(album_cover, "manager_core/static/manager_core/images/allmusic_" + album_cover.split("/")[-1].split("?")[0])
+    save_image(album_cover, "manager_core/static/manager_core/images/allmusic_" +
+               album_cover.split("/")[-1].split("?")[0])
 
     # Get track list
     # Initialize track lists
@@ -303,7 +307,6 @@ def get_allmusic_data(album_url):
         table_row_list = track_list_body.find_all('tr')
 
         for row in table_row_list:
-
             # Get track number
             track_num = row.find('td', class_='tracknum').text
 
@@ -328,10 +331,10 @@ def get_allmusic_data(album_url):
 
 # Check if input URL is valid.
 def check_input(url_input):
-    bugs_pattern = re.compile("bugs[.]co[.]kr\/album\/[0-9]{1,8}")
-    naver_music_pattern = re.compile("music[.]naver[.]com\/album\/index.nhn[?]albumId=[0-9]{1,8}")
-    melon_pattern = re.compile("melon[.]com\/album\/detail[.]htm[?]albumId=[0-9]{1,8}")
-    allmusic_pattern = re.compile("allmusic[.]com\/album\/.*mw[0-9]{10}")
+    bugs_pattern = re.compile("bugs[.]co[.]kr/album/[0-9]{1,8}")
+    naver_music_pattern = re.compile("music[.]naver[.]com/album/index.nhn[?]albumId=[0-9]{1,8}")
+    melon_pattern = re.compile("melon[.]com/album/detail[.]htm[?]albumId=[0-9]{1,8}")
+    allmusic_pattern = re.compile("allmusic[.]com/album/.*mw[0-9]{10}")
 
     # Check bugs pattern
     m = bugs_pattern.search(url_input)
@@ -359,6 +362,7 @@ def check_input(url_input):
 
     return ""
 
+
 # Get JSON data from music sites.
 def get_parsed_data(input_url):
     bugs_pattern = re.compile("bugs[.]co[.]kr")
@@ -369,24 +373,25 @@ def get_parsed_data(input_url):
     # if Bugs URL, run get_bugs_data()
     m = bugs_pattern.search(input_url)
     if m:
-        parsed_data = get_bugs_data(input_url)
-    
+        return get_bugs_data(input_url)
+
     # if Naver Music URL, run get_naver_music_data()
     m = naver_music_pattern.search(input_url)
     if m:
-        parsed_data = get_naver_music_data(input_url)
+        return get_naver_music_data(input_url)
 
     # if Melon URL, run get_melon_url()
     m = melon_pattern.search(input_url)
     if m:
-        parsed_data = get_melon_data(input_url)
+        return get_melon_data(input_url)
 
     # if AllMusic URL, run get_allmusic_data()
     m = allmusic_pattern.search(input_url)
     if m:
-        parsed_data = get_allmusic_data(input_url)
-    
-    return parsed_data
+        return get_allmusic_data(input_url)
+
+    return None
+
 
 # For Testing.
 if __name__ == "__main__":
