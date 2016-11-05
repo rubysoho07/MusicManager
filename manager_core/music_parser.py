@@ -315,25 +315,25 @@ def check_input(url_input):
     match = bugs_pattern.search(url_input)
 
     if match:
-        return "http://music." + m.group()
+        return "http://music." + match.group()
 
     # Check naver_music_pattern
     match = naver_music_pattern.search(url_input)
 
     if match:
-        return "http://" + m.group()
+        return "http://" + match.group()
 
     # Check melon pattern.
     match = melon_pattern.search(url_input)
 
     if match:
-        return "http://www." + m.group()
+        return "http://www." + match.group()
 
     # Check AllMusic pattern.
     match = allmusic_pattern.search(url_input)
 
     if match:
-        return "http://www." + m.group()
+        return "http://www." + match.group()
 
     return None
 
