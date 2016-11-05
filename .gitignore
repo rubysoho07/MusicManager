@@ -1,4 +1,11 @@
 # Ignore Python compiled file.
 *.pyc
+
+# Ignore database file.
 db.sqlite3
+
+# Ignore album cover files.
 *.jpg
+
+# Ignore files made by PyCharm.
+.idea/*
