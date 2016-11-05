@@ -17,7 +17,7 @@ MusicManager :: Add album confirm
 </form>
 <div class="goni_padding"></div>
 <!-- Start of printing result -->
-{% include "manager_core/album_item.html" with link=False id=-1 cover_file=album_cover artist=album_artist title=album_title delete=False %}
+{% include "manager_core/album_item.html" with link=False id=-1 cover_external=True cover_file=album_cover artist=album_artist title=album_title delete=False %}
 
 <!-- Track list -->
 {% for disk in disks %}

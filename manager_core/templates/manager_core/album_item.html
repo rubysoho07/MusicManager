@@ -4,7 +4,11 @@
     {% if link == True %}
     <a href="{% url 'manager_core:album' id %}">
     {% endif %}
-    <img class="img-responsive" src="{% static 'manager_core/images/'|add:cover_file %}" width="120px" height="120px">
+        {% if cover_external == True %}
+        <img class="img-responsive" src="{{ cover_file }}" width="120px" height="120px">
+        {% else %}
+        <img class="img-responsive" src="{% static 'manager_core/images/'|add:cover_file %}" width="120px" height="120px">
+        {% endif %}
     {% if link == True %}
     </a>
     {% endif %}

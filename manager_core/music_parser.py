@@ -26,6 +26,10 @@ def save_image(source, target):
     if os.path.exists(target):
         return
 
+    # If static images directory not found, make directory.
+    if not os.path.exists("manager_core/static/manager_core/images"):
+        os.mkdir("manager_core/static/manager_core/images")
+
     # Else, save album cover image
     with open(target, 'wb') as handle:
         response = requests.get(source, stream=True)
@@ -54,13 +58,6 @@ def get_naver_music_data(album_url):
 
     # Get and print album cover image.
     album_cover = soup.find('div', class_='thumb').img['src']
-
-    # Save album cover image.
-    # ex) http://musicmeta.phinf.naver.net/album/000/645/645112.jpg?type=r204Fll&v=20160623150347
-    if not os.path.exists("manager_core/static/manager_core/images"):
-        os.mkdir("manager_core/static/manager_core/images")
-
-    save_image(album_cover, "manager_core/static/manager_core/images/naver_" + album_cover.split("/")[-1].split("?")[0])
 
     # Default number of disk = 1
     disk_num = 1
@@ -103,7 +100,7 @@ def get_naver_music_data(album_url):
     # Make JSON data and return it.
     return json.dumps({"artist": artist,
                        "album_title": album_title,
-                       "album_cover": "naver_" + album_cover.split("/")[-1].split("?")[0],
+                       "album_cover": album_cover,
                        "tracks": tracks},
                       ensure_ascii=False)
 
@@ -126,13 +123,6 @@ def get_bugs_data(album_url):
 
     # Get and print album cover image.
     album_cover = soup.find('div', class_='photos').img['src']
-
-    # Save album cover image.
-    # ex) http://image.bugsm.co.kr/album/images/200/5712/571231.jpg
-    if not os.path.exists("manager_core/static/manager_core/images"):
-        os.mkdir("manager_core/static/manager_core/images")
-
-    save_image(album_cover, "manager_core/static/manager_core/images/bugs_" + album_cover.split("/")[-1])
 
     # Default number of disk = 1
     disk_num = 1
@@ -175,7 +165,7 @@ def get_bugs_data(album_url):
     # Make JSON data and return it.
     return json.dumps({"artist": artist,
                        "album_title": album_title,
-                       "album_cover": "bugs_" + album_cover.split("/")[-1],
+                       "album_cover": album_cover,
                        "tracks": tracks},
                       ensure_ascii=False)
 
@@ -203,13 +193,6 @@ def get_melon_data(album_url):
     # Get and print album cover image. (Finished)
     album_cover_thumb = soup.find('div', class_='wrap_thumb')
     album_cover = album_cover_thumb.find('img')['src']
-
-    # Save album cover image. (Finished)
-    # ex) http://cdnimg.melon.co.kr/cm/album/images/006/23/653/623653.jpg
-    if not os.path.exists("manager_core/static/manager_core/images"):
-        os.mkdir("manager_core/static/manager_core/images")
-
-    save_image(album_cover, "manager_core/static/manager_core/images/melon_" + album_cover.split("/")[-7])
 
     # Get track list
     # Initialize track lists
@@ -254,7 +237,7 @@ def get_melon_data(album_url):
     # Make JSON data and return it.
     return json.dumps({"artist": artist,
                        "album_title": album_title,
-                       "album_cover": "melon_" + album_cover.split("/")[-7],
+                       "album_cover": album_cover,
                        "tracks": tracks},
                       ensure_ascii=False)
 
@@ -279,14 +262,6 @@ def get_allmusic_data(album_url):
     # Get and print album cover image. 
     album_cover_thumb = sidebar.find('div', class_='album-contain')
     album_cover = album_cover_thumb.find('img', class_='media-gallery-image')['src']
-
-    # Save album cover image. 
-    # ex) http://cps-static.rovicorp.com/3/JPG_500/MI0002/416/MI0002416076.jpg?partner=allrovi.com
-    if not os.path.exists("manager_core/static/manager_core/images"):
-        os.mkdir("manager_core/static/manager_core/images")
-
-    save_image(album_cover, "manager_core/static/manager_core/images/allmusic_" +
-               album_cover.split("/")[-1].split("?")[0])
 
     # Get track list
     # Initialize track lists
@@ -324,7 +299,7 @@ def get_allmusic_data(album_url):
     # Make JSON data and return it.
     return json.dumps({"artist": artist,
                        "album_title": album_title,
-                       "album_cover": "allmusic_" + album_cover.split("/")[-1].split("?")[0],
+                       "album_cover": album_cover,
                        "tracks": tracks},
                       ensure_ascii=False)
 
@@ -360,7 +335,7 @@ def check_input(url_input):
     if m:
         return "http://www." + m.group()
 
-    return ""
+    return None
 
 
 # Get JSON data from music sites.
@@ -399,7 +374,7 @@ if __name__ == "__main__":
 
     new_input = check_input(input_val)
 
-    if new_input == "":
+    if new_input is None:
         print "ERROR: Invalid input"
     else:
         print get_parsed_data(new_input)
