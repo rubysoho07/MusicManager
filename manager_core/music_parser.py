@@ -312,27 +312,27 @@ def check_input(url_input):
     allmusic_pattern = re.compile("allmusic[.]com/album/.*mw[0-9]{10}")
 
     # Check bugs pattern
-    m = bugs_pattern.search(url_input)
+    match = bugs_pattern.search(url_input)
 
-    if m:
+    if match:
         return "http://music." + m.group()
 
     # Check naver_music_pattern
-    m = naver_music_pattern.search(url_input)
+    match = naver_music_pattern.search(url_input)
 
-    if m:
+    if match:
         return "http://" + m.group()
 
     # Check melon pattern.
-    m = melon_pattern.search(url_input)
+    match = melon_pattern.search(url_input)
 
-    if m:
+    if match:
         return "http://www." + m.group()
 
     # Check AllMusic pattern.
-    m = allmusic_pattern.search(url_input)
+    match = allmusic_pattern.search(url_input)
 
-    if m:
+    if match:
         return "http://www." + m.group()
 
     return None
@@ -346,23 +346,23 @@ def get_parsed_data(input_url):
     allmusic_pattern = re.compile("allmusic[.]com")
 
     # if Bugs URL, run get_bugs_data()
-    m = bugs_pattern.search(input_url)
-    if m:
+    match = bugs_pattern.search(input_url)
+    if match:
         return get_bugs_data(input_url)
 
     # if Naver Music URL, run get_naver_music_data()
-    m = naver_music_pattern.search(input_url)
-    if m:
+    match = naver_music_pattern.search(input_url)
+    if match:
         return get_naver_music_data(input_url)
 
     # if Melon URL, run get_melon_url()
-    m = melon_pattern.search(input_url)
-    if m:
+    match = melon_pattern.search(input_url)
+    if match:
         return get_melon_data(input_url)
 
     # if AllMusic URL, run get_allmusic_data()
-    m = allmusic_pattern.search(input_url)
-    if m:
+    match = allmusic_pattern.search(input_url)
+    if match:
         return get_allmusic_data(input_url)
 
     return None
