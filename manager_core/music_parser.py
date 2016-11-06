@@ -49,7 +49,11 @@ def get_naver_music_data(album_url):
     # Get and print artist information.
     artist_data = soup.find('dd', class_='artist')
     if artist_data.find('a'):
-        artist = artist_data.find('a').text
+        artist_list = artist_data.find_all('a')
+        if len(artist_list) == 1:
+            artist = artist_list[0].text
+        else:
+            artist = ", ".join(item.text for item in artist_list)
     else:
         artist = artist_data.find('span').text
 
@@ -114,7 +118,11 @@ def get_bugs_data(album_url):
     basic_info = soup.find('table', class_='info').tr
 
     if basic_info.find('a'):
-        artist = basic_info.find('a').text
+        artist_list = basic_info.find('td').find_all('a')
+        if len(artist_list) == 1:
+            artist = artist_list[0].text
+        else:
+            artist = ", ".join(item.text for item in artist_list)
     else:
         artist = basic_info.find('td').text.strip()
 
@@ -155,12 +163,28 @@ def get_bugs_data(album_url):
                 track_title = track_title_data.span.text
 
             # Get track artist
-            track_artist = row.find('p', class_='artist')
+            track_artist_tag = row.find('p', class_='artist')
+
+            # Checking more artists.
+            more_artist = track_artist_tag.find('a', class_='more')
+
+            if more_artist:
+                onclick_text = more_artist['onclick'].split(",")[1].split("||")
+                artist_list = []
+                for i in range(len(onclick_text)):
+                    if i % 2 == 0:
+                        continue
+                    else:
+                        artist_list.append(onclick_text[i])
+
+                track_artist = ", ".join(artist_list)
+            else:
+                track_artist = track_artist_tag.a.text
 
             # Add to track list
             tracks.append({"disk": disk_num, "track_num": int(track_num.em.text),
                            "track_title": track_title,
-                           "track_artist": track_artist.a.text})
+                           "track_artist": track_artist})
 
     # Make JSON data and return it.
     return json.dumps({"artist": artist,
@@ -179,7 +203,11 @@ def get_melon_data(album_url):
     basic_info = soup.find('dl', class_='song_info clfix')
 
     if basic_info.find('span'):
-        artist = basic_info.find('span').text
+        artist_list = basic_info.find_all('span', class_=None)
+        if len(artist_list) == 1:
+            artist = artist_list[0].text
+        else:
+            artist = ", ".join(item.text for item in artist_list)
     else:
         artist = basic_info.find('dd').text.strip()
 
@@ -227,12 +255,17 @@ def get_melon_data(album_url):
                 track_title = track_title_data.find_all('span')[-1].text
 
             # Get track artist
-            track_artist = row.find('div', id='artistName')
+            track_artist_list = row.find('div', id='artistName').find('span', class_="checkEllipsis").find_all('a')
+
+            if len(track_artist_list) == 1:
+                track_artist = track_artist_list[0].text
+            else:
+                track_artist = ", ".join(item.text for item in track_artist_list)
 
             # Add to track list
             tracks.append({"disk": disk_num, "track_num": int(track_num),
                            "track_title": track_title,
-                           "track_artist": track_artist.a.text})
+                           "track_artist": track_artist})
 
     # Make JSON data and return it.
     return json.dumps({"artist": artist,
@@ -254,7 +287,16 @@ def get_allmusic_data(album_url):
     content = soup.find('div', class_='content')
 
     # Get artist from content. 
-    artist = content.find('h2').find('a').text
+    artist_tag = content.find('h2', class_='album-artist')
+
+    if artist_tag.find('a'):
+        artist_list = artist_tag.find_all('a')
+        if len(artist_list) == 1:
+            artist = artist_list[0].text
+        else:
+            artist = ", ".join(item.text for item in artist_list)
+    else:
+        artist = artist_tag.find('span').text
 
     # get album title from content.
     album_title = content.find('h1', class_='album-title').text
@@ -289,7 +331,12 @@ def get_allmusic_data(album_url):
             track_title = row.find('div', class_='title').find('a').text
 
             # Get track artist
-            track_artist = row.find('td', class_='performer').find('a').text
+            track_artist_list = row.find('td', class_='performer').find_all('a')
+
+            if len(track_artist_list) == 1:
+                track_artist = track_artist_list[0].text
+            else:
+                track_artist = ", ".join(item.text for item in track_artist_list)
 
             # Add to track list
             tracks.append({"disk": disk_num, "track_num": int(track_num),
