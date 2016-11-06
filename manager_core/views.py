@@ -57,6 +57,7 @@ def get_album_cover(original_url):
 
     return None
 
+
 # Create your views here.
 
 
@@ -70,30 +71,30 @@ def index(request):
     # Get data of current page. (Default is first page.)
     current_page = int(request.GET.get('page', '1'))
 
-    if (current_page != 1):
+    if current_page != 1:
         start_num = (current_page - 1) * 10
     else:
         start_num = 0
 
-    if (albums_number - start_num < 10):
+    if albums_number - start_num < 10:
         end_num = albums_number
     else:
         end_num = start_num + 10
-    
+
     album_list = all_album_list[start_num:end_num]
 
     # Get number of total pages.
-    if (albums_number % 10 == 0):
+    if albums_number % 10 == 0:
         total_pages = (albums_number / 10)
     else:
         total_pages = (albums_number / 10) + 1
 
-    return render(request, 'manager_core/index.html', 
-                    {'album_list': album_list,
-                     'current_page': current_page,
-                     'start_num': start_num,
-                     'pages_list': range(1, total_pages + 1),
-                     'albums_number': albums_number})
+    return render(request, 'manager_core/index.html',
+                  {'album_list': album_list,
+                   'current_page': current_page,
+                   'start_num': start_num,
+                   'pages_list': range(1, total_pages + 1),
+                   'albums_number': albums_number})
 
 
 # Search albums from database. (by Artist/Album title)
@@ -114,14 +115,14 @@ def search_result(request):
         result = Album.objects.filter(album_title__icontains=keyword)
     else:
         return render(request, 'manager_core/search_result.html',
-                 {'search_type': search_type, 
-                  'keyword': keyword,
-                  'search_result': []})
+                      {'search_type': search_type,
+                       'keyword': keyword,
+                       'search_result': []})
 
     return render(request, 'manager_core/search_result.html',
-                 {'search_type': search_type, 
-                  'keyword': keyword,
-                  'search_result': result})
+                  {'search_type': search_type,
+                   'keyword': keyword,
+                   'search_result': result})
 
 
 # Add album from Bugs/Naver music.
@@ -131,19 +132,17 @@ def add_album(request):
 
 # Add result and confirm add this information or cancel.
 def add_result(request):
-
     # Original URL from submitted value.
     original_url = request.POST['album_url']
 
     # Parse URL and make JSON values.
-    new_url = music_parser.check_input (original_url)
+    new_url = music_parser.check_input(original_url)
 
     if new_url == "":
-        parsed_data = ""
         return render(request, 'manager_core/add_album.html', {'error': True, 'req_url': original_url})
     else:
         parsed_data = music_parser.get_parsed_data(new_url)
-    
+
     # JSON data -> Data for user.
     json_data = json.loads(parsed_data)
 
@@ -164,24 +163,23 @@ def add_result(request):
 
     while len(track_list) != 0:
         disks.append(track_list)
-        disk_num = disk_num + 1
+        disk_num += 1
         track_list = list(track for track in album_track if track['disk'] == disk_num)
 
-    return render(request, 'manager_core/add_album_confirm.html', 
-                    {'original_url': original_url, 
-                     'parsed_data': parsed_data,
-                     'album_artist': album_artist,
-                     'album_title': album_title,
-                     'album_cover': album_cover,
-                     'disks': disks})
+    return render(request, 'manager_core/add_album_confirm.html',
+                  {'original_url': original_url,
+                   'parsed_data': parsed_data,
+                   'album_artist': album_artist,
+                   'album_title': album_title,
+                   'album_cover': album_cover,
+                   'disks': disks})
 
 
 # Add album information to database.
 def add_action(request):
-    
     # Get JSON data
     parsed_data = request.POST['album_data']
-    
+
     # Add JSON data to database
     json_data = json.loads(parsed_data)
 
@@ -189,7 +187,7 @@ def add_action(request):
     new_album_cover = get_album_cover(json_data['album_cover'])
     new_album_artist = json_data['artist']
 
-    album = Album(album_artist=new_album_artist, album_title=new_album_title, 
+    album = Album(album_artist=new_album_artist, album_title=new_album_title,
                   album_cover_file=new_album_cover, album_url=request.POST['album_url'])
     album.save()
 
@@ -197,15 +195,16 @@ def add_action(request):
     new_album_track = json_data['tracks']
 
     for track in new_album_track:
-        new_track = AlbumTrack(album=album, disk=track['disk'], 
-                            track_num=track['track_num'], track_title=track['track_title'], 
-                            track_artist=track['track_artist'])
+        new_track = AlbumTrack(album=album, disk=track['disk'],
+                               track_num=track['track_num'], track_title=track['track_title'],
+                               track_artist=track['track_artist'])
         new_track.save()
 
-    return render(request, 'manager_core/add_album_complete.html', 
-                    {'album_artist': new_album_artist,
-                     'album_title': new_album_title,
-                     'album_cover': new_album_cover})
+    return render(request, 'manager_core/add_album_complete.html',
+                  {'album_artist': new_album_artist,
+                   'album_title': new_album_title,
+                   'album_cover': new_album_cover})
+
 
 # See album detail information
 def see_album(request, album_id):
@@ -219,10 +218,11 @@ def see_album(request, album_id):
 
     while len(track_list) != 0:
         disks.append(track_list)
-        disk_num = disk_num + 1
+        disk_num += 1
         track_list = album.albumtrack_set.filter(disk=disk_num)
 
     return render(request, 'manager_core/album_detail.html', {'album': album, 'disks': disks})
+
 
 # Confirm delete information from database.
 def confirm_delete(request, album_id):
@@ -231,13 +231,14 @@ def confirm_delete(request, album_id):
     album_artist = album.album_artist
     album_cover = album.album_cover_file
 
-    return render(request, 'manager_core/delete_album_confirm.html', 
-                 {
-                     'album_title': album_title,
-                     'album_artist': album_artist,
-                     'album_cover': album_cover,
-                     'album_id': album_id
-                 })
+    return render(request, 'manager_core/delete_album_confirm.html',
+                  {
+                      'album_title': album_title,
+                      'album_artist': album_artist,
+                      'album_cover': album_cover,
+                      'album_id': album_id
+                  })
+
 
 # Delete album information from database.
 def delete(request):
@@ -250,18 +251,20 @@ def delete(request):
     album.delete()
 
     # remove cover file from static directory.
-    os.remove("manager_core/static/manager_core/images/"+album_cover_file)
+    os.remove("manager_core/static/manager_core/images/" + album_cover_file)
 
-    return render(request, 'manager_core/delete_album_complete.html', 
-                 {
-                     'album_artist': album_artist,
-                     'album_title': album_title
-                 })
+    return render(request, 'manager_core/delete_album_complete.html',
+                  {
+                      'album_artist': album_artist,
+                      'album_title': album_title
+                  })
+
 
 # View for 404 error
 def custom_page_not_found(request):
     return render(request, 'manager_core/404.html')
 
-# View for 500 error 
+
+# View for 500 error
 def custom_internal_server_error(request):
     return render(request, 'manager_core/500.html')
