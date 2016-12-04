@@ -9,3 +9,6 @@ db.sqlite3
 
 # Ignore files made by PyCharm.
 .idea/*
+
+# Ignore static files.
+static/
