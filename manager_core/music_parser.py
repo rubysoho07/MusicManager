@@ -461,15 +461,3 @@ def get_parsed_data(input_url):
         return get_allmusic_data(input_url)
 
     return None
-
-
-# For Testing.
-if __name__ == "__main__":
-    input_val = raw_input("Write album URL (supporting Bugs/Naver Music/Melon/AllMusic): ")
-
-    new_input = check_input(input_val)
-
-    if new_input is None:
-        print "ERROR: Invalid input"
-    else:
-        print get_parsed_data(new_input)
