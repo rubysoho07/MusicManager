@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
-from manager_core.views import *
+from manager_core.views import Error404View, Error500View
 
 urlpatterns = [
     url(r'^musicmanager/', include('manager_core.urls')),
