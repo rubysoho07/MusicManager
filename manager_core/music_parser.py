@@ -8,6 +8,8 @@ import os
 import json
 from bs4 import BeautifulSoup
 
+from django.conf import settings
+
 
 # Save album cover image and return saved cover image name.
 def get_album_cover(original_url):
@@ -26,8 +28,8 @@ def get_album_cover(original_url):
 
     if result:
         save_image(original_url,
-                   "manager_core/static/manager_core/images/naver_"
-                   + original_url.split("/")[-1].split("?")[0])
+                   os.path.join(settings.STATIC_ROOT, "manager_core/images/naver_"
+                                + original_url.split("/")[-1].split("?")[0]))
         return "naver_" + original_url.split("/")[-1].split("?")[0]
 
     # Check Melon pattern.
@@ -35,7 +37,8 @@ def get_album_cover(original_url):
 
     if result:
         save_image(original_url,
-                   "manager_core/static/manager_core/images/melon_" + original_url.split("/")[-7])
+                   os.path.join(settings.STATIC_ROOT, "manager_core/images/melon_"
+                                + original_url.split("/")[-7]))
         return "melon_" + original_url.split("/")[-7]
 
     # Check Bugs pattern.
@@ -43,7 +46,8 @@ def get_album_cover(original_url):
 
     if result:
         save_image(original_url,
-                   "manager_core/static/manager_core/images/bugs_" + original_url.split("/")[-1])
+                   os.path.join(settings.STATIC_ROOT, "manager_core/images/bugs_"
+                                + original_url.split("/")[-1]))
         return "bugs_" + original_url.split("/")[-1]
 
     # Check AllMusic pattern.
@@ -51,7 +55,8 @@ def get_album_cover(original_url):
 
     if result:
         save_image(original_url,
-                   "manager_core/static/manager_core/images/allmusic_" + original_url.split("/")[-1].split("?")[0])
+                   os.path.join(settings.STATIC_ROOT, "manager_core/images/allmusic_"
+                                + original_url.split("/")[-1].split("?")[0]))
         return "allmusic_" + original_url.split("/")[-1].split("?")[0]
 
     return None
@@ -75,8 +80,8 @@ def save_image(source, target):
         return
 
     # If static images directory not found, make directory.
-    if not os.path.exists("manager_core/static/manager_core/images"):
-        os.mkdir("manager_core/static/manager_core/images")
+    if not os.path.exists(os.path.join(settings.STATIC_ROOT, "manager_core/images")):
+        os.mkdir(os.path.join(settings.STATIC_ROOT, "manager_core/images"))
 
     # Else, save album cover image
     with open(target, 'wb') as handle:

@@ -1,4 +1,5 @@
 from django.shortcuts import get_object_or_404, render
+from django.conf import settings
 
 from .models import Album, AlbumTrack
 from django.views.generic.base import TemplateView
@@ -200,7 +201,7 @@ def delete(request):
     album.delete()
 
     # remove cover file from static directory.
-    os.remove("manager_core/static/manager_core/images/" + album_cover_file)
+    os.remove(os.path.join(settings.STATIC_ROOT, "manager_core/images/" + album_cover_file))
 
     return render(request, 'manager_core/delete_album_complete.html',
                   {
