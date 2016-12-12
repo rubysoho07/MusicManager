@@ -15,11 +15,12 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
+from manager_core.views import *
 
 urlpatterns = [
     url(r'^musicmanager/', include('manager_core.urls')),
     url(r'^admin/', admin.site.urls),
 ]
 
-handler404 = 'manager_core.views.custom_page_not_found'
-hanlder500 = 'manager_core.views.custom_internal_server_error'
+handler404 = Error404View.as_view()
+handler500 = Error500View.as_view()

@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404, render
 
 from .models import Album, AlbumTrack
+from django.views.generic.base import TemplateView
 
 import music_parser
 import json
@@ -209,10 +210,10 @@ def delete(request):
 
 
 # View for 404 error
-def custom_page_not_found(request):
-    return render(request, 'manager_core/404.html')
+class Error404View(TemplateView):
+    template_name = "manager_core/404.html"
 
 
 # View for 500 error
-def custom_internal_server_error(request):
-    return render(request, 'manager_core/500.html')
+class Error500View(TemplateView):
+    template_name = "manager_core/500.html"
