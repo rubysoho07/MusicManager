@@ -31,7 +31,7 @@
         <tr>
         {% if delete == True %}
             <td class="col-md-2 col-sm-2 col-xs-3">
-                <a class="btn btn-danger btn-sm" href="{% url 'manager_core:confirm_delete' id %}">Delete!</a>
+                <a class="btn btn-danger btn-sm" href="{% url 'manager_core:delete' id %}">Delete!</a>
             </td>
             <td class="col-md-10 col-sm-10 col-xs-9"></td>
         {% endif %}

@@ -1,7 +1,7 @@
 from django.conf.urls import url
 
 from . import views
-from views import AlbumDV, AlbumLV, SearchFV
+from views import AlbumDV, AlbumLV, SearchFV, AlbumDeleteView
 
 # Register application namespace
 app_name = 'manager_core'
@@ -14,6 +14,5 @@ urlpatterns = [
     url(r'^add_result/', views.add_result, name='add_result'),
     url(r'^add_action/', views.add_action, name='add_action'),
     url(r'^album/(?P<pk>[0-9]+)/$', AlbumDV.as_view(), name='album'),
-    url(r'^confirm_delete/(?P<album_id>[0-9]+)/$', views.confirm_delete, name='confirm_delete'),
-    url(r'^delete/', views.delete, name='delete'),
+    url(r'^delete/(?P<pk>[0-9]+)/$', AlbumDeleteView.as_view(), name='delete'),
 ]

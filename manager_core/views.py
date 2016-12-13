@@ -1,11 +1,13 @@
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import render
 from django.conf import settings
 
 from .models import Album, AlbumTrack
 from django.views.generic.base import TemplateView
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
-from django.views.generic.edit import FormView
+from django.views.generic.edit import CreateView, DeleteView, FormView
+
+from django.urls import reverse_lazy
 
 from forms import AlbumSearchForm
 
@@ -103,6 +105,8 @@ def add_result(request):
 
 
 # TODO: Class-based add album page
+class AlbumCreateView(CreateView):
+    pass
 
 
 # Add album information to database.
@@ -157,43 +161,22 @@ class AlbumDV(DetailView):
         return context
 
 
-# Confirm delete information from database.
-def confirm_delete(request, album_id):
-    album = get_object_or_404(Album, pk=album_id)
-    album_title = album.album_title
-    album_artist = album.album_artist
-    album_cover = album.album_cover_file
-
-    return render(request, 'manager_core/delete_album_confirm.html',
-                  {
-                      'album_title': album_title,
-                      'album_artist': album_artist,
-                      'album_cover': album_cover,
-                      'album_id': album_id
-                  })
-
-
 # Delete album information from database.
-def delete(request):
-    album_id = request.POST['album_id']
-    album = get_object_or_404(Album, pk=album_id)
-    album_artist = album.album_artist
-    album_title = album.album_title
-    album_cover_file = album.album_cover_file
+class AlbumDeleteView(DeleteView):
+    model = Album
 
-    album.delete()
+    # If delete completed, redirect to album list.
+    success_url = reverse_lazy('manager_core:index')
 
-    # remove cover file from static directory.
-    os.remove(os.path.join(settings.STATIC_ROOT, "manager_core/images/" + album_cover_file))
-
-    return render(request, 'manager_core/delete_album_complete.html',
-                  {
-                      'album_artist': album_artist,
-                      'album_title': album_title
-                  })
-
-
-# TODO: Class based delete page.
+    def delete(self, request, *args, **kwargs):
+        # remove cover file from static directory.
+        if settings.DEBUG:
+            os.remove(os.path.join(settings.STATICFILES_DIRS[0], "manager_core/images/"
+                                   + self.get_object().album_cover_file))
+        else:
+            os.remove(os.path.join(settings.STATIC_ROOT, "manager_core/images/"
+                                   + self.get_object().album_cover_file))
+        return super(AlbumDeleteView, self).delete(request, *args, **kwargs)
 
 
 # View for 404 error
