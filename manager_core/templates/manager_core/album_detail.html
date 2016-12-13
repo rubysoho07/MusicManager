@@ -9,7 +9,7 @@ MusicManager :: {{ album.album_artist }} - {{ album.album_title }}
 <h1>앨범 확인하기</h1>
 <div class="goni_padding"></div>
 <!-- Start of printing result -->
-{% include "manager_core/album_item.html" with link=False id=album.id cover_file=album.album_cover_file artist=album.album_artist title=album.album_title delete=True %}
+{% include "manager_core/album_item.html" with link=False id=object.id cover_file=object.album_cover_file artist=object.album_artist title=object.album_title delete=True %}
 
 <!-- Track list. -->
 

@@ -3,48 +3,25 @@ from django.conf import settings
 
 from .models import Album, AlbumTrack
 from django.views.generic.base import TemplateView
+from django.views.generic.list import ListView
+from django.views.generic.detail import DetailView
 
 import music_parser
 import json
 import os
 
+
 # Create your views here.
-
-
 # First page. (List of albums I've bought.)
-def index(request):
-    # Get all albums (to List).
-    all_album_list = Album.objects.all().order_by('-id')
+class AlbumLV(ListView):
+    model = Album
+    paginate_by = 10
+    queryset = Album.objects.all().order_by('-id')
 
-    albums_number = len(all_album_list)
-
-    # Get data of current page. (Default is first page.)
-    current_page = int(request.GET.get('page', '1'))
-
-    if current_page != 1:
-        start_num = (current_page - 1) * 10
-    else:
-        start_num = 0
-
-    if albums_number - start_num < 10:
-        end_num = albums_number
-    else:
-        end_num = start_num + 10
-
-    album_list = all_album_list[start_num:end_num]
-
-    # Get number of total pages.
-    if albums_number % 10 == 0:
-        total_pages = (albums_number / 10)
-    else:
-        total_pages = (albums_number / 10) + 1
-
-    return render(request, 'manager_core/index.html',
-                  {'album_list': album_list,
-                   'current_page': current_page,
-                   'start_num': start_num,
-                   'pages_list': range(1, total_pages + 1),
-                   'albums_number': albums_number})
+    def get_context_data(self, **kwargs):
+        context = super(AlbumLV, self).get_context_data(**kwargs)
+        context['albums_number'] = len(self.queryset)
+        return context
 
 
 # Search albums from database. (by Artist/Album title)
@@ -73,6 +50,9 @@ def search_result(request):
                   {'search_type': search_type,
                    'keyword': keyword,
                    'search_result': result})
+
+
+# TODO: Class-based search page.
 
 
 # Add album from Bugs/Naver music.
@@ -125,6 +105,9 @@ def add_result(request):
                    'disks': disks})
 
 
+# TODO: Class-based add album page
+
+
 # Add album information to database.
 def add_action(request):
     # Get JSON data
@@ -156,22 +139,25 @@ def add_action(request):
                    'album_cover': new_album_cover})
 
 
-# See album detail information
-def see_album(request, album_id):
-    album = get_object_or_404(Album, pk=album_id)
+# Detailed album information.
+class AlbumDV(DetailView):
+    model = Album
 
-    # Dividing all tracks per disk.
-    disk_num = 1
-    disks = []
+    def get_context_data(self, **kwargs):
+        context = super(AlbumDV, self).get_context_data(**kwargs)
 
-    track_list = album.albumtrack_set.filter(disk=disk_num)
+        disk_num = 1
+        disks = []
 
-    while len(track_list) != 0:
-        disks.append(track_list)
-        disk_num += 1
-        track_list = album.albumtrack_set.filter(disk=disk_num)
+        track_list = self.object.albumtrack_set.filter(disk=disk_num)
 
-    return render(request, 'manager_core/album_detail.html', {'album': album, 'disks': disks})
+        while len(track_list) != 0:
+            disks.append(track_list)
+            disk_num += 1
+            track_list = self.object.albumtrack_set.filter(disk=disk_num)
+
+        context['disks'] = disks
+        return context
 
 
 # Confirm delete information from database.
@@ -208,6 +194,9 @@ def delete(request):
                       'album_artist': album_artist,
                       'album_title': album_title
                   })
+
+
+# TODO: Class based delete page.
 
 
 # View for 404 error
