@@ -5,6 +5,9 @@ from .models import Album, AlbumTrack
 from django.views.generic.base import TemplateView
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
+from django.views.generic.edit import FormView
+
+from forms import AlbumSearchForm
 
 import music_parser
 import json
@@ -25,34 +28,28 @@ class AlbumLV(ListView):
 
 
 # Search albums from database. (by Artist/Album title)
-def search(request):
-    return render(request, 'manager_core/search_album.html')
+class SearchFV(FormView):
+    form_class = AlbumSearchForm
+    template_name = "manager_core/album_search.html"
 
+    def form_valid(self, form):
+        search_type = self.request.POST["search_type"]
+        keyword = self.request.POST['keyword']
+        # Search album from database.
+        if search_type == "artist":
+            result = Album.objects.filter(album_artist__icontains=keyword)
+        elif search_type == "album":
+            result = Album.objects.filter(album_title__icontains=keyword)
+        else:
+            result = []
 
-# See search result.
-def search_result(request):
-    # Get search keywords.
-    search_type = request.POST['search_type']
-    keyword = request.POST['search_keyword']
+        context = dict()
+        context['form'] = form
+        context['search_type'] = search_type
+        context['keyword'] = keyword
+        context['object_list'] = result
 
-    # Search album from database.
-    if search_type == "artist":
-        result = Album.objects.filter(album_artist__icontains=keyword)
-    elif search_type == "album":
-        result = Album.objects.filter(album_title__icontains=keyword)
-    else:
-        return render(request, 'manager_core/search_result.html',
-                      {'search_type': search_type,
-                       'keyword': keyword,
-                       'search_result': []})
-
-    return render(request, 'manager_core/search_result.html',
-                  {'search_type': search_type,
-                   'keyword': keyword,
-                   'search_result': result})
-
-
-# TODO: Class-based search page.
+        return render(self.request, self.template_name, context)
 
 
 # Add album from Bugs/Naver music.

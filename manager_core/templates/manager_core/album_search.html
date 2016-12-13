@@ -1,0 +1,34 @@
+{% extends 'manager_core/page_base.html' %}
+
+{% block title %}
+MusicManager :: Search
+{% endblock %}
+
+{% block content %}
+<!-- Body start -->
+<h1>Search Album</h1>
+
+<p>Artist/Album title 기준으로 검색 가능합니다.</p>
+
+<form class="form-inline" role="form" action="." method="POST">
+{% csrf_token %}
+    {{ form.as_table }}
+    <input class="btn" type="submit" value="검색" />
+</form>
+<div class="goni_padding"></div>
+
+<!-- Start of printing result -->
+{% if object_list %}
+    <h4>앨범 목록 ({{ object_list|length }} albums found) </h4>
+    <div class="goni_padding"></div>
+    {% for album in object_list %}
+        {% include "manager_core/album_item.html" with link=True id=album.id cover_file=album.album_cover_file artist=album.album_artist title=album.album_title delete=True %}
+    {% endfor %}
+{% elif keyword %}
+    <h4>Can't find album. </h4>
+{% endif %}
+<!-- End of printing result -->
+
+<div class="goni_padding"></div>
+<!-- Body end -->
+{% endblock content %}
