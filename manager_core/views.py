@@ -25,7 +25,7 @@ class AlbumLV(ListView):
 
     def get_context_data(self, **kwargs):
         context = super(AlbumLV, self).get_context_data(**kwargs)
-        context['albums_number'] = len(self.queryset)
+        context['albums_number'] = self.get_queryset().count()
         return context
 
 
