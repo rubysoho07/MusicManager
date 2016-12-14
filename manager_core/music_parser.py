@@ -11,6 +11,15 @@ from bs4 import BeautifulSoup
 from django.conf import settings
 
 
+# Get path prefix
+def get_path_prefix(is_debug):
+
+    if is_debug:
+        return settings.STATICFILES_DIRS[0]
+    else:
+        return settings.STATIC_ROOT
+
+
 # Save album cover image and return saved cover image name.
 def get_album_cover(original_url):
     # find pattern from these patterns.
@@ -26,9 +35,11 @@ def get_album_cover(original_url):
     # Check Naver pattern.
     result = naver_pattern.search(original_url)
 
+    path_prefix = get_path_prefix(settings.DEBUG)
+
     if result:
         save_image(original_url,
-                   os.path.join(settings.STATIC_ROOT, "manager_core/images/naver_"
+                   os.path.join(path_prefix, "manager_core/images/naver_"
                                 + original_url.split("/")[-1].split("?")[0]))
         return "naver_" + original_url.split("/")[-1].split("?")[0]
 
@@ -37,7 +48,7 @@ def get_album_cover(original_url):
 
     if result:
         save_image(original_url,
-                   os.path.join(settings.STATIC_ROOT, "manager_core/images/melon_"
+                   os.path.join(path_prefix, "manager_core/images/melon_"
                                 + original_url.split("/")[-7]))
         return "melon_" + original_url.split("/")[-7]
 
@@ -46,7 +57,7 @@ def get_album_cover(original_url):
 
     if result:
         save_image(original_url,
-                   os.path.join(settings.STATIC_ROOT, "manager_core/images/bugs_"
+                   os.path.join(path_prefix, "manager_core/images/bugs_"
                                 + original_url.split("/")[-1]))
         return "bugs_" + original_url.split("/")[-1]
 
@@ -55,7 +66,7 @@ def get_album_cover(original_url):
 
     if result:
         save_image(original_url,
-                   os.path.join(settings.STATIC_ROOT, "manager_core/images/allmusic_"
+                   os.path.join(path_prefix, "manager_core/images/allmusic_"
                                 + original_url.split("/")[-1].split("?")[0]))
         return "allmusic_" + original_url.split("/")[-1].split("?")[0]
 
@@ -79,9 +90,11 @@ def save_image(source, target):
     if os.path.exists(target):
         return
 
+    path_prefix = get_path_prefix(settings.DEBUG)
+
     # If static images directory not found, make directory.
-    if not os.path.exists(os.path.join(settings.STATIC_ROOT, "manager_core/images")):
-        os.mkdir(os.path.join(settings.STATIC_ROOT, "manager_core/images"))
+    if not os.path.exists(os.path.join(path_prefix, "manager_core/images")):
+        os.mkdir(os.path.join(path_prefix, "manager_core/images"))
 
     # Else, save album cover image
     with open(target, 'wb') as handle:

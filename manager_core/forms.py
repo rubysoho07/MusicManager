@@ -10,3 +10,7 @@ SEARCH_TYPE_CHOICES = (
 class AlbumSearchForm(forms.Form):
     search_type = forms.ChoiceField(label="", choices=SEARCH_TYPE_CHOICES)
     keyword = forms.CharField(label="")
+
+
+class AlbumParseRequestForm(forms.Form):
+    album_url = forms.CharField(label="")

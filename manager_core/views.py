@@ -1,15 +1,15 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.conf import settings
 
 from .models import Album, AlbumTrack
-from django.views.generic.base import TemplateView
+from django.views.generic.base import TemplateView, View
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
-from django.views.generic.edit import CreateView, DeleteView, FormView
+from django.views.generic.edit import DeleteView, FormView
 
 from django.urls import reverse_lazy
 
-from forms import AlbumSearchForm
+from forms import AlbumSearchForm, AlbumParseRequestForm
 
 import music_parser
 import json
@@ -54,90 +54,89 @@ class SearchFV(FormView):
         return render(self.request, self.template_name, context)
 
 
-# Add album from Bugs/Naver music.
-def add_album(request):
-    return render(request, 'manager_core/add_album.html', {'error': False})
+# Parse album information to add album.
+class AlbumParseView(FormView):
+    form_class = AlbumParseRequestForm
+    template_name = 'manager_core/album_parse.html'
 
+    def form_valid(self, form):
+        # Context dictionary.
+        context = dict()
 
-# Add result and confirm add this information or cancel.
-def add_result(request):
-    # Original URL from submitted value.
-    original_url = request.POST['album_url']
+        # Original URL from submitted value.
+        original_url = self.request.POST['album_url']
 
-    # Parse URL and make JSON values.
-    new_url = music_parser.check_input(original_url)
+        # Parse URL and make JSON values.
+        new_url = music_parser.check_input(original_url)
 
-    if new_url == "":
-        return render(request, 'manager_core/add_album.html', {'error': True, 'req_url': original_url})
-    else:
-        parsed_data = music_parser.get_parsed_data(new_url)
+        if new_url is None:
+            # Error on parsing URL.
+            context['form'] = form
+            context['success'] = False
+            context['error'] = True
+            return render(self.request, self.template_name, context=context)
+        else:
+            parsed_data = music_parser.get_parsed_data(new_url)
 
-    # JSON data -> Data for user.
-    json_data = json.loads(parsed_data)
+        # JSON data -> Data for user.
+        json_data = json.loads(parsed_data)
 
-    # Album title, cover, artist: unicode data.
-    album_title = json_data['album_title']
-    album_cover = json_data['album_cover']
-    album_artist = json_data['artist']
+        # Album title, cover, artist: unicode data.
+        context['album_title'] = json_data['album_title']
+        context['album_cover'] = json_data['album_cover']
+        context['album_artist'] = json_data['artist']
 
-    # Album track: a list. 
-    # (A track of track list is to an dict, because a track is JSON object.)
-    album_track = json_data['tracks']
+        # Album track: a list.
+        # (A track of track list is to an dict, because a track is JSON object.)
+        album_track = json_data['tracks']
 
-    # Dividing all tracks per disk.
-    disk_num = 1
-    disks = []
+        # Dividing all tracks per disk.
+        disk_num = 1
+        disks = []
 
-    track_list = list(track for track in album_track if track['disk'] == disk_num)
-
-    while len(track_list) != 0:
-        disks.append(track_list)
-        disk_num += 1
         track_list = list(track for track in album_track if track['disk'] == disk_num)
 
-    return render(request, 'manager_core/add_album_confirm.html',
-                  {'original_url': original_url,
-                   'parsed_data': parsed_data,
-                   'album_artist': album_artist,
-                   'album_title': album_title,
-                   'album_cover': album_cover,
-                   'disks': disks})
+        while len(track_list) != 0:
+            disks.append(track_list)
+            disk_num += 1
+            track_list = list(track for track in album_track if track['disk'] == disk_num)
+
+        context['disks'] = disks
+        context['parsed_data'] = parsed_data
+        context['original_url'] = original_url
+        context['form'] = form
+        context['success'] = True
+        return render(self.request, self.template_name, context=context)
 
 
-# TODO: Class-based add album page
-class AlbumCreateView(CreateView):
-    pass
+# Add album to database.
+class AlbumCreateView(View):
 
+    def post(self, request, *args, **kwargs):
+        # Get JSON data
+        parsed_data = request.POST['album_data']
 
-# Add album information to database.
-def add_action(request):
-    # Get JSON data
-    parsed_data = request.POST['album_data']
+        # Add JSON data to database
+        json_data = json.loads(parsed_data)
 
-    # Add JSON data to database
-    json_data = json.loads(parsed_data)
+        new_album_title = json_data['album_title']
+        new_album_cover = music_parser.get_album_cover(json_data['album_cover'])
+        new_album_artist = json_data['artist']
 
-    new_album_title = json_data['album_title']
-    new_album_cover = music_parser.get_album_cover(json_data['album_cover'])
-    new_album_artist = json_data['artist']
+        album = Album(album_artist=new_album_artist, album_title=new_album_title,
+                      album_cover_file=new_album_cover, album_url=request.POST['album_url'])
+        album.save()
 
-    album = Album(album_artist=new_album_artist, album_title=new_album_title,
-                  album_cover_file=new_album_cover, album_url=request.POST['album_url'])
-    album.save()
+        # Add track data to database
+        new_album_track = json_data['tracks']
 
-    # Add track data to database
-    new_album_track = json_data['tracks']
+        for track in new_album_track:
+            new_track = AlbumTrack(album=album, disk=track['disk'],
+                                   track_num=track['track_num'], track_title=track['track_title'],
+                                   track_artist=track['track_artist'])
+            new_track.save()
 
-    for track in new_album_track:
-        new_track = AlbumTrack(album=album, disk=track['disk'],
-                               track_num=track['track_num'], track_title=track['track_title'],
-                               track_artist=track['track_artist'])
-        new_track.save()
-
-    return render(request, 'manager_core/add_album_complete.html',
-                  {'album_artist': new_album_artist,
-                   'album_title': new_album_title,
-                   'album_cover': new_album_cover})
+        return redirect("manager_core:index")
 
 
 # Detailed album information.
