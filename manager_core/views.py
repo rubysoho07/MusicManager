@@ -11,7 +11,7 @@ from django.urls import reverse_lazy
 
 from forms import AlbumSearchForm, AlbumParseRequestForm
 
-import music_parser
+from music_parser import MusicParser
 import json
 import os
 
@@ -67,7 +67,7 @@ class AlbumParseView(FormView):
         original_url = self.request.POST['album_url']
 
         # Parse URL and make JSON values.
-        new_url = music_parser.check_input(original_url)
+        new_url = MusicParser.check_input(original_url)
 
         if new_url is None:
             # Error on parsing URL.
@@ -76,7 +76,7 @@ class AlbumParseView(FormView):
             context['error'] = True
             return render(self.request, self.template_name, context=context)
         else:
-            parsed_data = music_parser.get_parsed_data(new_url)
+            parsed_data = MusicParser.get_parsed_data(new_url)
 
         # JSON data -> Data for user.
         json_data = json.loads(parsed_data)
@@ -120,7 +120,7 @@ class AlbumCreateView(View):
         json_data = json.loads(parsed_data)
 
         new_album_title = json_data['album_title']
-        new_album_cover = music_parser.get_album_cover(json_data['album_cover'])
+        new_album_cover = MusicParser.get_album_cover(json_data['album_cover'])
         new_album_artist = json_data['artist']
 
         album = Album(album_artist=new_album_artist, album_title=new_album_title,
