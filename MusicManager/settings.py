@@ -74,8 +74,12 @@ WSGI_APPLICATION = 'MusicManager.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'musicmanager',
+        'USER': 'musicmanager',
+        'PASSWORD': 'YOURPASSWORD',
+        'HOST': 'localhost',
+        'PORT': '',
     }
 }
 
@@ -119,3 +123,9 @@ else:
     STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 STATIC_URL = '/static/'
+
+# Media files
+
+MEDIA_URL = '/media/'
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

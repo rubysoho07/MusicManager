@@ -120,11 +120,12 @@ class AlbumCreateView(View):
         json_data = json.loads(parsed_data)
 
         new_album_title = json_data['album_title']
-        new_album_cover = MusicParser.get_album_cover(json_data['album_cover'])
         new_album_artist = json_data['artist']
+        new_album_cover = MusicParser.get_album_cover(json_data['album_cover'],
+                                                      "album_" + str(MusicParser.get_parsed_count()) + ".jpg")
 
-        album = Album(album_artist=new_album_artist, album_title=new_album_title,
-                      album_cover_file=new_album_cover, album_url=request.POST['album_url'])
+        album = Album(album_artist=new_album_artist, album_title=new_album_title, album_url=request.POST['album_url'])
+        album.album_cover_file.name = "manager_core/cover_files/" + new_album_cover
         album.save()
 
         # Add track data to database
@@ -170,11 +171,11 @@ class AlbumDeleteView(DeleteView):
     def delete(self, request, *args, **kwargs):
         # remove cover file from static directory.
         if settings.DEBUG:
-            os.remove(os.path.join(settings.STATICFILES_DIRS[0], "manager_core/images/"
-                                   + self.get_object().album_cover_file))
+            os.remove(os.path.join(settings.MEDIA_ROOT, "manager_core/cover_files/"
+                                   + self.get_object().album_cover_file.name))
         else:
-            os.remove(os.path.join(settings.STATIC_ROOT, "manager_core/images/"
-                                   + self.get_object().album_cover_file))
+            os.remove(os.path.join(settings.MEDIA_ROOT, "manager_core/cover_files/"
+                                   + self.get_object().album_cover_file.name))
         return super(AlbumDeleteView, self).delete(request, *args, **kwargs)
 
 

@@ -9,26 +9,33 @@ import json
 from bs4 import BeautifulSoup
 
 from django.conf import settings
+from django.core.files import File
+
+from .models import Album
 
 
 class MusicParser(object):
+
+    parsed_count = Album.objects.count()
 
     # __init__ method
     def __init__(self):
         pass
 
+    # Get count.
+    @classmethod
+    def get_parsed_count(cls):
+        cls.parsed_count += 1
+        return cls.parsed_count
+
     # Get path prefix
     @classmethod
-    def get_path_prefix(cls, is_debug):
-
-        if is_debug:
-            return settings.STATICFILES_DIRS[0]
-        else:
-            return settings.STATIC_ROOT
+    def get_path_prefix(cls):
+        return settings.MEDIA_ROOT
 
     # Save album cover image and return saved cover image name.
     @classmethod
-    def get_album_cover(cls, original_url):
+    def get_album_cover(cls, original_url, target):
         # find pattern from these patterns.
         # Naver: http://musicmeta.phinf.naver.net/album/000/645/645112.jpg?type=r204Fll&v=20160623150347
         # Melon: http://cdnimg.melon.co.kr/cm/album/images/006/23/653/623653.jpg
@@ -42,40 +49,30 @@ class MusicParser(object):
         # Check Naver pattern.
         result = naver_pattern.search(original_url)
 
-        path_prefix = cls.get_path_prefix(settings.DEBUG)
-
         if result:
-            cls.save_image(original_url,
-                           os.path.join(path_prefix, "manager_core/images/naver_"
-                                        + original_url.split("/")[-1].split("?")[0]))
-            return "naver_" + original_url.split("/")[-1].split("?")[0]
+            cls.save_image(original_url, target)
+            return target
 
         # Check Melon pattern.
         result = melon_pattern.search(original_url)
 
         if result:
-            cls.save_image(original_url,
-                           os.path.join(path_prefix, "manager_core/images/melon_"
-                                        + original_url.split("/")[-7]))
-            return "melon_" + original_url.split("/")[-7]
+            cls.save_image(original_url, target)
+            return target
 
         # Check Bugs pattern.
         result = bugs_pattern.search(original_url)
 
         if result:
-            cls.save_image(original_url,
-                           os.path.join(path_prefix, "manager_core/images/bugs_"
-                                        + original_url.split("/")[-1]))
-            return "bugs_" + original_url.split("/")[-1]
+            cls.save_image(original_url, target)
+            return target
 
         # Check AllMusic pattern.
         result = allmusic_pattern.search(original_url)
 
         if result:
-            cls.save_image(original_url,
-                           os.path.join(path_prefix, "manager_core/images/allmusic_"
-                                        + original_url.split("/")[-1].split("?")[0]))
-            return "allmusic_" + original_url.split("/")[-1].split("?")[0]
+            cls.save_image(original_url, target)
+            return target
 
         return None
 
@@ -97,21 +94,18 @@ class MusicParser(object):
         if os.path.exists(target):
             return
 
-        path_prefix = cls.get_path_prefix(settings.DEBUG)
+        path_prefix = cls.get_path_prefix()
 
-        # If static images directory not found, make directory.
-        if not os.path.exists(os.path.join(path_prefix, "manager_core/images")):
-            os.mkdir(os.path.join(path_prefix, "manager_core/images"))
-
-        # Else, save album cover image
-        with open(target, 'wb') as handle:
+        # Save album cover image
+        with open(os.path.join(path_prefix, "manager_core/cover_files", target), 'wb') as handle:
             response = requests.get(source, stream=True)
+            target_file = File(handle)
 
             if not response.ok:
                 return
 
             for block in response.iter_content(1024):
-                handle.write(block)
+                target_file.write(block)
 
     # Get album data from Naver Music (JSON data)
     @classmethod

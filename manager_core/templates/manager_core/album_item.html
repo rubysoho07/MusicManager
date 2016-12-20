@@ -7,7 +7,7 @@
         {% if cover_external == True %}
         <img class="img-responsive" src="{{ cover_file }}" width="120px" height="120px">
         {% else %}
-        <img class="img-responsive" src="{% static 'manager_core/images/'|add:cover_file %}" width="120px" height="120px">
+        <img class="img-responsive" src="{{ cover_file.url }}" width="120px" height="120px">
         {% endif %}
     {% if link == True %}
     </a>
