@@ -8,7 +8,6 @@ from django.db import models
 @python_2_unicode_compatible
 class Album(models.Model):
     album_artist = models.CharField(max_length=200)
-    foreign_artist = models.CharField(max_length=200, null=True)
     album_title = models.CharField(max_length=200)
     album_cover_file = models.ImageField(upload_to='manager_core/cover_files', max_length=200)
     album_url = models.CharField(max_length=200)
