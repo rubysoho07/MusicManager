@@ -150,12 +150,12 @@ class AlbumDV(DetailView):
         disk_num = 1
         disks = []
 
-        track_list = self.object.albumtrack_set.filter(disk=disk_num)
+        track_list = self.object.albumtrack_set.filter(disk=disk_num).order_by('track_num')
 
         while len(track_list) != 0:
             disks.append(track_list)
             disk_num += 1
-            track_list = self.object.albumtrack_set.filter(disk=disk_num)
+            track_list = self.object.albumtrack_set.filter(disk=disk_num).order_by('track_num')
 
         context['disks'] = disks
         return context
