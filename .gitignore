@@ -6,3 +6,6 @@
 
 # Ignore media files.
 media/
+
+# Ignore migrations file.
+migrations/
