@@ -4,5 +4,8 @@
 # Ignore files made by PyCharm.
 .idea/*
 
-# Ignore media files.
+# Ignore media(album cover) files.
 media/
+
+# Ignore setting secret file.
+settings.json
