@@ -2,31 +2,22 @@
 # 2016.07.09
 # 2016.10.05 Add Melon parser.
 
-import requests
 import re
 import os
 import json
+
+import requests
 from bs4 import BeautifulSoup
 
 from django.conf import settings
 from django.core.files import File
 
-from .models import Album
-
 
 class MusicParser(object):
-
-    parsed_count = Album.objects.count()
 
     # __init__ method
     def __init__(self):
         pass
-
-    # Get count.
-    @classmethod
-    def get_parsed_count(cls):
-        cls.parsed_count += 1
-        return cls.parsed_count
 
     # Get path prefix
     @classmethod
