@@ -1,34 +1,28 @@
 @import url(http://fonts.googleapis.com/earlyaccess/notosanskr.css);
-
 body {
   font-family: 'Noto Sans KR', sans-serif;
 }
-
 /* To customizing footer. */
 .gonifooter {
   background: #1088B7;
   color: white;
   vertical-align: middle;
 }
-
 /* Album information */
 .album_cover {
   float: left;
   height: 150px;
   padding: 5px;
 }
-
 .album_basicinfo {
   float: right;
   height: 150px;
 }
-
 .goni_padding {
   height: 30px;
 }
-
 .navbar-default {
-  background-color: #1088b7;
+  background-color: #1088B7;
   border-color: #cfe7f0;
 }
 .navbar-default .navbar-brand {
@@ -80,7 +74,6 @@ body {
 .navbar-default .navbar-link:hover {
   color: #414040;
 }
-
 @media (max-width: 767px) {
   .navbar-default .navbar-nav .open .dropdown-menu > li > a {
     color: #ffffff;
