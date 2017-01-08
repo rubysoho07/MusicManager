@@ -1,14 +1,65 @@
-{% extends 'manager_core/page_base.html' %}
+<!DOCTYPE html>
+{% load staticfiles %}
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title> MusicManager :: 404 Page Not Found
+		</title>
 
-{% block title %}
-MusicManager :: 500 Internal Error
-{% endblock %}
+		<!-- Favicon -->
+        <link rel="shortcut icon" type="image/png" href="{% static 'favicon.ico' %}"/>
 
-{% block content %}
-<!-- For 500 error message. -->
-<h1>500 Internal Server Error</h1>
-<hr>
-<p>서버에서 오류가 발생 했습니다.</p>
-<!-- End of 500 error message. -->
-<div class="goni_padding"></div>
-{% endblock content %}
+        <style type="text/css">
+            @import url(http://fonts.googleapis.com/earlyaccess/notosanskr.css);
+            body {
+              font-family: 'Noto Sans KR', sans-serif;
+            }
+
+            a {
+                text-decoration: none;
+            }
+
+            a:hover {
+                text-decoration: underline;
+            }
+
+            .header-img {
+                width: 900px;
+                height: 400px;
+                text-align: center;
+                margin-top: 30px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .container {
+                width: 900px;
+                height: 500px;
+                text-align: center;
+                margin-top: 30px;
+                margin-bottom: 30px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .footer {
+                font-size: 9pt;
+                color: #6f6f6f;
+            }
+        </style>
+	</head>
+	<body>
+        <div class="header-img">
+            <img src="{% static 'common/images/error_page_header.png' %}">
+        </div>
+        <div class="container">
+            <h1>500 Error | 서버 내부 오류입니다.</h1>
+            <p>
+                동일 오류를 계속하여 겪으시면, 연락 주시기 바랍니다.
+            </p>
+            <p><a href="{% url 'manager_core:index' }">MusicManager 홈으로 이동</a> </p>
+            <hr style="border:none; height:1px; color: #6f6f6f; background-color: #6f6f6f;"/>
+            <p class="footer">2016~2017 April Station Lab / Yungon Park</p>
+        </div>
+    </body>
+</html>
