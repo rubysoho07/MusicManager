@@ -115,3 +115,5 @@ Run uWSGI on your project root directory.
 <pre>
 uwsgi --socket MusicManager.socket --module MusicManager.wsgi --env DJANGO_SETTINGS_MODULE=MusicManager.settings.production --chmod-socket=666 > MusicManager.log 2> MusicManager.err.log &
 </pre>
+
+If you experience "Permission denied" on ngnix, try to change permission of your source directory to 666 or 755.
