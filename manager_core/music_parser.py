@@ -3,14 +3,12 @@
 # 2016.10.05 Add Melon parser.
 
 import re
-import os
 import json
 
 import requests
 from bs4 import BeautifulSoup
 
 from django.conf import settings
-from django.core.files import File
 
 
 class MusicParser(object):
@@ -24,9 +22,9 @@ class MusicParser(object):
     def get_path_prefix(cls):
         return settings.MEDIA_ROOT
 
-    # Save album cover image and return saved cover image name.
+    # Check album cover file pattern.
     @classmethod
-    def get_album_cover(cls, original_url, target):
+    def check_album_cover_pattern(cls, original_url):
         # find pattern from these patterns.
         # Naver: http://musicmeta.phinf.naver.net/album/000/645/645112.jpg?type=r204Fll&v=20160623150347
         # Melon: http://cdnimg.melon.co.kr/cm/album/images/006/23/653/623653.jpg
@@ -41,31 +39,27 @@ class MusicParser(object):
         result = naver_pattern.search(original_url)
 
         if result:
-            cls.save_image(original_url, target)
-            return target
+            return True
 
         # Check Melon pattern.
         result = melon_pattern.search(original_url)
 
         if result:
-            cls.save_image(original_url, target)
-            return target
+            return True
 
         # Check Bugs pattern.
         result = bugs_pattern.search(original_url)
 
         if result:
-            cls.save_image(original_url, target)
-            return target
+            return True
 
         # Check AllMusic pattern.
         result = allmusic_pattern.search(original_url)
 
         if result:
-            cls.save_image(original_url, target)
-            return target
+            return True
 
-        return None
+        return False
 
     # Get original data from web.
     @classmethod
@@ -77,26 +71,6 @@ class MusicParser(object):
 
         # Need to encoding UTF-8. (For unicode text)
         return BeautifulSoup(data.text, "html.parser", from_encoding="utf-8")
-
-    # Save album cover image (with requests library)
-    @classmethod
-    def save_image(cls, source, target):
-        # If target file exists, return
-        if os.path.exists(target):
-            return
-
-        path_prefix = cls.get_path_prefix()
-
-        # Save album cover image
-        with open(os.path.join(path_prefix, "manager_core/cover_files", target), 'wb') as handle:
-            response = requests.get(source, stream=True)
-            target_file = File(handle)
-
-            if not response.ok:
-                return
-
-            for block in response.iter_content(1024):
-                target_file.write(block)
 
     # Get album data from Naver Music (JSON data)
     @classmethod

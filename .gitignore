@@ -9,3 +9,6 @@ media/
 
 # Ignore setting secret file.
 settings.json
+
+# Ignore static directory. (Static files are on AWS S3)
+static/

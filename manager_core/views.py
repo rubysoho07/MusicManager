@@ -1,8 +1,6 @@
-import os
 import json
 
 from django.shortcuts import render, redirect
-from django.conf import settings
 
 from django.views.generic.base import TemplateView, View
 from django.views.generic.list import ListView
@@ -14,6 +12,10 @@ from django.urls import reverse_lazy
 from .forms import AlbumSearchForm, AlbumParseRequestForm
 from .models import Album, AlbumTrack
 from .music_parser import MusicParser
+
+# To save album cover image.
+import requests
+from io import BytesIO
 
 
 # Create your views here.
@@ -127,11 +129,16 @@ class AlbumCreateView(View):
 
         new_album_title = json_data['album_title']
         new_album_artist = json_data['artist']
-        new_album_cover = MusicParser.get_album_cover(json_data['album_cover'],
-                                                      "album_" + format(album_num, '08') + ".jpg")
 
         album = Album(album_artist=new_album_artist, album_title=new_album_title, album_url=request.POST['album_url'])
-        album.album_cover_file.name = "manager_core/cover_files/" + new_album_cover
+        if MusicParser.check_album_cover_pattern(json_data['album_cover']):
+            album.album_cover_file.save(
+                                "album_" + format(album_num, '08') + ".jpg",
+                                BytesIO(requests.get(json_data['album_cover']).content)
+                            )
+        else:
+            album.album_cover_file.name = "manager_core/cover_files/no_cover.jpg"
+
         album.save()
 
         # Add track data to database
@@ -175,13 +182,10 @@ class AlbumDeleteView(DeleteView):
     success_url = reverse_lazy('manager_core:index')
 
     def delete(self, request, *args, **kwargs):
-        # remove cover file from static directory.
-        if settings.DEBUG:
-            os.remove(os.path.join(settings.MEDIA_ROOT, "manager_core/cover_files/"
-                                   + self.get_object().album_cover_file.name))
-        else:
-            os.remove(os.path.join(settings.MEDIA_ROOT, "manager_core/cover_files/"
-                                   + self.get_object().album_cover_file.name))
+        # remove cover file from media directory.
+        self.get_object().album_cover_file.delete()
+
+        # remove instance of Album.
         return super(AlbumDeleteView, self).delete(request, *args, **kwargs)
 
 
