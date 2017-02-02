@@ -1,6 +1,6 @@
 from .base import *
 
-DEBUG = False
+DEBUG = True
 
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
@@ -25,6 +25,8 @@ STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 AWS_STORAGE_BUCKET_NAME = get_secret("AWS_STORAGE_BUCKET_NAME")
 AWS_ACCESS_KEY_ID = get_secret("AWS_ACCESS_KEY_ID")
 AWS_SECRET_ACCESS_KEY = get_secret("AWS_SECRET_ACCESS_KEY")
+
+# Caution: Some region only supports S3 Signature version 4. (e.g. Seoul, Frankfurt...)
 AWS_S3_REGION_NAME = get_secret("AWS_S3_REGION_NAME")
 AWS_S3_SIGNATURE_VERSION = 's3v4'
 AWS_QUERYSTRING_AUTH = False

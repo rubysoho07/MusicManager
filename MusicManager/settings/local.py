@@ -11,8 +11,8 @@ DATABASES = {
         'NAME': 'musicmanager',
         'USER': 'musicmanager',
         'PASSWORD': get_secret("DB_PASSWORD"),
-        'HOST': 'localhost',
-        'PORT': '',
+        'HOST': get_secret("DB_HOST"),
+        'PORT': get_secret("DB_PORT"),
     }
 }
 
