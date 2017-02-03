@@ -127,10 +127,11 @@ class AlbumCreateView(View):
         # Add JSON data to database
         json_data = json.loads(parsed_data)
 
-        new_album_title = json_data['album_title']
-        new_album_artist = json_data['artist']
+        album = Album(album_artist=json_data['artist'],
+                      album_title=json_data['album_title'],
+                      album_url=request.POST['album_url'])
 
-        album = Album(album_artist=new_album_artist, album_title=new_album_title, album_url=request.POST['album_url'])
+        # Save album cover image.
         if MusicParser.check_album_cover_pattern(json_data['album_cover']):
             album.album_cover_file.save(
                                 "album_" + format(album_num, '08') + ".jpg",
