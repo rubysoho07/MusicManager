@@ -5,13 +5,14 @@ MusicManager :: Add album
 {% endblock %}
 
 {% block content %}
+{% load crispy_forms_tags %}
 <!-- Body start -->
 <h1>Add Album</h1>
 <p>주소를 입력하세요 (네이버 뮤직/벅스/멜론/AllMusic 지원)</p>
 
 <form class="form-inline" role="form" action="." method="POST">
 {% csrf_token %}
-    {{ form.as_table }}
+    {{ form|crispy }}
     <input class="btn btn-default" type="submit" value="Get!" />
 </form>
 <div class="goni_padding"></div>

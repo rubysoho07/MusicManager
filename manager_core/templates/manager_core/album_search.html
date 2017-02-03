@@ -5,6 +5,7 @@ MusicManager :: Search
 {% endblock %}
 
 {% block content %}
+{% load crispy_forms_tags %}
 <!-- Body start -->
 <h1>Search Album</h1>
 
@@ -12,7 +13,7 @@ MusicManager :: Search
 
 <form class="form-inline" role="form" action="." method="POST">
 {% csrf_token %}
-    {{ form.as_table }}
+    {{ form|crispy }}
     <input class="btn btn-default" type="submit" value="검색" />
 </form>
 <div class="goni_padding"></div>
