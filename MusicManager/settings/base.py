@@ -54,7 +54,9 @@ ROOT_URLCONF = 'MusicManager.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            os.path.join(BASE_DIR, 'templates'),
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -113,3 +115,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Set 'django-crispy-forms' template pack.
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
+
+# Using custom user model.
+AUTH_USER_MODEL = 'mm_user.MmUser'
