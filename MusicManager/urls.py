@@ -23,6 +23,9 @@ from django.conf.urls.static import static
 urlpatterns = [
     url(r'^musicmanager/', include('manager_core.urls')),
     url(r'^admin/', admin.site.urls),
+
+    # Add URLs for authentication
+    url(r'^user/', include('mm_user.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 handler404 = Error404View.as_view()
