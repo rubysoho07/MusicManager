@@ -1,0 +1,42 @@
+{% extends "manager_core/page_base.html" %}
+
+{% block title %}
+
+{% endblock title %}
+MusicManager :: Login
+{% block content %}
+{% load crispy_forms_tags %}
+<!-- Body start -->
+<h1>Login</h1>
+
+<p>로그인을 해 주세요.</p>
+
+
+<form method="post" action=".">
+    {% csrf_token %}
+
+    {% if form.errors %}
+    <p>입력하신 이메일 주소와 비밀번호가 맞지 않습니다.</p>
+    {% endif %}
+
+    <table>
+    <tr>
+        <td>{{ form.username.label_tag }}</td>
+        <td>{{ form.username }}</td>
+    </tr>
+    <tr>
+        <td>{{ form.password.label_tag }}</td>
+        <td>{{ form.password }}</td>
+    </tr>
+    </table>
+
+
+    <div>
+        <input class="btn btn-default" type="submit" value="등록" />
+    </div>
+
+</form>
+
+<div class="goni_padding"></div>
+<!-- Body end -->
+{% endblock content %}
