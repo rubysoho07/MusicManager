@@ -15,4 +15,9 @@ urlpatterns = [
     url(r'^main/$', UserMainView.as_view(), name='main'),
     url(r'^update/$', UserUpdateView.as_view(), name='update'),
     url(r'^delete/$', UserDeleteView.as_view(), name='delete'),
+    url(r'^change_pw/$', auth_views.password_change, {'post_change_redirect': 'user:password_change_done',
+                                                      'template_name': 'users/password_change.html'},
+        name='password_change'),
+    url(r'^change_pw/done/$', auth_views.password_change_done, {'template_name': 'users/password_change_done.html'},
+        name='password_change_done'),
 ]

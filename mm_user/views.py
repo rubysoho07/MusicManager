@@ -64,3 +64,8 @@ class UserDeleteView(LoginRequiredMixin, DeleteView):
     # Get current user.
     def get_object(self):
         return self.request.user
+
+
+# Change password for current user.
+class ChangePasswordView(LoginRequiredMixin, UpdateView):
+    pass
