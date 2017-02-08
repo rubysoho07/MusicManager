@@ -121,5 +121,7 @@ AUTH_USER_MODEL = 'mm_user.MmUser'
 
 # Settings related with login and logout.
 LOGIN_URL = '/user/login/'
-LOGOUT_URL = '/user/logout'
+LOGOUT_URL = '/user/logout/'
+
+LOGIN_REDIRECT_URL = '/user/main/'
 LOGOUT_REDIRECT_URL = LOGIN_URL
