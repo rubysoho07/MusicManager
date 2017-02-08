@@ -47,7 +47,8 @@
 						<li><a href="{% url 'user:update' %}"><span class="glyphicon glyphicon-pencil"></span>&nbsp;Change info</a></li>
 						<li><a href="{% url 'user:logout' %}"><span class="glyphicon glyphicon-user"></span>&nbsp;Logout</a></li>
 						{% else %}
-						<li><a href="{% url 'user:login' %}"><span class="glyphicon glyphicon-user"></span>&nbsp;Login</a></li>
+                        <li><a href="{% url 'user:create' %}"><span class="glyphicon glyphicon-user"></span>&nbsp;Sign in</a></li>
+						<li><a href="{% url 'user:login' %}">Login</a></li>
 						{% endif %}
 						<li><a href="{% url 'manager_core:add_album' %}"><span class="glyphicon glyphicon-plus"></span>&nbsp;Add</a></li>
 						<li><a href="{% url 'manager_core:search' %}"><span class="glyphicon glyphicon-search"></span>&nbsp;Search</a></li>

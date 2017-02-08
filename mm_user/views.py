@@ -1,7 +1,6 @@
 from django.views.generic.base import TemplateView
 from django.views.generic.detail import DetailView
-from django.views.generic.edit import CreateView
-from django.views.generic.edit import UpdateView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 
@@ -50,6 +49,17 @@ class UserUpdateView(LoginRequiredMixin, UpdateView):
     form_class = UserChangeForm
     template_name = 'users/modify.html'
     success_url = reverse_lazy('user:main')
+
+    # Get current user.
+    def get_object(self):
+        return self.request.user
+
+
+# Delete user.
+class UserDeleteView(LoginRequiredMixin, DeleteView):
+    model = MmUser
+    success_url = reverse_lazy('manager_core:index')
+    template_name = 'users/user_confirm_delete.html'
 
     # Get current user.
     def get_object(self):

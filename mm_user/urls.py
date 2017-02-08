@@ -14,4 +14,5 @@ urlpatterns = [
     url(r'^profile/(?P<pk>\d+)$', UserDetailView.as_view(), name='user_profile'),
     url(r'^main/$', UserMainView.as_view(), name='main'),
     url(r'^update/$', UserUpdateView.as_view(), name='update'),
+    url(r'^delete/$', UserDeleteView.as_view(), name='delete'),
 ]
