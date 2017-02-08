@@ -43,13 +43,14 @@
 				<div id="navbar" class="collapse navbar-collapse">
 					<ul class="nav navbar-nav navbar-right">
 						{% if user.is_active %}
-						<li><a href="#">Hello, {% firstof user.get_short_name user.get_username %}</a></li>
-						<li><a href="{% url 'user:logout' %}"><span class="glyphicon glyphicon-user"></span> Logout</a></li>
+						<li><a href="{% url 'user:main' %}">Hello,&nbsp;{% firstof user.get_short_name user.get_username %}</a></li>
+						<li><a href="{% url 'user:update' %}"><span class="glyphicon glyphicon-pencil"></span>&nbsp;Change info</a></li>
+						<li><a href="{% url 'user:logout' %}"><span class="glyphicon glyphicon-user"></span>&nbsp;Logout</a></li>
 						{% else %}
-						<li><a href="{% url 'user:login' %}"><span class="glyphicon glyphicon-user"></span> Login</a></li>
+						<li><a href="{% url 'user:login' %}"><span class="glyphicon glyphicon-user"></span>&nbsp;Login</a></li>
 						{% endif %}
-						<li><a href="{% url 'manager_core:add_album' %}"><span class="glyphicon glyphicon-plus"></span> Add Album</a></li>
-						<li><a href="{% url 'manager_core:search' %}"><span class="glyphicon glyphicon-search"></span> Search Album</a></li>
+						<li><a href="{% url 'manager_core:add_album' %}"><span class="glyphicon glyphicon-plus"></span>&nbsp;Add</a></li>
+						<li><a href="{% url 'manager_core:search' %}"><span class="glyphicon glyphicon-search"></span>&nbsp;Search</a></li>
 					</ul>
 				</div>
 			</nav>
