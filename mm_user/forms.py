@@ -1,6 +1,6 @@
 from django import forms
 
-# from django.contrib.auth.forms import ReadOnlyPasswordHashField
+from django.contrib.auth.forms import ReadOnlyPasswordHashField
 
 from mm_user.models import MmUser
 
@@ -41,7 +41,7 @@ class UserChangeForm(forms.ModelForm):
     but replaces the password field with admin's password hash display field.
     """
     email = forms.CharField()
-    # password = ReadOnlyPasswordHashField()
+    password = ReadOnlyPasswordHashField()
 
     # Field.disabled makes field not editable.
     email.disabled = True
