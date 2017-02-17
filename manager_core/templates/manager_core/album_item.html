@@ -35,6 +35,15 @@
             </td>
             <td class="col-md-10 col-sm-10 col-xs-9"></td>
         {% endif %}
+        {% if user_add == True %}
+            {% if user.is_active %}
+            <!-- Add album button -->
+            <td class="col-md-2 col-sm-2 col-xs-3">
+                <a class="btn btn-primary btn-sm" href="{% url 'user:user_album_add_confirm' id %}">Add Album</a>
+            </td>
+            <td class="col-md-10 col-sm-10 col-xs-9"></td>
+            {% endif %}
+        {% endif %}
         </tr>
     </table>
 </div>

@@ -1,10 +1,13 @@
-from django.views.generic.base import TemplateView
+from django.shortcuts import redirect, get_object_or_404
+from django.views.generic.base import TemplateView, View
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from django.core.urlresolvers import reverse_lazy
+
+from manager_core.models import Album
 
 from mm_user.forms import UserCreationForm, UserChangeForm
 from mm_user.models import MmUser
@@ -41,7 +44,9 @@ class UserMainView(LoginRequiredMixin, UserDetailView):
         return self.request.user
 
     def get_context_data(self, **kwargs):
-        return super(UserMainView, self).get_context_data(**kwargs)
+        context = super(UserMainView, self).get_context_data(**kwargs)
+        context['user_albums'] = self.object.albums.all().order_by('-id')
+        return context
 
 
 # Modify user's profile.
@@ -66,6 +71,17 @@ class UserDeleteView(LoginRequiredMixin, DeleteView):
         return self.request.user
 
 
-# Change password for current user.
-class ChangePasswordView(LoginRequiredMixin, UpdateView):
-    pass
+# Confirm before adding an album to user's album list.
+class UserAlbumAddConfirmView(LoginRequiredMixin, DetailView):
+    model = Album
+    template_name = 'users/user_add_album.html'
+
+
+# Add album to user's album list.
+class UserAlbumAddView(LoginRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
+        # Get album data
+        album_to_add = get_object_or_404(Album, pk=request.POST['album_id'])
+        album_owner = request.user
+        album_owner.albums.add(album_to_add)
+        return redirect('user:main')

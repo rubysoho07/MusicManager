@@ -20,4 +20,6 @@ urlpatterns = [
         name='password_change'),
     url(r'^change_pw/done/$', auth_views.password_change_done, {'template_name': 'users/password_change_done.html'},
         name='password_change_done'),
+    url(r'^user_album_add/$', UserAlbumAddView.as_view(), name='user_album_add'),
+    url(r'^user_album_add/(?P<pk>\d+)$', UserAlbumAddConfirmView.as_view(), name='user_album_add_confirm')
 ]

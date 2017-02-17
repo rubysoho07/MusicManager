@@ -151,7 +151,11 @@ class AlbumCreateView(View):
                                    track_artist=track['track_artist'])
             new_track.save()
 
-        return redirect("manager_core:index")
+        # If user is authenticated, redirect to add album in user's list.
+        if request.user.is_authenticated():
+            return redirect("user:user_album_add_confirm", pk=album.id)
+        else:
+            return redirect("manager_core:index")
 
 
 # Detailed album information.
