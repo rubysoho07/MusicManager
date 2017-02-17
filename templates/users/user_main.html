@@ -13,7 +13,7 @@ MusicManager :: {% firstof user.get_short_name user.get_username %}'s album
 
 <!-- User's album list -->
 {% for album in user_albums %}
-    {% include "manager_core/album_item.html" with link=True id=album.id cover_file=album.album_cover_file artist=album.album_artist title=album.album_title %}
+    {% include "manager_core/album_item.html" with link=True id=album.id cover_file=album.album_cover_file artist=album.album_artist title=album.album_title user_delete=True %}
 {% endfor %}
 
 <!-- End of user's album list -->

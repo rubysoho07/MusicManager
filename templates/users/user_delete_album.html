@@ -1,0 +1,24 @@
+{% extends 'manager_core/page_base.html' %}
+
+{% block title %}
+MusicManager :: Delete album for user
+{% endblock %}
+
+{% block content %}
+<!-- Body start -->
+<h1>Delete Album from {% firstof user.get_short_name user.get_username %}'s List</h1>
+
+<div class="goni_padding"></div>
+<!-- Start of printing result -->
+{% include "manager_core/album_item.html" with link=True id=object.id cover_file=object.album_cover_file artist=object.album_artist title=object.album_title %}
+<hr>
+<p>이 앨범을 {% firstof user.get_short_name user.get_username %}님의 리스트에서 삭제 하시겠습니까?</p>
+<form class="form-inline" role="form" action="{% url 'user:user_album_delete'%}" method="POST">
+{% csrf_token %}
+    <input type="hidden" name="album_id" id="album_id" value="{{ object.id }}" />
+    <input class="btn btn-success" type="submit" value="등록" />
+    <a class="btn btn-default" href="{% url 'user:main' %}">취소</a>
+</form>
+<div class="goni_padding"></div>
+<!-- Body end -->
+{% endblock content %}

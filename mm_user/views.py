@@ -85,3 +85,19 @@ class UserAlbumAddView(LoginRequiredMixin, View):
         album_owner = request.user
         album_owner.albums.add(album_to_add)
         return redirect('user:main')
+
+
+# Confirm before deleting an album from user's album list.
+class UserAlbumDeleteConfirmView(LoginRequiredMixin, DetailView):
+    model = Album
+    template_name = 'users/user_delete_album.html'
+
+
+# Delete album from user's album list.
+class UserAlbumDeleteView(LoginRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
+        # Get album data
+        album_to_remove = get_object_or_404(Album, pk=request.POST['album_id'])
+        album_owner = request.user
+        album_owner.albums.remove(album_to_remove)
+        return redirect('user:main')

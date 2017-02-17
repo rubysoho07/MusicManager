@@ -44,6 +44,15 @@
             <td class="col-md-10 col-sm-10 col-xs-9"></td>
             {% endif %}
         {% endif %}
+        {% if user_delete == True %}
+            {% if user.is_active %}
+            <!-- Add album button -->
+            <td class="col-md-2 col-sm-2 col-xs-3">
+                <a class="btn btn-danger btn-sm" href="{% url 'user:user_album_delete_confirm' id %}">Delete Album</a>
+            </td>
+            <td class="col-md-10 col-sm-10 col-xs-9"></td>
+            {% endif %}
+        {% endif %}
         </tr>
     </table>
 </div>
