@@ -5,6 +5,7 @@ from django.db import models
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 
 from manager_core.models import Album
+from django.conf import settings
 
 
 class MmUserManager(BaseUserManager):
@@ -50,7 +51,6 @@ class MmUser(AbstractBaseUser, PermissionsMixin):
     nickname = models.CharField(max_length=255, null=False, unique=True)
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
-    albums = models.ManyToManyField(Album)
 
     objects = MmUserManager()
 
@@ -87,3 +87,15 @@ class MmUser(AbstractBaseUser, PermissionsMixin):
     def is_staff(self):
         """ Is the user a member or staff? """
         return self.is_admin
+
+
+# MusicManager user's album list.
+class MmUserAlbum(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    album = models.ForeignKey(Album, on_delete=models.CASCADE)
+    add_time = models.DateTimeField(auto_now_add=True)
+    score = models.FloatField(null=True)
+
+    def __unicode__(self):
+        """ Get user and album entry. """
+        return self.user + "/" + self.album

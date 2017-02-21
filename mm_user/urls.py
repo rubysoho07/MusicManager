@@ -22,6 +22,5 @@ urlpatterns = [
         name='password_change_done'),
     url(r'^user_album_add/$', UserAlbumAddView.as_view(), name='user_album_add'),
     url(r'^user_album_add/(?P<pk>\d+)$', UserAlbumAddConfirmView.as_view(), name='user_album_add_confirm'),
-    url(r'^user_album_delete/$', UserAlbumDeleteView.as_view(), name='user_album_delete'),
-    url(r'^user_album_delete/(?P<pk>\d+)$', UserAlbumDeleteConfirmView.as_view(), name='user_album_delete_confirm')
+    url(r'^user_album_delete/(?P<pk>\d+)$', UserAlbumDeleteView.as_view(), name='user_album_delete'),
 ]

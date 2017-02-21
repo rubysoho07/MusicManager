@@ -7,10 +7,12 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 from django.core.urlresolvers import reverse_lazy
 
+from django.db.models import Q
+
 from manager_core.models import Album
 
 from mm_user.forms import UserCreationForm, UserChangeForm
-from mm_user.models import MmUser
+from mm_user.models import MmUser, MmUserAlbum
 
 
 # User creation form.
@@ -45,7 +47,12 @@ class UserMainView(LoginRequiredMixin, UserDetailView):
 
     def get_context_data(self, **kwargs):
         context = super(UserMainView, self).get_context_data(**kwargs)
-        context['user_albums'] = self.object.albums.all().order_by('-id')
+
+        try:
+            context['user_albums'] = MmUserAlbum.objects.filter(Q(user=self.object))
+        except MmUserAlbum.DoesNotExist:
+            context['user_albums'] = None
+
         return context
 
 
@@ -83,21 +90,15 @@ class UserAlbumAddView(LoginRequiredMixin, View):
         # Get album data
         album_to_add = get_object_or_404(Album, pk=request.POST['album_id'])
         album_owner = request.user
-        album_owner.albums.add(album_to_add)
+
+        mm_user_album = MmUserAlbum(user=album_owner, album=album_to_add)
+        mm_user_album.save()
+
         return redirect('user:main')
-
-
-# Confirm before deleting an album from user's album list.
-class UserAlbumDeleteConfirmView(LoginRequiredMixin, DetailView):
-    model = Album
-    template_name = 'users/user_delete_album.html'
 
 
 # Delete album from user's album list.
-class UserAlbumDeleteView(LoginRequiredMixin, View):
-    def post(self, request, *args, **kwargs):
-        # Get album data
-        album_to_remove = get_object_or_404(Album, pk=request.POST['album_id'])
-        album_owner = request.user
-        album_owner.albums.remove(album_to_remove)
-        return redirect('user:main')
+class UserAlbumDeleteView(LoginRequiredMixin, DeleteView):
+    model = MmUserAlbum
+    template_name = 'users/user_delete_album.html'
+    success_url = reverse_lazy('user:main')
