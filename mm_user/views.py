@@ -94,6 +94,10 @@ class UserAlbumAddView(LoginRequiredMixin, View):
         mm_user_album = MmUserAlbum(user=album_owner, album=album_to_add)
         mm_user_album.save()
 
+        # Add album owners count.
+        album_to_add.owner_count += 1
+        album_to_add.save()
+
         return redirect('user:main')
 
 
@@ -102,3 +106,14 @@ class UserAlbumDeleteView(LoginRequiredMixin, DeleteView):
     model = MmUserAlbum
     template_name = 'users/user_delete_album.html'
     success_url = reverse_lazy('user:main')
+
+    # Overriding delete method. (To reduce Album owners count)
+    def delete(self, request, *args, **kwargs):
+        album_to_delete = self.get_object().album
+
+        # Reduce album owners count.
+        if album_to_delete.owner_count > 0:
+            album_to_delete.owner_count -= 1
+            album_to_delete.save()
+
+        return super(UserAlbumDeleteView, self).delete(request, *args, **kwargs)

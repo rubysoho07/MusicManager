@@ -11,6 +11,7 @@ class Album(models.Model):
     album_title = models.CharField(max_length=200)
     album_cover_file = models.ImageField(upload_to='manager_core/cover_files', max_length=200)
     album_url = models.CharField(max_length=200, null=True)
+    owner_count = models.IntegerField(default=0)
 
     # Override __unicode__ method to display album artist and title.
     def __str__(self):
