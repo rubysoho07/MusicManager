@@ -97,6 +97,10 @@ class MmUserAlbum(models.Model):
     add_time = models.DateTimeField(auto_now_add=True)
     score = models.FloatField(null=True)
 
+    # Order by add_time in reverse.
+    class Meta:
+        ordering = ['-add_time']
+
     def __unicode__(self):
         """ Get user and album entry. """
         return self.user + "/" + self.album
