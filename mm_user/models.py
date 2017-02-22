@@ -51,6 +51,7 @@ class MmUser(AbstractBaseUser, PermissionsMixin):
     nickname = models.CharField(max_length=255, null=False, unique=True)
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
+    albums = models.ManyToManyField(Album, through='MmUserAlbum')
 
     objects = MmUserManager()
 

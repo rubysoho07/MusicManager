@@ -91,6 +91,11 @@ class UserAlbumAddView(LoginRequiredMixin, View):
         album_to_add = get_object_or_404(Album, pk=request.POST['album_id'])
         album_owner = request.user
 
+        # If duplicated item exists, don't save.
+        if MmUserAlbum.objects.filter(Q(user=album_owner) & Q(album=album_to_add)).count() != 0:
+            return redirect('user:main')
+
+        # Save item.
         mm_user_album = MmUserAlbum(user=album_owner, album=album_to_add)
         mm_user_album.save()
 
