@@ -1,6 +1,7 @@
 from django.shortcuts import redirect, get_object_or_404
 from django.views.generic.base import TemplateView, View
 from django.views.generic.detail import DetailView
+from django.views.generic.list import ListView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -27,10 +28,10 @@ class UserCreateDoneTV(TemplateView):
     template_name = 'users/register_done.html'
 
 
-# View to see user's profile
-class UserDetailView(DetailView):
-    model = MmUser
+class UserDetailView(ListView):
+    paginate_by = 10
     template_name = 'users/user_main.html'
+    model = MmUserAlbum
 
     def get_context_data(self, **kwargs):
         return super(UserDetailView, self).get_context_data(**kwargs)
@@ -38,21 +39,17 @@ class UserDetailView(DetailView):
 
 # View to see current user's profile
 class UserMainView(LoginRequiredMixin, UserDetailView):
-    model = MmUser
+    paginate_by = 10
     template_name = 'users/user_main.html'
 
-    # Get current user.
-    def get_object(self):
-        return self.request.user
+    def get_queryset(self):
+        user = self.request.user
+        user_queryset = MmUserAlbum.objects.filter(Q(user=user))
+        return user_queryset
 
     def get_context_data(self, **kwargs):
         context = super(UserMainView, self).get_context_data(**kwargs)
-
-        try:
-            context['user_albums'] = MmUserAlbum.objects.filter(Q(user=self.object))
-        except MmUserAlbum.DoesNotExist:
-            context['user_albums'] = None
-
+        context['user_album_count'] = self.get_queryset().count()
         return context
 
 
