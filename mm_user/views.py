@@ -77,6 +77,19 @@ class UserDeleteView(LoginRequiredMixin, DeleteView):
     def get_object(self):
         return self.request.user
 
+    # Reduce album owners count.
+    def delete(self, request, *args, **kwargs):
+        # Get album list.
+        albums = self.request.user.albums.all()
+
+        # Reduce album owner count for all albums.
+        for album in albums:
+            if album.owner_count > 0:
+                album.owner_count -= 1
+                album.save()
+
+        return super(UserDeleteView, self).delete(request, *args, **kwargs)
+
 
 # Confirm before adding an album to user's album list.
 class UserAlbumAddConfirmView(LoginRequiredMixin, DetailView):
