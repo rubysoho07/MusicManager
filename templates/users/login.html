@@ -23,19 +23,7 @@ MusicManager :: Login
     {% if form.errors %}
     <p>입력하신 이메일 주소와 비밀번호가 맞지 않습니다.</p>
     {% endif %}
-
-    <table>
-    <tr>
-        <td>{{ form.username.label_tag }}</td>
-        <td>{{ form.username }}</td>
-    </tr>
-    <tr>
-        <td>{{ form.password.label_tag }}</td>
-        <td>{{ form.password }}</td>
-    </tr>
-    </table>
-
-
+    {{ form|crispy }}
     <div>
         <input class="btn btn-default" type="submit" value="등록" />
     </div>

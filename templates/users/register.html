@@ -18,7 +18,7 @@ MusicManager :: Register
     <p>아래 입력에서 에러가 난 부분을 확인하세요.</p>
     {% endif %}
 
-    {{ form.as_p }}
+    {{ form|crispy }}
 
     <input class="btn btn-default" type="submit" value="등록" />
 
