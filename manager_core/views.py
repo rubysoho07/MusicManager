@@ -1,6 +1,6 @@
 import json
 
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 
 from django.views.generic.base import TemplateView, View
 from django.views.generic.list import ListView
@@ -10,7 +10,7 @@ from django.views.generic.edit import DeleteView, FormView
 from django.urls import reverse_lazy
 
 from .forms import AlbumSearchForm, AlbumParseRequestForm
-from .models import Album, AlbumTrack
+from .models import Album, AlbumTrack, AlbumComment
 from .music_parser import MusicParser
 
 # To save album cover image.
@@ -165,6 +165,7 @@ class AlbumDV(DetailView):
     def get_context_data(self, **kwargs):
         context = super(AlbumDV, self).get_context_data(**kwargs)
 
+        # Get track list.
         disk_num = 1
         disks = []
 
@@ -176,6 +177,10 @@ class AlbumDV(DetailView):
             track_list = self.object.albumtrack_set.filter(disk=disk_num).order_by('track_num')
 
         context['disks'] = disks
+
+        # Get comment list.
+        comments = self.object.albumcomment_set.all().order_by('-add_date')
+        context['comments'] = comments
         return context
 
 
@@ -202,3 +207,35 @@ class Error404View(TemplateView):
 # View for 500 error
 class Error500View(TemplateView):
     template_name = "manager_core/500.html"
+
+
+# Add comments
+class AlbumCommentAddView(View):
+    def post(self, request, *args, **kwargs):
+        # Get user, album, comment
+        user = request.user
+        album = get_object_or_404(Album, pk=request.POST['album_id'])
+        comment = request.POST['comment']
+
+        # Make new object and save it to the database.
+        album_comment = AlbumComment(user=user, album=album, comment=comment)
+        album_comment.save()
+
+        # Redirect to detailed page of the album.
+        return redirect('manager_core:album', pk=album.id)
+
+
+# Delete comments
+class AlbumCommentDeleteView(DeleteView):
+    model = AlbumComment
+
+    # Save success_url to redirect to album detail page.
+    def get_success_url(self):
+        return reverse_lazy('manager_core:album', kwargs={'pk': self.get_object().album.id})
+
+    # To delete without confirmation.
+    def get(self, *args, **kwargs):
+        return self.post(*args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        return super(AlbumCommentDeleteView, self).delete(request, *args, **kwargs)

@@ -35,6 +35,34 @@ MusicManager :: {{ album.album_artist }} - {{ album.album_title }}
   </table>
 {% endfor %}
 
+<!-- End of track list -->
+<div class="goni_padding"></div>
+<!-- Comments -->
+<p>총 {{ comments|length }} 개의 댓글</p>
+<table class="table">
+{% for comment in comments %}
+<tr>
+    <td class="col-md-2 col-sm-2 col-xs-2">{{ comment.user.nickname }}</td>
+    <td class="col-md-9 col-sm-9 col-xs-9">{{ comment.comment }} &nbsp;&nbsp;<small class="comment-date">{{ comment.add_date }}</small></td>
+    {% if user.is_authenticated and comment.user.nickname == user.nickname %}
+    <td class="col-md-1 col-sm-1 col-xs-1"><a href="{% url 'manager_core:delete_comment' comment.id %}"><span class="glyphicon glyphicon-remove"></span></a></td>
+    {% else %}
+    <td class="col-md-1 col-sm-1 col-xs-1"></td>
+    {% endif %}
+</tr>
+{% endfor %}
+</table>
+<!-- End of comments -->
+<!-- Form for writing comments -->
+{% if user.is_authenticated %}
+<form class="form-inline" role="form" action="{% url 'manager_core:add_comment' %}" method="POST">
+    {% csrf_token %}
+    <input class="form-control" type="text" name="comment" placeholder="댓글을 달아주세요. (최대 500자)">
+    <input type="hidden" name="album_id" value="{{ album.id }}">
+    <input class="btn btn-primary" type="submit" value="comment">
+</form>
+{% endif %}
+<!-- End of form for writing comments -->
 <p></p>
 <!-- End of printing result -->
 <div class="goni_padding"></div>
