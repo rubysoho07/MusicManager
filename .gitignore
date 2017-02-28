@@ -2,7 +2,7 @@
 *.pyc
 
 # Ignore files made by PyCharm.
-.idea/*
+.idea/
 
 # Ignore media(album cover) files.
 media/
@@ -11,4 +11,4 @@ media/
 settings.json
 
 # Ignore static directory. (Static files are on AWS S3)
-static/
+/static/
