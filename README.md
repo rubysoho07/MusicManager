@@ -1,119 +1,33 @@
-# MusicManager
-Manage and share your music interest with MusicManager!
+#MusicManager
 
-## Requirements
-You need there requirements to deploy MusicManager on your own server.
+MusicManager와 함께 자신의 음반을 관리하고 취향을 공유해 보세요!
 
-* PostgreSQL (DB)
-* AWS S3
+아래와 같은 사항을 지원합니다.
 
-You need to install this package for using PostgreSQL like this:
+* Bugs, Naver Music, Melon, AllMusic의 음반 주소를 통해 음반 등록 가능
+* 등록된 앨범에 대한 댓글 달기 기능
+* 사용자별 음반 등록/삭제 기능
 
-* On Ubuntu
-<pre>
-sudo apt-get install postgresql libpq-dev
-</pre>
-* On CentOS / AWS EC2 AMI
-<pre>
-sudo yum install postgresql postgresql-devel
-</pre>
+아래는 차후 지원할 내용입니다.
 
-If you don't want to use MusicManager without PostgreSQL or AWS S3, pull until [aaf17e](https://github.com/rubysoho07/MusicManager/commit/aaf17e689e0882a6d5162054c76882887f368b18) commit.
+* 별점 기능
+* 유사한 취향을 가진 사용자 추천 기능
 
-## Installing Development Environment.
-I want to recommend using `virtualenv` for your development environment not to confuse your development or deployment.
-You can install requisite packages with pip on the directory which `requirement.txt` file exists.
-<pre>
-pip install -r requirement.txt
-</pre>
+테스트 사이트에서 MusicManager를 체험하고 싶으시면, GitHub 프로필에 있는 메일 주소로 메일을 보내 주시기 바랍니다.
 
-## Setting Configuration
-I store password settings with `settings.json` file. Write this file and save it project root directory.
-For example:
-``` json
-{
-  "SECRET_KEY": "SECRET_KEY",
-  "DB_PASSWORD": "PostgreSQL DB Password",
-  "PORT": "5432"
-}
-```
-You can generate your `SECRET_KEY` with http://www.miniwebtool.com/django-secret-key-generator/.
+(English Version)
 
-## Deploying and Running MusicManager 
+Manage and share your interest of music with MusicManager!
 
-### Using Django runserver
-If you want to debug or test MusicManager, start runserver of Django. You should specify setting file with `--settings` option.
+I support these below:
 
-<pre>
-python manage.py runserver 0.0.0.0:8000 --settings=MusicManager.settings.local
-</pre>
+* Register album with URL of Bugs, Naver Music, Melon, AllMusic
+* Write comment to registered albums
+* Add/delete album per a user
 
-### Using nginx + uWSGI
-If you want to deploy MusicManager on server, try this with nginx and uWSGI.
+I'll support soon below:
 
-#### nginx Setting
-edit /etc/nginx/sites-enabled/MusicManager.conf (I used vim).
-<pre>
-# MusicManager.conf
+* Star ratings
+* Recommend user which has similar interests
 
-# the upstream component nginx needs to connect to
-upstream django {
-        server unix:///home/ec2-user/musicmanager/MusicManager/MusicManager.socket; # for a file socket
-        # server 127.0.0.1:8001; # for a web port socket (we'll use this first)
-}
-
-# configuration of the server
-server {
-# the port your site will be served on
-        listen      80;
-# the domain name it will serve for
-        server_name musicmanager.gonigoni.kr; # substitute your machine's IP address or FQDN
-        charset     utf-8;
-
-# max upload size
-        client_max_body_size 75M;   # adjust to taste
-
-# Django media
-
-        location /static {
-                alias /home/ec2-user/musicmanager/MusicManager/static; # your Django project's static files - amend as required
-        }
-
-        location /media {
-                alias /home/ec2-user/musicmanager/MusicManager/media; # your Django project's static files - amend as required
-        }
-
-# Finally, send all non-media requests to the Django server.
-        location / {
-                uwsgi_pass  django;
-                include     /home/ec2-user/musicmanager/MusicManager/uwsgi_params; # the uwsgi_params file you installed
-        }
-}
-</pre>
-
-After that, edit `/etc/nginx/nginx.conf` file.
-<pre>
-http {
-
-    (...)
-
-    # Load modular configuration files from the /etc/nginx/conf.d directory.
-    # See http://nginx.org/en/docs/ngx_core_module.html#include
-    # for more information.
-    include /etc/nginx/conf.d/*.conf;
-
-    # Load configuration files for sites-enabled directory.
-    # ADD THIS TO DEPLOY MUSICMANAGER!!
-    include /etc/nginx/sites-enabled/*.conf;
-
-    (...)
-</pre>
-
-#### uWSGI Setting
-Run uWSGI on your project root directory.
-
-<pre>
-uwsgi --socket MusicManager.socket --module MusicManager.wsgi --env DJANGO_SETTINGS_MODULE=MusicManager.settings.production --chmod-socket=666 > MusicManager.log 2> MusicManager.err.log &
-</pre>
-
-If you experience "Permission denied" on ngnix, try to change permission of your source directory to 666 or 755.
+If you want to experience MusicManager in test site, send email to me. (My address is in my GitHub profile.)
