@@ -71,6 +71,14 @@
         </div>
         {% endif %}
     {% endif %}
-        <div class="col-md-8 col-sm-8 col-xs-5"></div>
+    {% if show_average == True %}
+        <!-- Score -->
+        <div class="col-md-2 col-sm-2 col-xs-2">
+            <div class="stars" style="cursor:auto; color:black;">
+                <span class="full_star">&#xf005;</span> {{ average }}
+            </div>
+        </div>
+    {% endif %}
+        <div class="col-md-8 col-sm-8 col-xs-8"></div>
     </div>
 </div>
