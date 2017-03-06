@@ -1,0 +1,52 @@
+@import url(http://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css);
+/* Ratings widget. */
+.ratings {
+  display: inline-block;
+  border: 0;
+  color: #DDD;
+}
+.ratings > input {
+  /* Hide radio button. */
+  display: none;
+}
+.ratings > label {
+  /* Order correctly by floating highest to the right. */
+  float: right;
+}
+.ratings > label:before {
+  /* The star of the show */
+  display: inline-block;
+  font-size: 1em;
+  padding: .3rem .2rem;
+  margin: 0;
+  cursor: pointer;
+  font-family: FontAwesome;
+  content: "\f005 ";
+  /* Full star */
+}
+.ratings > label:last-child:before {
+  /* Zero stars rating */
+  content: "\f006 ";
+  /* Empty star outline */
+}
+.ratings .half:before {
+  /* Half star trick */
+  content: "\f089";
+  /* Half star no outline */
+  position: absolute;
+  padding-right: 0;
+}
+/* Click + hover color */
+input:checked ~ label,
+label:hover,
+label:hover ~ label {
+  /* color previous stars on hover */
+  color: #f4ac04;
+}
+/* Hover highlights */
+input:checked + label:hover,
+input:checked ~ label:hover,
+input:checked ~ label:hover ~ label,
+label:hover ~ input:checked ~ label {
+  color: #b06800;
+}

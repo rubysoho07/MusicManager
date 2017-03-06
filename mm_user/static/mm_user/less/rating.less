@@ -1,0 +1,59 @@
+@import url(http://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css);
+@base-color: rgb(244, 172, 4);
+@hover-color: @base-color - #444;
+
+/* Ratings widget. */
+.ratings {
+    display: inline-block;
+    border: 0;
+    color: #DDD;
+
+    > input {
+        /* Hide radio button. */
+        display: none;
+    }
+
+    > label {
+        /* Order correctly by floating highest to the right. */
+        float: right;
+
+        &:before {
+            /* The star of the show */
+            display: inline-block;
+            font-size: 1em;
+            padding: .3rem .2rem;
+            margin: 0;
+            cursor: pointer;
+            font-family: FontAwesome;
+            content: "\f005 "; /* Full star */
+        }
+
+        &:last-child:before {
+            /* Zero stars rating */
+            content: "\f006 "; /* Empty star outline */
+        }
+    }
+
+    .half:before {
+        /* Half star trick */
+        content: "\f089"; /* Half star no outline */
+        position: absolute;
+        padding-right: 0;
+    }
+}
+
+/* Click + hover color */
+input:checked ~ label, /* Color current and previous stars on checked */
+label:hover, label:hover ~ label
+{
+    /* color previous stars on hover */
+    color: @base-color;
+}
+
+/* Hover highlights */
+input:checked + label:hover, input:checked ~ label:hover, /* Highlight current and previous stars */
+input:checked ~ label:hover ~ label, /* Highlight previous selected stars for new rating */
+label:hover ~ input:checked ~ label /* Hightlight previous selected stars */
+{
+    color: @hover-color;
+}

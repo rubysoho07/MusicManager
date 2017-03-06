@@ -1,6 +1,8 @@
 @import url(http://fonts.googleapis.com/earlyaccess/notosanskr.css);
 @base-color: #1088B7;
 @default-image-height: 150px;
+@row-height: 33px;
+@row-padding: @row-height / 2;
 
 body {
   font-family: 'Noto Sans KR', sans-serif;
@@ -23,6 +25,11 @@ body {
 .album_basicinfo {
   float: right;
   height: @default-image-height;
+
+  .row {
+    height: @row-height;
+    vertical-align: middle;
+  }
 }
 
 .goni_padding {

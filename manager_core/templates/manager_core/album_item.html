@@ -15,51 +15,57 @@
 </div>
 <div class="album_basicinfo col-md-10 col-sm-10 col-xs-9">
     <!-- Show artist and title-->
-    <table class="table">
-        <tr>
-            <td class="col-md-2 col-sm-2 col-xs-3"><b>Artist</b></td>
-            <td class="col-md-10 col-sm-10 col-xs-9">{{ artist }}</td>
-        <tr>
-        <tr>
-            <td class="col-md-2 col-sm-2 col-xs-3"><b>Title</b></td>
-            {% if link == True %}
-            <td class="col-md-10 col-sm-10 col-xs-9"><a href="{% url 'manager_core:album' id %}">{{ title }}</a></td>
-            {% else %}
-            <td class="col-md-10 col-sm-10 col-xs-9">{{ title }}</td>
-            {% endif %}
-        </tr>
-        <tr>
-        {% if owner_count == True %}
-            <!-- Owners count -->
-            <td class="col-md-2 col-sm-2 col-xs-3">
-                <span class="glyphicon glyphicon-user"></span>
-                &nbsp;{{ owners }}
-            </td>
+    <div class="row">
+        <div class="col-md-2 col-sm-2 col-xs-3"><b>Artist</b></div>
+        <div class="col-md-10 col-sm-10 col-xs-9">{{ artist }}</div>
+    </div>
+    <div class="row">
+        <div class="col-md-2 col-sm-2 col-xs-3"><b>Title</b></div>
+        {% if link == True %}
+        <div class="col-md-10 col-sm-10 col-xs-9"><a href="{% url 'manager_core:album' id %}">{{ title }}</a></div>
+        {% else %}
+        <div class="col-md-10 col-sm-10 col-xs-9">{{ title }}</div>
         {% endif %}
-        {% if delete == True %}
-            <td class="col-md-2 col-sm-2 col-xs-3">
-                <a class="btn btn-danger btn-sm" href="{% url 'manager_core:delete' id %}">Delete!</a>
-            </td>
-            <td class="col-md-10 col-sm-10 col-xs-9"></td>
+    </div>
+    <div class="row">
+    {% if owner_count == True %}
+        <!-- Owners count -->
+        <div title="이 앨범을 갖고 있는 사람 수" class="col-md-1 col-sm-1 col-xs-1">
+            <span class="glyphicon glyphicon-user"></span>
+            &nbsp;{{ owners }}
+        </div>
+    {% endif %}
+    {% if delete == True %}
+        <div class="col-md-2 col-sm-2 col-xs-3">
+            <a class="btn btn-danger btn-sm" href="{% url 'manager_core:delete' id %}">Delete!</a>
+        </div>
+        <div class="col-md-10 col-sm-10 col-xs-9"></div>
+    {% endif %}
+    {% if user_add == True %}
+        {% if user.is_active %}
+        <!-- Add album button -->
+        <div class="col-md-1 col-sm-1 col-xs-1">
+            <a title="앨범 추가" href="{% url 'user:user_album_add_confirm' id %}">
+                <span class="glyphicon glyphicon-plus"></span>
+            </a>
+        </div>
         {% endif %}
-        {% if user_add == True %}
-            {% if user.is_active %}
-            <!-- Add album button -->
-            <td class="col-md-2 col-sm-2 col-xs-3">
-                <a class="btn btn-primary btn-sm" href="{% url 'user:user_album_add_confirm' id %}">Add Album</a>
-            </td>
-            <td class="col-md-10 col-sm-10 col-xs-9"></td>
-            {% endif %}
+    {% endif %}
+    {% if user_delete == True %}
+        {% if user.is_active %}
+        <!-- Delete album button -->
+        <div class="col-md-1 col-sm-1 col-xs-1">
+            <a title="앨범 삭제" href="{% url 'user:user_album_delete' delete_id %}" style="color: red;">
+                <span class="glyphicon glyphicon-remove"></span>
+            </a>
+        </div>
         {% endif %}
-        {% if user_delete == True %}
-            {% if user.is_active %}
-            <!-- Delete album button -->
-            <td class="col-md-2 col-sm-2 col-xs-3">
-                <a class="btn btn-danger btn-sm" href="{% url 'user:user_album_delete' delete_id %}">Delete Album</a>
-            </td>
-            <td class="col-md-10 col-sm-10 col-xs-9"></td>
-            {% endif %}
-        {% endif %}
-        </tr>
-    </table>
+    {% endif %}
+    {% if rating_form == True %}
+        <div class="col-md-2 col-sm-2 col-xs-2">
+            {% include "users/stars.html" with album_id=id %}
+        </div>
+    {% endif %}
+        <div class="col-md-8 col-sm-8 col-xs-5"></div>
+    </div>
 </div>
