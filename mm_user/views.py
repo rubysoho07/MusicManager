@@ -123,15 +123,23 @@ class UserAlbumDeleteView(LoginRequiredMixin, DeleteView):
     template_name = 'users/user_delete_album.html'
     success_url = reverse_lazy('user:main')
 
-    # Overriding delete method. (To reduce Album owners count)
+    # Overriding delete method.
     def delete(self, request, *args, **kwargs):
         album_to_delete = self.get_object().album
 
         # Reduce album owners count.
         if album_to_delete.owner_count > 0:
             album_to_delete.owner_count -= 1
-            album_to_delete.save()
 
+        # Calculate average rating again without self.object
+        album_avg = MmUserAlbum.objects.filter(Q(album=album_to_delete)
+                                               & ~Q(user=request.user)).aggregate(Avg('score'))['score__avg']
+        if album_avg is not None:
+            album_to_delete.average_rating = float(album_avg)
+        else:
+            album_to_delete.average_rating = None
+
+        album_to_delete.save()
         return super(UserAlbumDeleteView, self).delete(request, *args, **kwargs)
 
 
