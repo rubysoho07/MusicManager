@@ -15,6 +15,8 @@
 		<link rel="stylesheet" type="text/css" href="{% static 'manager_core/css/bootstrap.min.css' %}">
 		<!-- Custom CSS (by Yungon) -->
 		<link rel="stylesheet" type="text/css" href="{% static 'manager_core/css/custom.css' %}">
+		{% block additional_style %}
+		{% endblock %}
 
 		<!-- Favicon -->
 		<link rel="shortcut icon" type="image/png" href="{% static 'manager_core/images/favicon.ico' %}"/>
@@ -74,5 +76,7 @@
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 		<!-- Include all compiled plugins (below), or include individual files as needed -->
 		<script src="{% static 'manager_core/js/bootstrap.min.js' %}"></script>
+		{% block addtional_scripts %}
+		{% endblock %}
 	</body>
 </html>
