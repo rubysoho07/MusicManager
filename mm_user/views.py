@@ -1,5 +1,5 @@
 from django.shortcuts import redirect, get_object_or_404
-from django.views.generic.base import TemplateView, View
+from django.views.generic.base import TemplateView, View, RedirectView
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
@@ -8,7 +8,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 from django.core.urlresolvers import reverse_lazy
 
-from django.db.models import Q
+from django.db.models import Q, Avg
 
 from manager_core.models import Album
 
@@ -50,6 +50,7 @@ class UserMainView(LoginRequiredMixin, UserDetailView):
     def get_context_data(self, **kwargs):
         context = super(UserMainView, self).get_context_data(**kwargs)
         context['user_album_count'] = self.get_queryset().count()
+        context['scores_list'] = range(1, 11)
         return context
 
 
@@ -132,3 +133,30 @@ class UserAlbumDeleteView(LoginRequiredMixin, DeleteView):
             album_to_delete.save()
 
         return super(UserAlbumDeleteView, self).delete(request, *args, **kwargs)
+
+
+# Rating album from user's album list.
+class UserAlbumRatingView(LoginRequiredMixin, View):
+
+    def post(self, request, *args, **kwargs):
+        # Get MmUserAlbum object.
+        user_album = get_object_or_404(MmUserAlbum, pk=request.POST['user_album_id'])
+
+        # Update score for an album.
+        user_album.score = int(request.POST['score'])
+        user_album.save()
+
+        # Calculate average score and save.
+        album = user_album.album
+        album_avg = MmUserAlbum.objects.filter(Q(album=album)).aggregate(Avg('score'))['score__avg']
+
+        if album_avg is not None:
+            album.average_rating = float(album_avg)
+            album.save()
+
+        return redirect('user:main')
+
+
+# If the app get abnormal url, just redirect to user's main page.
+class UserAbnormalRequestRV(LoginRequiredMixin, RedirectView):
+    url = reverse_lazy('user:main')

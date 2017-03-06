@@ -8,10 +8,14 @@ MusicManager :: {% firstof user.get_short_name user.get_username %}'s album
 
 {% block additional_style %}
 <link rel="stylesheet" type="text/css" href="{% static 'mm_user/css/rating.css' %}">
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 {% endblock %}
 
 {% block content %}
 {% load crispy_forms_tags %}
+<!-- Rating form -->
+{% include "users/rating_form.html" %}
+
 <!-- Body start -->
 <h1>Main</h1>
 
@@ -19,7 +23,7 @@ MusicManager :: {% firstof user.get_short_name user.get_username %}'s album
 <div class="goni_padding"></div>
 <!-- User's album list -->
 {% for item in object_list %}
-    {% include "manager_core/album_item.html" with rating_form=True link=True id=item.album.id cover_file=item.album.album_cover_file artist=item.album.album_artist title=item.album.album_title user_delete=True delete_id=item.id owner_count=True owners=item.album.owner_count %}
+    {% include "manager_core/album_item.html" with rating_form=True my_score=item.score scores_list=scores_list link=True id=item.album.id cover_file=item.album.album_cover_file artist=item.album.album_artist title=item.album.album_title user_delete=True user_album_id=item.id owner_count=True owners=item.album.owner_count %}
 {% endfor %}
 
 <!-- End of user's album list -->
@@ -50,3 +54,30 @@ MusicManager :: {% firstof user.get_short_name user.get_username %}'s album
 <div class="goni_padding"></div>
 <!-- Body end -->
 {% endblock content %}
+
+{% block addtional_scripts %}
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script type="text/javascript">
+$( function() {
+    var dialog = $("#rating-form").dialog({
+        autoOpen: false,
+        height: 200,
+        width: 400,
+        modal: true,
+    });
+
+    $(".open-form").on("click", function() {
+        /* Get id value from link */
+        var id = $(this).attr('id');
+
+        /* Modify form action */
+        $("form").attr("action", "{% url 'user:user_album_rating_no_argument' %}" + id);
+
+        /* Modify value of user_album_id */
+        $("input[name=user_album_id]").val(id);
+
+        dialog.dialog("open");
+    });
+});
+</script>
+{% endblock %}

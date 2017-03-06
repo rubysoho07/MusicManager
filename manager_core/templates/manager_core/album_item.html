@@ -55,16 +55,21 @@
         {% if user.is_active %}
         <!-- Delete album button -->
         <div class="col-md-1 col-sm-1 col-xs-1">
-            <a title="앨범 삭제" href="{% url 'user:user_album_delete' delete_id %}" style="color: red;">
+            <a title="앨범 삭제" href="{% url 'user:user_album_delete' user_album_id %}" style="color: red;">
                 <span class="glyphicon glyphicon-remove"></span>
             </a>
         </div>
         {% endif %}
     {% endif %}
     {% if rating_form == True %}
+        {% if user.is_active %}
+        <!-- Rating -->
         <div class="col-md-2 col-sm-2 col-xs-2">
-            {% include "users/stars.html" with album_id=id %}
+            <a class="open-form" id="{{ user_album_id }}">
+            {% include "users/star_score.html" with my_score=my_score scores_list=scores_list %}
+            </a>
         </div>
+        {% endif %}
     {% endif %}
         <div class="col-md-8 col-sm-8 col-xs-5"></div>
     </div>

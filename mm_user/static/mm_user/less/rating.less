@@ -2,13 +2,30 @@
 @base-color: rgb(244, 172, 4);
 @hover-color: @base-color - #444;
 
+/* Stars widget on user's album list */
+.stars {
+    font-size: 1em;
+    font-family: FontAwesome;
+    color: #DDD;
+    cursor: pointer;
+
+    .full_star, .half_star {
+        color: @base-color;
+    }
+
+    .half_star {
+        position: absolute;
+        padding-right: 0;
+    }
+}
+
 /* Ratings widget. */
 .ratings {
-    display: inline-block;
+    display: block;
     border: 0;
     color: #DDD;
 
-    > input {
+    > input[type="radio"] {
         /* Hide radio button. */
         display: none;
     }
@@ -20,7 +37,7 @@
         &:before {
             /* The star of the show */
             display: inline-block;
-            font-size: 1em;
+            font-size: 5em;
             padding: .3rem .2rem;
             margin: 0;
             cursor: pointer;
@@ -56,4 +73,16 @@ input:checked ~ label:hover ~ label, /* Highlight previous selected stars for ne
 label:hover ~ input:checked ~ label /* Hightlight previous selected stars */
 {
     color: @hover-color;
+}
+
+.open-form:hover {
+    /* Remove underline for open-form link */
+    text-decoration: none;
+}
+
+
+.btn {
+    /* Align center for form button */
+    float: right;
+    margin-right: 155px;
 }
