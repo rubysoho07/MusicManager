@@ -95,7 +95,7 @@ class MmUserAlbum(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     album = models.ForeignKey(Album, on_delete=models.CASCADE)
     add_time = models.DateTimeField(auto_now_add=True)
-    score = models.FloatField(null=True)
+    score = models.PositiveSmallIntegerField(null=True, default=None)
 
     # Order by add_time in reverse.
     class Meta:
