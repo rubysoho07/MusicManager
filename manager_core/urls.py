@@ -1,6 +1,6 @@
 from django.conf.urls import url
 
-from views import AlbumDV, AlbumLV, SearchFV, AlbumDeleteView, AlbumParseView, AlbumCreateView
+from views import AlbumDV, SearchFV, AlbumDeleteView, AlbumParseView, AlbumCreateView
 from views import AlbumCommentAddView, AlbumCommentDeleteView
 
 # Register application namespace
@@ -8,7 +8,6 @@ app_name = 'manager_core'
 
 # URL patterns
 urlpatterns = [
-    url(r'^$', AlbumLV.as_view(), name='index'),
     url(r'^search/', SearchFV.as_view(), name='search'),
     url(r'^add/', AlbumParseView.as_view(), name='add_album'),
     url(r'^add_action/', AlbumCreateView.as_view(), name='add_action'),
