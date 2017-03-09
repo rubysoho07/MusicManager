@@ -15,3 +15,6 @@ settings.json
 
 # Ignore log file.
 MusicManager.log
+
+# Ignore database file for local development.
+db.sqlite3
