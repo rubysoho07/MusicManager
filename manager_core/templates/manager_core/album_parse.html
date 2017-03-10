@@ -54,7 +54,7 @@ MusicManager :: Add album
         <input type="hidden" name="album_data" id="album_data" value="{{ parsed_data }}" />
         <input type="hidden" name="album_url" id="original_url" value="{{ original_url }}" />
         <input class="btn btn-success" type="submit" value="등록" />
-        <a class="btn btn-default" href="{% url 'manager_core:index' %}">취소</a>
+        <a class="btn btn-default" href="{% url 'index' %}">취소</a>
     </form>
 {% endif %}
 <div class="goni_padding"></div>

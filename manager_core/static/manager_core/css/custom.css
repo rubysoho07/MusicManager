@@ -18,12 +18,12 @@ body {
   float: right;
   height: 150px;
 }
+.album_basicinfo .row {
+  height: 33px;
+  vertical-align: middle;
+}
 .goni_padding {
   height: 30px;
-}
-.comment-date {
-    font-style: italic;
-    color: #4f4f4f;
 }
 .navbar-default {
   background-color: #1088B7;
@@ -92,4 +92,8 @@ body {
     color: #414040;
     background-color: #cfe7f0;
   }
+}
+.comment-date {
+  font-style: italic;
+  color: #4f4f4f;
 }

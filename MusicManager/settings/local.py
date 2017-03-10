@@ -7,12 +7,8 @@ DEBUG = True
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'musicmanager',
-        'USER': 'musicmanager',
-        'PASSWORD': get_secret("DB_PASSWORD"),
-        'HOST': get_secret("DB_HOST"),
-        'PORT': get_secret("DB_PORT"),
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
 

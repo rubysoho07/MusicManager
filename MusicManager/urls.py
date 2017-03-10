@@ -15,12 +15,13 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
-from manager_core.views import Error404View, Error500View
+from manager_core.views import Error404View, Error500View, AlbumLV
 
 from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
+    url(r'^$', AlbumLV.as_view(), name='index'),
     url(r'^musicmanager/', include('manager_core.urls')),
     url(r'^admin/', admin.site.urls),
 

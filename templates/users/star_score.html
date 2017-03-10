@@ -1,0 +1,20 @@
+<div class="stars" title="사용자 별점">
+    {% if my_score != None %}
+        {% for num in scores_list %}
+            {% if num|divisibleby:"2" %}
+                {% if my_score < num %}
+                    {% if my_score == num|add:"-1" %}
+                        <span class="half_star">&#xf089;</span>
+                        <span class="empty_star">&#xf005;</span>
+                    {% else %}
+                        <span class="empty_star">&#xf005;</span>
+                    {% endif %}
+                {% else %}
+                    <span class="full_star">&#xf005;</span>
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+    {% else %}
+        <span class="empty_star">&#xf005;&nbsp;&#xf005;&nbsp;&#xf005;&nbsp;&#xf005;&nbsp;&#xf005;</span>
+    {% endif %}
+</div>

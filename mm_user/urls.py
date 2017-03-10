@@ -23,4 +23,6 @@ urlpatterns = [
     url(r'^user_album_add/$', UserAlbumAddView.as_view(), name='user_album_add'),
     url(r'^user_album_add/(?P<pk>\d+)$', UserAlbumAddConfirmView.as_view(), name='user_album_add_confirm'),
     url(r'^user_album_delete/(?P<pk>\d+)$', UserAlbumDeleteView.as_view(), name='user_album_delete'),
+    url(r'^rating/(?P<pk>\d+)$', UserAlbumRatingView.as_view(), name='user_album_rating'),
+    url(r'^rating/$', UserAbnormalRequestRV.as_view(), name='user_album_rating_no_argument'),
 ]

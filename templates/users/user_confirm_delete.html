@@ -13,7 +13,7 @@ MusicManager :: Delete User
 <form action="" method="POST">
 {% csrf_token %}
     <input class="btn btn-danger" type="submit" value="탈퇴" />
-    <a class="btn btn-default" href="{% url 'manager_core:index' %}">취소</a>
+    <a class="btn btn-default" href="{% url 'index' %}">취소</a>
 </form>
 <!-- End of printing result -->
 <div class="goni_padding"></div>
