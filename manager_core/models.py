@@ -33,12 +33,8 @@ class AlbumTrack(models.Model):
         return self.track_artist + " - " + self.track_title
 
 
-@python_2_unicode_compatible
 class AlbumComment(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     album = models.ForeignKey(Album, on_delete=models.CASCADE)
     comment = models.CharField(max_length=500)
     add_date = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return self.user + "/" + self.album + "/" + self.comment

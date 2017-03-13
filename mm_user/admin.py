@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
 from mm_user.forms import UserCreationForm, UserChangeForm
-from mm_user.models import MmUser
+from mm_user.models import MmUser, MmUserAlbum
 
 
 # Register your models here.
@@ -34,5 +34,11 @@ class MmUserAdmin(UserAdmin):
     ordering = ('email',)
     filter_horizontal = ()
 
-# Now register the new UserAdmin...
+
+# User Album Admin
+class MmUserAlbumAdmin(admin.ModelAdmin):
+    list_display = ("user", "album", "add_time", "score")
+
+# Now register admin page for user-related models.
 admin.site.register(MmUser, MmUserAdmin)
+admin.site.register(MmUserAlbum, MmUserAlbumAdmin)

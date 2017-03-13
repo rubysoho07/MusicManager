@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Album, AlbumTrack
+from .models import Album, AlbumTrack, AlbumComment
 
 
 # Track Inline.
@@ -19,6 +19,12 @@ class AlbumAdmin(admin.ModelAdmin):
 class AlbumTrackAdmin(admin.ModelAdmin):
     list_display = ("album", "disk", "track_num", "track_title", "track_artist")
 
+
+# Album comment admin
+class AlbumCommentAdmin(admin.ModelAdmin):
+    list_display = ("user", "album", "comment", "add_date")
+
 # Register your models here.
 admin.site.register(Album, AlbumAdmin)
 admin.site.register(AlbumTrack, AlbumTrackAdmin)
+admin.site.register(AlbumComment, AlbumCommentAdmin)

@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 
+from django.utils.encoding import python_2_unicode_compatible
 from django.contrib.auth.models import PermissionsMixin
 from django.db import models
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
@@ -45,6 +46,7 @@ class MmUserManager(BaseUserManager):
 
 
 # MusicManager user model.
+@python_2_unicode_compatible
 class MmUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=255, verbose_name='E-mail address', unique=True)
     name = models.CharField(max_length=255, null=False)
@@ -66,7 +68,7 @@ class MmUser(AbstractBaseUser, PermissionsMixin):
         """ Return the user's nickname. """
         return self.nickname
 
-    def __unicode__(self):
+    def __str__(self):
         return self.email
 
     def has_perm(self, perm, obj=None):
@@ -76,7 +78,7 @@ class MmUser(AbstractBaseUser, PermissionsMixin):
         """
         return True
 
-    def has_module_perm(self, app_label):
+    def has_module_perms(self, app_label):
         """
         Does the user have permissions to view the app `app_label`?
         :param app_label:
@@ -101,6 +103,3 @@ class MmUserAlbum(models.Model):
     class Meta:
         ordering = ['-add_time']
 
-    def __unicode__(self):
-        """ Get user and album entry. """
-        return self.user + "/" + self.album
