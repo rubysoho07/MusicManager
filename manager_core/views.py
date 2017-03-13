@@ -155,7 +155,7 @@ class AlbumCreateView(View):
         if request.user.is_authenticated():
             return redirect("user:user_album_add_confirm", pk=album.id)
         else:
-            return redirect("manager_core:index")
+            return redirect("index")
 
 
 # Detailed album information.
@@ -189,7 +189,7 @@ class AlbumDeleteView(DeleteView):
     model = Album
 
     # If delete completed, redirect to album list.
-    success_url = reverse_lazy('manager_core:index')
+    success_url = reverse_lazy('index')
 
     def delete(self, request, *args, **kwargs):
         # remove cover file from media directory.

@@ -68,7 +68,7 @@ class UserUpdateView(LoginRequiredMixin, UpdateView):
 # Delete user.
 class UserDeleteView(LoginRequiredMixin, DeleteView):
     model = MmUser
-    success_url = reverse_lazy('manager_core:index')
+    success_url = reverse_lazy('index')
     template_name = 'users/user_confirm_delete.html'
 
     # Get current user.
