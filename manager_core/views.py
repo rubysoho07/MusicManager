@@ -181,6 +181,10 @@ class AlbumDV(DetailView):
         # Get comment list.
         comments = self.object.albumcomment_set.all().order_by('-add_date')
         context['comments'] = comments
+
+        # Get users list.
+        users = self.object.mmuseralbum_set.all()
+        context['users'] = users
         return context
 
 

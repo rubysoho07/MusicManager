@@ -1,12 +1,12 @@
 from django.shortcuts import redirect, get_object_or_404
 from django.views.generic.base import TemplateView, View, RedirectView
 from django.views.generic.detail import DetailView
-from django.views.generic.list import ListView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from django.core.urlresolvers import reverse_lazy
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from django.db.models import Q, Avg
 
@@ -28,28 +28,54 @@ class UserCreateDoneTV(TemplateView):
     template_name = 'users/register_done.html'
 
 
-class UserDetailView(ListView):
-    paginate_by = 10
+# User's profile.
+class UserDetailView(DetailView):
     template_name = 'users/user_main.html'
-    model = MmUserAlbum
+    model = MmUser
 
     def get_context_data(self, **kwargs):
-        return super(UserDetailView, self).get_context_data(**kwargs)
+        context = super(UserDetailView, self).get_context_data(**kwargs)
+
+        # Get many-to-many field list.
+        user_album_list = self.object.mmuseralbum_set.all()
+
+        # Pagination for user_album_list (for 10 albums)
+        album_list_paginator = Paginator(user_album_list, 10)
+        page = self.request.GET.get('page')
+
+        try:
+            context['user_album_list'] = album_list_paginator.page(page)
+        except PageNotAnInteger:
+            # If page is not an integer, deliver first page.
+            context['user_album_list'] = album_list_paginator.page(1)
+        except EmptyPage:
+            # If page is out of range, deliver last page of results.
+            context['user_album_list'] = album_list_paginator.page(album_list_paginator.num_pages)
+
+        # Paginator range.
+        context['pages'] = album_list_paginator.page_range
+
+        # Count all albums of the user.
+        context['user_album_count'] = self.object.albums.count()
+
+        # Can't set another user's star rating.
+        context['own_page'] = False
+        return context
 
 
 # View to see current user's profile
 class UserMainView(LoginRequiredMixin, UserDetailView):
-    paginate_by = 10
     template_name = 'users/user_main.html'
 
-    def get_queryset(self):
-        user = self.request.user
-        user_queryset = MmUserAlbum.objects.filter(Q(user=user))
-        return user_queryset
+    # Get current user.
+    def get_object(self, queryset=None):
+        return self.request.user
 
     def get_context_data(self, **kwargs):
         context = super(UserMainView, self).get_context_data(**kwargs)
-        context['user_album_count'] = self.get_queryset().count()
+
+        # Can set my star rating.
+        context['own_page'] = True
         context['scores_list'] = range(1, 11)
         return context
 
