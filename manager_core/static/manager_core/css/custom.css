@@ -24,6 +24,7 @@ body {
 }
 .goni_padding {
   height: 30px;
+  clear: both;
 }
 .navbar-default {
   background-color: #1088B7;
