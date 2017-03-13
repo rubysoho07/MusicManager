@@ -12,7 +12,6 @@ MusicManager :: {{ album.album_artist }} - {{ album.album_title }}
 {% include "manager_core/album_item.html" with link=False id=object.id cover_file=object.album_cover_file artist=object.album_artist title=object.album_title user_add=True %}
 
 <!-- Track list. -->
-
 {% for disk in disks %}
   {% comment "Get disk number" %}
     Get disk number from first track. disk is a QuerySet object for an actual disk. 
@@ -34,11 +33,21 @@ MusicManager :: {{ album.album_artist }} - {{ album.album_title }}
   {% endfor %}
   </table>
 {% endfor %}
-
-<!-- End of track list -->
 <div class="goni_padding"></div>
+<!-- End of track list -->
+<!-- List of users having this album -->
+<div>
+    <p style="font-weight: bold;">이 앨범을 갖고 있는 사람</p>
+    <p>
+    {% for user in users %}
+        <a href="{% url 'user:user_profile' user.user.id %}">{{ user.user.nickname }}</a>&nbsp;
+    {% endfor %}
+    </p>
+</div>
+<div class="goni_padding"></div>
+<!-- End of users list -->
 <!-- Comments -->
-<p>총 {{ comments|length }} 개의 댓글</p>
+<p style="font-weight: bold;">총 <span style="color: red;">{{ comments|length }}</span> 개의 댓글</p>
 <table class="table">
 {% for comment in comments %}
 <tr>
