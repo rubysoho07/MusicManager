@@ -69,7 +69,7 @@ label:hover ~ input:checked ~ label {
   /* Remove underline for open-form link */
   text-decoration: none;
 }
-.btn {
+.rating-btn {
   /* Align center for form button */
   float: right;
   margin-right: 155px;
