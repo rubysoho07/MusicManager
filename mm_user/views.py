@@ -87,7 +87,7 @@ class UserUpdateView(LoginRequiredMixin, UpdateView):
     success_url = reverse_lazy('user:main')
 
     # Get current user.
-    def get_object(self):
+    def get_object(self, queryset=None):
         return self.request.user
 
 
@@ -98,13 +98,13 @@ class UserDeleteView(LoginRequiredMixin, DeleteView):
     template_name = 'users/user_confirm_delete.html'
 
     # Get current user.
-    def get_object(self):
+    def get_object(self, queryset=None):
         return self.request.user
 
     # Reduce album owners count.
     def delete(self, request, *args, **kwargs):
         # Get album list.
-        albums = self.request.user.albums.all()
+        albums = self.get_object().albums.all()
 
         # Reduce album owner count for all albums.
         for album in albums:

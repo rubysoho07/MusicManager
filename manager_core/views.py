@@ -90,18 +90,18 @@ class AlbumParseView(FormView):
 
         # Album track: a list.
         # (A track of track list is to an dict, because a track is JSON object.)
-        album_track = json_data['tracks']
+        tracks = json_data['tracks']
 
         # Dividing all tracks per disk.
         disk_num = 1
         disks = []
 
-        track_list = list(track for track in album_track if track['disk'] == disk_num)
+        track_list = list(track for track in tracks if track['disk'] == disk_num)
 
         while len(track_list) != 0:
             disks.append(track_list)
             disk_num += 1
-            track_list = list(track for track in album_track if track['disk'] == disk_num)
+            track_list = list(track for track in tracks if track['disk'] == disk_num)
 
         context['disks'] = disks
         context['parsed_data'] = parsed_data
@@ -165,7 +165,7 @@ class AlbumDV(DetailView):
     def get_context_data(self, **kwargs):
         context = super(AlbumDV, self).get_context_data(**kwargs)
 
-        # Get track list.
+        # Get track list (per disk).
         disk_num = 1
         disks = []
 
