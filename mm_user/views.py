@@ -17,6 +17,25 @@ from mm_user.forms import UserCreationForm, UserChangeForm
 from mm_user.models import MmUser, MmUserAlbum
 
 
+def make_user_album_list(album_score_list, user, authenticated_user):
+    """
+    Manipulate user's album list.
+    """
+    user_album_list = list()
+
+    for item in album_score_list:
+        album_dict = make_album_info(item.album, item.album.album_cover_file.url)
+        album_dict = make_link_enable(album_dict)
+        # For current authenticated user.
+        album_dict = make_user_add_delete_album(album_dict, item.album, authenticated_user)
+        if user == authenticated_user:
+            album_dict = make_user_rating_form(album_dict, item.score)
+
+        user_album_list.append(album_dict)
+
+    return user_album_list
+
+
 def make_user_rating_form(album_info, my_score):
     """
     Make rating form for an item from user's album list.
@@ -70,32 +89,13 @@ class UserDetailView(DetailView):
             original_list = album_list_paginator.page(album_list_paginator.num_pages)
 
         # Get only album and score field.
-        album_score_list = original_list.object_list
-
-        # Manipulate user's album list.
-        user_album_list = list()
-
-        for item in album_score_list:
-            album_dict = make_album_info(item.album, item.album.album_cover_file.url)
-            album_dict = make_link_enable(album_dict)
-            # For current authenticated user.
-            album_dict = make_user_add_delete_album(album_dict, item.album, self.request.user)
-            if self.object == self.request.user:
-                album_dict = make_user_rating_form(album_dict, item.score)
-
-            user_album_list.append(album_dict)
-
-        context['user_object_list'] = user_album_list
+        album_score_list = original_list.object_list.only("album", "score")
+        context['user_object_list'] = make_user_album_list(album_score_list, self.object, self.request.user)
         context['user_album_list'] = original_list
 
-        # Paginator range.
         context['pages'] = album_list_paginator.page_range
-
-        # Count all albums of the user.
         context['user_album_count'] = self.object.albums.count()
 
-        # Can't set another user's star rating.
-        context['own_page'] = False
         return context
 
 
@@ -105,17 +105,9 @@ class UserMainView(LoginRequiredMixin, UserDetailView):
     """
     template_name = 'users/user_main.html'
 
-    # Get current user.
+    # Get current user without primary key.
     def get_object(self, queryset=None):
         return self.request.user
-
-    def get_context_data(self, **kwargs):
-        context = super(UserMainView, self).get_context_data(**kwargs)
-
-        # Can set my star rating.
-        context['own_page'] = True
-        context['scores_list'] = range(1, 11)
-        return context
 
 
 class UserUpdateView(LoginRequiredMixin, UpdateView):
