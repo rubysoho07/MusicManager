@@ -1,7 +1,13 @@
 {% extends 'manager_core/page_base.html' %}
 
+{% load staticfiles %}
+
 {% block title %}
-MusicManager :: {{ album.album_artist }} - {{ album.album_title }}
+MusicManager :: {{ object.album_artist }} - {{ object.album_title }}
+{% endblock %}
+
+{% block additional_style %}
+<link rel="stylesheet" type="text/css" href="{% static 'mm_user/css/rating.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -9,7 +15,7 @@ MusicManager :: {{ album.album_artist }} - {{ album.album_title }}
 <h1>앨범 확인하기</h1>
 <div class="goni_padding"></div>
 <!-- Start of printing result -->
-{% include "manager_core/album_item.html" with link=False id=object.id cover_file=object.album_cover_file artist=object.album_artist title=object.album_title user_add=True %}
+{% include "manager_core/album_item.html" with item=album %}
 
 <!-- Track list. -->
 {% for disk in disks %}

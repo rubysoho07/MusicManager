@@ -1,11 +1,12 @@
 {% extends 'manager_core/page_base.html' %}
 
+{% load staticfiles %}
+
 {% block title %}
 MusicManager
 {% endblock %}
 
 {% block additional_style %}
-{% load staticfiles %}
 <link rel="stylesheet" type="text/css" href="{% static 'mm_user/css/rating.css' %}">
 {% endblock %}
 
@@ -18,7 +19,7 @@ MusicManager
     <p>현재 {{ albums_number }} 장의 앨범을 관리하고 있습니다.</p>
     <div class="goni_padding"></div>
     {% for album in object_list %}
-        {% include "manager_core/album_item.html" with show_average=True average=album.average_rating link=True id=album.id cover_file=album.album_cover_file artist=album.album_artist title=album.album_title user_add=True owner_count=True owners=album.owner_count %}
+        {% include "manager_core/album_item.html" with item=album %}
     {% endfor %}
 
     <!-- Page selector. -->

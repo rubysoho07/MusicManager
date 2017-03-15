@@ -2,6 +2,8 @@ import json
 
 from django.shortcuts import render, redirect, get_object_or_404
 
+from django.db.models import Q
+
 from django.views.generic.base import TemplateView, View
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
@@ -19,20 +21,111 @@ from io import BytesIO
 
 
 # Create your views here.
-# First page. (List of albums I've bought.)
+def make_base_album_info(album, cover_url):
+    """
+    Make single view for album information.
+    """
+    album_info = dict()
+
+    album_info['album'] = album
+    album_info['cover_url'] = cover_url
+
+    return album_info
+
+
+def make_album_info(album, cover_url):
+    """
+    If user want to get album information from database,
+    attach additional information for an album.
+    """
+    album_info = make_base_album_info(album, cover_url)
+
+    album_info['show_owner_count'] = True
+    album_info['show_average_rating'] = True
+
+    return album_info
+
+
+def make_link_enable(album_info):
+    """
+    If the link for an album needs to be enabled, make link enabled.
+    """
+    album_info['link'] = True
+    return album_info
+
+
+def make_user_add_album(album_info):
+    """
+    Make link of adding album to the list for an user.
+    """
+    album_info['add_user_list'] = True
+    return album_info
+
+
+def make_user_delete_album(album_info, user_album_id):
+    """
+    Make link of deleting album from the list for an user.
+    """
+    album_info['delete_user_list'] = True
+    album_info['user_album_id'] = user_album_id
+    return album_info
+
+
+def make_user_add_delete_album(album_info, album, user):
+    """
+    Check whether making add to list or delete from list button.
+    """
+    if user.is_authenticated():
+        my_album = album.mmuseralbum_set.filter(Q(user=user))
+        if len(my_album) == 0:
+            album_info = make_user_add_album(album_info)
+        else:
+            album_info = make_user_delete_album(album_info, my_album[0].id)
+
+    return album_info
+
+
+def make_album_list(object_list, user):
+    """
+    Make album list for album list views.
+    """
+    album_list = list()
+
+    for item in object_list:
+        # Make album information.
+        item_dict = make_album_info(item, item.album_cover_file.url)
+        item_dict = make_link_enable(item_dict)
+        item_dict = make_user_add_delete_album(item_dict, item, user)
+
+        album_list.append(item_dict)
+
+    return album_list
+
+
 class AlbumLV(ListView):
+    """
+    List of all albums.
+    """
     model = Album
     paginate_by = 10
     queryset = Album.objects.all().order_by('-id')
 
     def get_context_data(self, **kwargs):
         context = super(AlbumLV, self).get_context_data(**kwargs)
+
+        # Get count for all albums.
         context['albums_number'] = self.get_queryset().count()
+
+        # Manipulate object list.
+        context['object_list'] = make_album_list(self.object_list, self.request.user)
+
         return context
 
 
-# Search albums from database. (by Artist/Album title)
 class SearchFV(FormView):
+    """
+    Search albums from database. (by Artist/Album title)
+    """
     form_class = AlbumSearchForm
     template_name = "manager_core/album_search.html"
 
@@ -51,13 +144,15 @@ class SearchFV(FormView):
         context['form'] = form
         context['search_type'] = search_type
         context['keyword'] = keyword
-        context['object_list'] = result
+        context['object_list'] = make_album_list(result, self.request.user)
 
         return render(self.request, self.template_name, context)
 
 
-# Parse album information to add album.
 class AlbumParseView(FormView):
+    """
+    Parse album information to add album.
+    """
     form_class = AlbumParseRequestForm
     template_name = 'manager_core/album_parse.html'
 
@@ -84,9 +179,9 @@ class AlbumParseView(FormView):
         json_data = json.loads(parsed_data)
 
         # Album title, cover, artist: unicode data.
-        context['album_title'] = json_data['album_title']
-        context['album_cover'] = json_data['album_cover']
-        context['album_artist'] = json_data['artist']
+        context['parsed_album'] = make_base_album_info(Album(album_title=json_data['album_title'],
+                                                             album_artist=json_data['artist']),
+                                                       json_data['album_cover'])
 
         # Album track: a list.
         # (A track of track list is to an dict, because a track is JSON object.)
@@ -111,14 +206,16 @@ class AlbumParseView(FormView):
         return render(self.request, self.template_name, context=context)
 
 
-# Add album to database.
 class AlbumCreateView(View):
+    """
+    Add album to database.
+    """
 
     def post(self, request, *args, **kwargs):
         # Get JSON data
         parsed_data = request.POST['album_data']
 
-        # Get album number.
+        # Get album number to make file name of image file for an album cover.
         if Album.objects.count() == 0:
             album_num = 1
         else:
@@ -158,13 +255,20 @@ class AlbumCreateView(View):
             return redirect("index")
 
 
-# Detailed album information.
 class AlbumDV(DetailView):
+    """
+    Detailed album information.
+    """
     model = Album
 
     def get_context_data(self, **kwargs):
         context = super(AlbumDV, self).get_context_data(**kwargs)
 
+        # Get album information.
+        context_album = make_album_info(self.object, self.object.album_cover_file.url)
+        context_album = make_user_add_delete_album(context_album, self.object, self.request.user)
+
+        context['album'] = context_album
         # Get track list (per disk).
         disk_num = 1
         disks = []
@@ -188,8 +292,10 @@ class AlbumDV(DetailView):
         return context
 
 
-# Delete album information from database.
 class AlbumDeleteView(DeleteView):
+    """
+    Delete album information from database.
+    """
     model = Album
 
     # If delete completed, redirect to album list.
@@ -203,18 +309,24 @@ class AlbumDeleteView(DeleteView):
         return super(AlbumDeleteView, self).delete(request, *args, **kwargs)
 
 
-# View for 404 error
 class Error404View(TemplateView):
+    """
+    View for 404 error
+    """
     template_name = "manager_core/404.html"
 
 
-# View for 500 error
 class Error500View(TemplateView):
+    """
+    View for 500 error
+    """
     template_name = "manager_core/500.html"
 
 
-# Add comments
 class AlbumCommentAddView(View):
+    """
+    Add comments
+    """
     def post(self, request, *args, **kwargs):
         # Get user, album, comment
         user = request.user
@@ -229,8 +341,10 @@ class AlbumCommentAddView(View):
         return redirect('manager_core:album', pk=album.id)
 
 
-# Delete comments
 class AlbumCommentDeleteView(DeleteView):
+    """
+    Delete comments
+    """
     model = AlbumComment
 
     # Save success_url to redirect to album detail page.

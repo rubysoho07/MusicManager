@@ -11,25 +11,42 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q, Avg
 
 from manager_core.models import Album
+from manager_core.views import make_album_info, make_link_enable, make_user_add_delete_album
 
 from mm_user.forms import UserCreationForm, UserChangeForm
 from mm_user.models import MmUser, MmUserAlbum
 
 
-# User creation form.
+def make_user_rating_form(album_info, my_score):
+    """
+    Make rating form for an item from user's album list.
+    """
+    album_info['rating_form'] = True
+    album_info['my_score'] = my_score
+    album_info['score_iterator'] = range(1, 11)
+    return album_info
+
+
 class UserCreateView(CreateView):
+    """
+    User creation form.
+    """
     template_name = 'users/register.html'
     form_class = UserCreationForm
     success_url = reverse_lazy('user:create_done')
 
 
-# After creating a user, redirect to 'register done' page.
 class UserCreateDoneTV(TemplateView):
+    """
+    After creating a user, redirect to 'register done' page.
+    """
     template_name = 'users/register_done.html'
 
 
-# User's profile.
 class UserDetailView(DetailView):
+    """
+    User's profile.
+    """
     template_name = 'users/user_main.html'
     model = MmUser
 
@@ -44,13 +61,32 @@ class UserDetailView(DetailView):
         page = self.request.GET.get('page')
 
         try:
-            context['user_album_list'] = album_list_paginator.page(page)
+            original_list = album_list_paginator.page(page)
         except PageNotAnInteger:
             # If page is not an integer, deliver first page.
-            context['user_album_list'] = album_list_paginator.page(1)
+            original_list = album_list_paginator.page(1)
         except EmptyPage:
             # If page is out of range, deliver last page of results.
-            context['user_album_list'] = album_list_paginator.page(album_list_paginator.num_pages)
+            original_list = album_list_paginator.page(album_list_paginator.num_pages)
+
+        # Get only album and score field.
+        album_score_list = original_list.object_list
+
+        # Manipulate user's album list.
+        user_album_list = list()
+
+        for item in album_score_list:
+            album_dict = make_album_info(item.album, item.album.album_cover_file.url)
+            album_dict = make_link_enable(album_dict)
+            # For current authenticated user.
+            album_dict = make_user_add_delete_album(album_dict, item.album, self.request.user)
+            if self.object == self.request.user:
+                album_dict = make_user_rating_form(album_dict, item.score)
+
+            user_album_list.append(album_dict)
+
+        context['user_object_list'] = user_album_list
+        context['user_album_list'] = original_list
 
         # Paginator range.
         context['pages'] = album_list_paginator.page_range
@@ -63,8 +99,10 @@ class UserDetailView(DetailView):
         return context
 
 
-# View to see current user's profile
 class UserMainView(LoginRequiredMixin, UserDetailView):
+    """
+    View to see current user's profile
+    """
     template_name = 'users/user_main.html'
 
     # Get current user.
@@ -80,24 +118,28 @@ class UserMainView(LoginRequiredMixin, UserDetailView):
         return context
 
 
-# Modify user's profile.
 class UserUpdateView(LoginRequiredMixin, UpdateView):
+    """
+    Modify user's profile.
+    """
     form_class = UserChangeForm
     template_name = 'users/modify.html'
     success_url = reverse_lazy('user:main')
 
-    # Get current user.
+    # Get current user without primary key.
     def get_object(self, queryset=None):
         return self.request.user
 
 
-# Delete user.
 class UserDeleteView(LoginRequiredMixin, DeleteView):
+    """
+    Delete user.
+    """
     model = MmUser
     success_url = reverse_lazy('index')
     template_name = 'users/user_confirm_delete.html'
 
-    # Get current user.
+    # Get current user without primary key.
     def get_object(self, queryset=None):
         return self.request.user
 
@@ -115,14 +157,23 @@ class UserDeleteView(LoginRequiredMixin, DeleteView):
         return super(UserDeleteView, self).delete(request, *args, **kwargs)
 
 
-# Confirm before adding an album to user's album list.
 class UserAlbumAddConfirmView(LoginRequiredMixin, DetailView):
+    """
+    Confirm before adding an album to user's album list.
+    """
     model = Album
     template_name = 'users/user_add_album.html'
 
+    def get_context_data(self, **kwargs):
+        context = super(UserAlbumAddConfirmView, self).get_context_data(**kwargs)
+        context['object'] = make_album_info(self.object, self.object.album_cover_file.url)
+        return context
 
-# Add album to user's album list.
+
 class UserAlbumAddView(LoginRequiredMixin, View):
+    """
+    Add album to user's album list.
+    """
     def post(self, request, *args, **kwargs):
         # Get album data
         album_to_add = get_object_or_404(Album, pk=request.POST['album_id'])
@@ -143,13 +194,19 @@ class UserAlbumAddView(LoginRequiredMixin, View):
         return redirect('user:main')
 
 
-# Delete album from user's album list.
 class UserAlbumDeleteView(LoginRequiredMixin, DeleteView):
+    """
+    Delete album from user's album list.
+    """
     model = MmUserAlbum
     template_name = 'users/user_delete_album.html'
     success_url = reverse_lazy('user:main')
 
-    # Overriding delete method.
+    def get_context_data(self, **kwargs):
+        context = super(UserAlbumDeleteView, self).get_context_data(**kwargs)
+        context['album'] = make_album_info(self.object.album, self.object.album.album_cover_file.url)
+        return context
+
     def delete(self, request, *args, **kwargs):
         album_to_delete = self.get_object().album
 
@@ -169,8 +226,10 @@ class UserAlbumDeleteView(LoginRequiredMixin, DeleteView):
         return super(UserAlbumDeleteView, self).delete(request, *args, **kwargs)
 
 
-# Rating album from user's album list.
 class UserAlbumRatingView(LoginRequiredMixin, View):
+    """
+    Rating album from user's album list.
+    """
 
     def post(self, request, *args, **kwargs):
         # Get MmUserAlbum object.
@@ -191,6 +250,8 @@ class UserAlbumRatingView(LoginRequiredMixin, View):
         return redirect('user:main')
 
 
-# If the app get abnormal url, just redirect to user's main page.
 class UserAbnormalRequestRV(LoginRequiredMixin, RedirectView):
+    """
+    If the app get abnormal url, just redirect to user's main page.
+    """
     url = reverse_lazy('user:main')

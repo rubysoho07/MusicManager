@@ -1,15 +1,11 @@
 {% load staticfiles %}
 <div class="album_cover col-md-2 col-sm-2 col-xs-3">
     <!-- Show album cover -->
-    {% if link == True %}
-    <a href="{% url 'manager_core:album' id %}">
+    {% if item.link == True %}
+    <a href="{% url 'manager_core:album' item.album.id %}">
     {% endif %}
-        {% if cover_external == True %}
-        <img class="img-responsive" src="{{ cover_file }}" width="120px" height="120px">
-        {% else %}
-        <img class="img-responsive" src="{{ cover_file.url }}" width="120px" height="120px">
-        {% endif %}
-    {% if link == True %}
+        <img class="img-responsive" src="{{ item.cover_url }}" width="120px" height="120px">
+    {% if item.link == True %}
     </a>
     {% endif %}
 </div>
@@ -17,67 +13,63 @@
     <!-- Show artist and title-->
     <div class="row">
         <div class="col-md-2 col-sm-2 col-xs-3"><b>Artist</b></div>
-        <div class="col-md-10 col-sm-10 col-xs-9">{{ artist }}</div>
+        <div class="col-md-10 col-sm-10 col-xs-9">{{ item.album.album_artist }}</div>
     </div>
     <div class="row">
         <div class="col-md-2 col-sm-2 col-xs-3"><b>Title</b></div>
-        {% if link == True %}
-        <div class="col-md-10 col-sm-10 col-xs-9"><a href="{% url 'manager_core:album' id %}">{{ title }}</a></div>
-        {% else %}
-        <div class="col-md-10 col-sm-10 col-xs-9">{{ title }}</div>
+        <div class="col-md-10 col-sm-10 col-xs-9">
+        {% if item.link == True %}
+        <a href="{% url 'manager_core:album' item.album.id %}">
         {% endif %}
+        {{ item.album.album_title }}
+        {% if item.link == True %}
+        </a>
+        {% endif %}
+        </div>
     </div>
+    <!-- Show additional information -->
     <div class="row">
-    {% if owner_count == True %}
-        <!-- Owners count -->
-        <div title="이 앨범을 갖고 있는 사람 수" class="col-md-1 col-sm-1 col-xs-1">
-            <span class="glyphicon glyphicon-user"></span>
-            &nbsp;{{ owners }}
-        </div>
-    {% endif %}
-    {% if delete == True %}
-        <div class="col-md-2 col-sm-2 col-xs-3">
-            <a class="btn btn-danger btn-sm" href="{% url 'manager_core:delete' id %}">Delete!</a>
-        </div>
-        <div class="col-md-10 col-sm-10 col-xs-9"></div>
-    {% endif %}
-    {% if user_add == True %}
-        {% if user.is_active %}
-        <!-- Add album button -->
-        <div class="col-md-1 col-sm-1 col-xs-1">
-            <a title="앨범 추가" href="{% url 'user:user_album_add_confirm' id %}">
-                <span class="glyphicon glyphicon-plus"></span>
-            </a>
-        </div>
-        {% endif %}
-    {% endif %}
-    {% if user_delete == True %}
-        {% if user.is_active %}
-        <!-- Delete album button -->
-        <div class="col-md-1 col-sm-1 col-xs-1">
-            <a title="앨범 삭제" href="{% url 'user:user_album_delete' user_album_id %}" style="color: red;">
-                <span class="glyphicon glyphicon-remove"></span>
-            </a>
-        </div>
-        {% endif %}
-    {% endif %}
-    {% if rating_form == True %}
-        {% if user.is_active %}
-        <!-- Rating -->
-        <div class="col-md-2 col-sm-2 col-xs-2">
-            <a class="open-form" id="{{ user_album_id }}">
-            {% include "users/star_score.html" with my_score=my_score scores_list=scores_list %}
-            </a>
-        </div>
-        {% endif %}
-    {% endif %}
-    {% if show_average == True %}
+    {% if item.show_average_rating == True %}
         <!-- Score -->
         <div class="col-md-2 col-sm-2 col-xs-2">
             <div class="stars" style="cursor:auto; color:black;">
-                <span class="full_star">&#xf005;</span> {{ average }}
+                <span class="full_star">&#xf005;</span> {{ item.album.average_rating }}
             </div>
         </div>
+    {% endif %}
+    {% if item.show_owner_count == True %}
+        <!-- Owners count -->
+        <div title="이 앨범을 갖고 있는 사람 수" class="col-md-1 col-sm-1 col-xs-1">
+            <span class="glyphicon glyphicon-user"></span>
+            &nbsp;{{ item.album.owner_count }}
+        </div>
+    {% endif %}
+    <!-- User related additional information. -->
+    {% if user.is_authenticated %}
+        {% if item.add_user_list == True %}
+            <!-- Add album button -->
+            <div class="col-md-1 col-sm-1 col-xs-1">
+                <a title="내 앨범 리스트에 추가" href="{% url 'user:user_album_add_confirm' item.album.id %}">
+                    <span class="glyphicon glyphicon-plus"></span>
+                </a>
+            </div>
+        {% endif %}
+        {% if item.delete_user_list == True %}
+            <!-- Delete album button -->
+            <div class="col-md-1 col-sm-1 col-xs-1">
+                <a title="내 앨범 리스트에서 삭제" href="{% url 'user:user_album_delete' item.user_album_id %}" style="color: red;">
+                    <span class="glyphicon glyphicon-remove"></span>
+                </a>
+            </div>
+        {% endif %}
+        {% if item.rating_form == True %}
+            <!-- Rating -->
+            <div class="col-md-2 col-sm-2 col-xs-2">
+                <a class="open-form" id="{{ item.user_album_id }}">
+                {% include "users/star_score.html" with my_score=item.my_score scores_list=item.score_iterator %}
+                </a>
+            </div>
+        {% endif %}
     {% endif %}
         <div class="col-md-8 col-sm-8 col-xs-8"></div>
     </div>
