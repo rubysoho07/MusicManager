@@ -1,4 +1,4 @@
-#MusicManager
+# MusicManager
 
 MusicManager와 함께 자신의 음반을 관리하고 취향을 공유해 보세요!
 
