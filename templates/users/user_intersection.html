@@ -1,0 +1,57 @@
+{% extends "manager_core/page_base.html" %}
+
+{% load staticfiles %}
+
+{% block title %}
+MusicManager :: Intersection
+{% endblock title %}
+
+{% block additional_style %}
+<link rel="stylesheet" type="text/css" href="{% static 'mm_user/css/rating.css' %}">
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+{% endblock %}
+
+{% block content %}
+<!-- Body start -->
+<h1>Main</h1>
+
+<p>{% firstof object.get_short_name object.get_username %}님과 {% firstof user.get_short_name user.get_username %}님이 
+    공통적으로 갖고 있는 앨범 목록입니다. 
+    <span style="font-weight:bold;">(총 {{ intersection_count }}장)</span></p>
+{% if intersection_count is not 0 and user != object %}
+
+{% endif %}
+<div class="goni_padding"></div>
+<!-- User's album list -->
+{% for album in intersection_list %}
+    {% include "manager_core/album_item.html" with item=album %}
+{% endfor %}
+
+<!-- End of user's album list -->
+<!-- Page selector. -->
+{% if pages|length > 1 %}
+    <ul class="pagination">
+        {% if intersection_list_page.has_previous %}
+            <li><a href="?page={{ intersection_list_page.previous_page_number }}">&laquo;</a></li>
+        {% else %}
+            <li class="disabled"><span>&laquo;</span></li>
+        {% endif %}
+        {% for i in pages %}
+            {% if intersection_list_page.number == i %}
+                <li class="active"><span>{{ i }}</span></li>
+            {% else %}
+                <li><a href="?page={{ i }}">{{ i }}</a></li>
+            {% endif %}
+        {% endfor %}
+        {% if intersection_list_page.has_next %}
+            <li><a href="?page={{ intersection_list_page.next_page_number }}">&raquo;</a></li>
+        {% else %}
+            <li class="disabled"><span>&raquo;</span></li>
+        {% endif %}
+    </ul>
+{% endif %}
+<!-- End of page selector. -->
+
+<div class="goni_padding"></div>
+<!-- Body end -->
+{% endblock content %}

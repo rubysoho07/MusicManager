@@ -11,7 +11,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q, Avg
 
 from manager_core.models import Album
-from manager_core.views import make_album_info, make_link_enable, make_user_add_delete_album
+from manager_core.views import make_album_info, make_link_enable, make_user_add_delete_album, make_album_list
 
 from mm_user.forms import UserCreationForm, UserChangeForm
 from mm_user.models import MmUser, MmUserAlbum
@@ -44,6 +44,52 @@ def make_user_rating_form(album_info, my_score):
     album_info['my_score'] = my_score
     album_info['score_iterator'] = range(1, 11)
     return album_info
+
+
+def get_album_intersection_two_users(user1, user2):
+    """
+    Get album intersection between 2 users.
+    """
+    user1_album = user1.albums.all()
+    user2_album = user2.albums.all()
+    return user1_album.filter(id__in=user2_album)
+
+
+class UserIntersectionView(LoginRequiredMixin, DetailView):
+    """
+    Get intersection of albums between two users.
+    """
+    template_name = 'users/user_intersection.html'
+    model = MmUser
+
+    def get_context_data(self, **kwargs):
+        context = super(UserIntersectionView, self).get_context_data(**kwargs)
+
+        # Get intersection.
+        user_album_list = get_album_intersection_two_users(self.object, self.request.user)
+
+        # Pagination for user_album_list (for 10 albums)
+        album_list_paginator = Paginator(user_album_list, 10)
+        page = self.request.GET.get('page')
+
+        try:
+            original_list = album_list_paginator.page(page)
+        except PageNotAnInteger:
+            # If page is not an integer, deliver first page.
+            original_list = album_list_paginator.page(1)
+        except EmptyPage:
+            # If page is out of range, deliver last page of results.
+            original_list = album_list_paginator.page(album_list_paginator.num_pages)
+
+        # Manipulate user's album list after getting only album and score field.
+        context['intersection_list'] = make_album_list(original_list, self.request.user)
+        context['intersection_list_page'] = original_list
+
+        context['intersection_count'] = len(user_album_list)
+
+        context['pages'] = album_list_paginator.page_range
+
+        return context
 
 
 class UserCreateView(CreateView):
@@ -88,10 +134,14 @@ class UserDetailView(DetailView):
             # If page is out of range, deliver last page of results.
             original_list = album_list_paginator.page(album_list_paginator.num_pages)
 
-        # Get only album and score field.
+        # Manipulate user's album list after getting only album and score field.
         album_score_list = original_list.object_list.only("album", "score")
         context['user_object_list'] = make_user_album_list(album_score_list, self.object, self.request.user)
         context['user_album_list'] = original_list
+
+        # Get count of intersection for user's albums between certain user and user logged in.
+        if self.object != self.request.user:
+            context['intersection_count'] = len(get_album_intersection_two_users(self.object, self.request.user))
 
         context['pages'] = album_list_paginator.page_range
         context['user_album_count'] = self.object.albums.count()
@@ -103,7 +153,6 @@ class UserMainView(LoginRequiredMixin, UserDetailView):
     """
     View to see current user's profile
     """
-    template_name = 'users/user_main.html'
 
     # Get current user without primary key.
     def get_object(self, queryset=None):

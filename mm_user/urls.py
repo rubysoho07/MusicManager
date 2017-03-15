@@ -25,4 +25,6 @@ urlpatterns = [
     url(r'^user_album_delete/(?P<pk>\d+)$', UserAlbumDeleteView.as_view(), name='user_album_delete'),
     url(r'^rating/(?P<pk>\d+)$', UserAlbumRatingView.as_view(), name='user_album_rating'),
     url(r'^rating/$', UserAbnormalRequestRV.as_view(), name='user_album_rating_no_argument'),
+
+    url(r'^intersection/(?P<pk>\d+)$', UserIntersectionView.as_view(), name='intersection'),
 ]

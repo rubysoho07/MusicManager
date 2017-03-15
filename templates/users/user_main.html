@@ -14,12 +14,20 @@ MusicManager :: {% firstof user.get_short_name user.get_username %}'s album
 {% block content %}
 {% load crispy_forms_tags %}
 <!-- Rating form -->
+{% if user == object %}
 {% include "users/rating_form.html" %}
+{% endif %}
 
 <!-- Body start -->
 <h1>Main</h1>
 
 <p>{% firstof object.get_short_name object.get_username %}님의 앨범 목록입니다. ({{ user_album_count }}장 관리 중)</p>
+{% if intersection_count is not 0 and user != object %}
+<p>
+    {% firstof object.get_short_name object.get_username %}님과 {% firstof user.get_short_name user.get_username %}님은
+    <a href="{% url 'user:intersection' object.id %}">{{ intersection_count }}장의 동일한 앨범</a>을 갖고 있습니다.
+</p>
+{% endif %}
 <div class="goni_padding"></div>
 <!-- User's album list -->
 {% for album in user_object_list %}
