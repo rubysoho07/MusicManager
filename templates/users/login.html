@@ -25,7 +25,9 @@ MusicManager :: Login
     {% endif %}
     {{ form|crispy }}
     <div>
-        <input class="btn btn-default" type="submit" value="등록" />
+        <input class="btn btn-primary" type="submit" value="로그인" />
+        &nbsp;
+        <a class="btn btn-default" href="{% url 'user:password_reset' %}">비밀번호 초기화</a>
     </div>
 
 </form>

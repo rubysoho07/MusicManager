@@ -125,3 +125,12 @@ LOGOUT_URL = '/user/logout/'
 
 LOGIN_REDIRECT_URL = '/user/main/'
 LOGOUT_REDIRECT_URL = LOGIN_URL
+
+# Settings related with resetting password.
+
+EMAIL_HOST = str(get_secret("EMAIL_HOST"))
+EMAIL_PORT = 587
+EMAIL_HOST_USER = str(get_secret("EMAIL_HOST_USER"))
+EMAIL_HOST_PASSWORD = str(get_secret("EMAIL_HOST_PASSWORD"))
+DEFAULT_FROM_EMAIL = get_secret("DEFAULT_FROM_EMAIL")
+EMAIL_USE_TLS = True
