@@ -117,7 +117,8 @@ class AlbumLV(ListView):
         context['albums_number'] = self.get_queryset().count()
 
         # Manipulate object list.
-        context['object_list'] = make_album_list(self.object_list, self.request.user)
+        _, _, page_object_list, _ = self.paginate_queryset(self.get_queryset(), self.paginate_by)
+        context['object_list'] = make_album_list(page_object_list, self.request.user)
 
         return context
 
