@@ -1,14 +1,9 @@
 # Music Parser (by Yungon Park)
-# 2016.07.09
-# 2016.10.05 Add Melon parser.
-
 import re
 import json
 
 import requests
 from bs4 import BeautifulSoup
-
-from django.conf import settings
 
 
 class MusicParser(object):
@@ -17,14 +12,9 @@ class MusicParser(object):
     def __init__(self):
         pass
 
-    # Get path prefix
-    @classmethod
-    def get_path_prefix(cls):
-        return settings.MEDIA_ROOT
-
     # Check album cover file pattern.
-    @classmethod
-    def check_album_cover_pattern(cls, original_url):
+    @staticmethod
+    def check_album_cover_pattern(original_url):
         # find pattern from these patterns.
         # Naver: http://musicmeta.phinf.naver.net/album/000/645/645112.jpg?type=r204Fll&v=20160623150347
         # Melon: http://cdnimg.melon.co.kr/cm/album/images/006/23/653/623653.jpg
@@ -37,33 +27,29 @@ class MusicParser(object):
 
         # Check Naver pattern.
         result = naver_pattern.search(original_url)
-
         if result:
             return True
 
         # Check Melon pattern.
         result = melon_pattern.search(original_url)
-
         if result:
             return True
 
         # Check Bugs pattern.
         result = bugs_pattern.search(original_url)
-
         if result:
             return True
 
         # Check AllMusic pattern.
         result = allmusic_pattern.search(original_url)
-
         if result:
             return True
 
         return False
 
     # Get original data from web.
-    @classmethod
-    def get_original_data(cls, album_url):
+    @staticmethod
+    def get_original_data(album_url):
         headers = {
             'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:49.0) Gecko/20100101 Firefox/49.0'
         }
@@ -72,13 +58,45 @@ class MusicParser(object):
         # Need to encoding UTF-8. (For unicode text)
         return BeautifulSoup(data.text, "html.parser", from_encoding="utf-8")
 
-    # Get album data from Naver Music (JSON data)
-    @classmethod
-    def get_naver_music_data(cls, album_url):
-        # Get original data
-        soup = cls.get_original_data(album_url)
+    # Check if input URL is valid and return normalized URL.
+    @staticmethod
+    def check_input(url_input):
+        bugs_pattern = re.compile("bugs[.]co[.]kr/album/[0-9]{1,8}")
+        naver_music_pattern = re.compile("music[.]naver[.]com/album/index.nhn[?]albumId=[0-9]{1,8}")
+        melon_pattern = re.compile("melon[.]com/album/detail[.]htm[?]albumId=[0-9]{1,8}")
+        allmusic_pattern = re.compile("allmusic[.]com/album/.*mw[0-9]{10}")
 
-        # Get and print artist information.
+        # Check bugs pattern
+        match = bugs_pattern.search(url_input)
+
+        if match:
+            return "http://music." + match.group()
+
+        # Check naver_music_pattern
+        match = naver_music_pattern.search(url_input)
+
+        if match:
+            return "http://" + match.group()
+
+        # Check melon pattern.
+        match = melon_pattern.search(url_input)
+
+        if match:
+            return "http://www." + match.group()
+
+        # Check AllMusic pattern.
+        match = allmusic_pattern.search(url_input)
+
+        if match:
+            return "http://www." + match.group()
+
+        return None
+
+    # Get album data from Naver Music (JSON data)
+    def get_naver_music_data(self, album_url):
+        soup = self.get_original_data(album_url)
+
+        # Get artist information.
         artist_data = soup.find('dd', class_='artist')
         if artist_data.find('a'):
             artist_list = artist_data.find_all('a')
@@ -89,10 +107,9 @@ class MusicParser(object):
         else:
             artist = artist_data.find('span').text
 
-        # Get and print album title.
+        # Get album title.
         album_title = soup.find('div', class_='info_txt').h2.text
-
-        # Get and print album cover image.
+        # Get URL of album cover image.
         album_cover = soup.find('div', class_='thumb').img['src']
 
         # Default number of disk = 1
@@ -102,7 +119,6 @@ class MusicParser(object):
         tracks = []
 
         # Get track list
-        # For supporting multiple disks
         track_list_body = soup.find('tbody')
 
         table_row_list = track_list_body.find_all('tr')
@@ -111,7 +127,6 @@ class MusicParser(object):
             if row.find('td', class_='cd_divide'):
                 # Disk number
                 disk = row.find('td', class_='cd_divide')
-                # print disk.text
                 disk_num = int(disk.text.split(' ')[1])
             else:
                 if row.find('td', class_='order').text == "{TRACK_NUM}":
@@ -141,12 +156,11 @@ class MusicParser(object):
                           ensure_ascii=False)
 
     # Get album data from Bugs. (JSON data)
-    @classmethod
-    def get_bugs_data(cls, album_url):
+    def get_bugs_data(self, album_url):
         # Get original data
-        soup = cls.get_original_data(album_url)
+        soup = self.get_original_data(album_url)
 
-        # Get and print artist information.
+        # Get artist information.
         basic_info = soup.find('table', class_='info').tr
 
         if basic_info.find('a'):
@@ -158,17 +172,15 @@ class MusicParser(object):
         else:
             artist = basic_info.find('td').text.strip()
 
-        # Get and print album title.
+        # Get album title.
         album_title = soup.find('header', class_='pgTitle').h1.text
-
-        # Get and print album cover image.
+        # Get album cover image.
         album_cover = soup.find('div', class_='photos').img['src']
 
         # Default number of disk = 1
         disk_num = 1
 
         # Get track list
-        # Initialize track lists
         tracks = []
 
         # For supporting multiple disks
@@ -226,12 +238,11 @@ class MusicParser(object):
                           ensure_ascii=False)
 
     # Get album data from Melon. (JSON data)
-    @classmethod
-    def get_melon_data(cls, album_url):
+    def get_melon_data(self, album_url):
         # Get original data
-        soup = cls.get_original_data(album_url)
+        soup = self.get_original_data(album_url)
 
-        # Get and print artist information. (Finished)
+        # Get artist information.
         basic_info = soup.find('dl', class_='song_info clfix')
 
         if basic_info.find('span'):
@@ -243,14 +254,16 @@ class MusicParser(object):
         else:
             artist = basic_info.find('dd').text.strip()
 
-        # Get and print album title. (Finished)
-        # About using find_all() method, see BeautifulSoup documentation.
-        # When you use text=True on find_all(), find_all() finds all texts from tags,
-        # and it return them as a list.
-        # I just wanted to exclude text from "span" and "strong" tags.
+        # Get album title.
+        """
+        About using find_all() method, see BeautifulSoup documentation.
+        When you use text=True on find_all(), find_all() finds all texts from tags,
+        and it return them as a list.
+        I just wanted to exclude text from "span" and "strong" tags.
+        """
         album_title = soup.find('p', class_='albumname').find_all(text=True)[-1].strip()
 
-        # Get and print album cover image. (Finished)
+        # Get URL of album cover image.
         album_cover_thumb = soup.find('div', class_='wrap_thumb')
         album_cover = album_cover_thumb.find('img')['src']
 
@@ -307,10 +320,9 @@ class MusicParser(object):
                           ensure_ascii=False)
 
     # Get album data from AllMusic. (JSON data)
-    @classmethod
-    def get_allmusic_data(cls, album_url):
+    def get_allmusic_data(self, album_url):
         # Get original data
-        soup = cls.get_original_data(album_url)
+        soup = self.get_original_data(album_url)
 
         # Get sidebar. (To get album cover)
         sidebar = soup.find('div', class_='sidebar')
@@ -333,7 +345,7 @@ class MusicParser(object):
         # get album title from content.
         album_title = content.find('h1', class_='album-title').text
 
-        # Get and print album cover image.
+        # Get URL of album cover image.
         album_cover_thumb = sidebar.find('div', class_='album-contain')
         album_cover = album_cover_thumb.find('img', class_='media-gallery-image')['src']
 
@@ -382,43 +394,8 @@ class MusicParser(object):
                            "tracks": tracks},
                           ensure_ascii=False)
 
-    # Check if input URL is valid.
-    @classmethod
-    def check_input(cls, url_input):
-        bugs_pattern = re.compile("bugs[.]co[.]kr/album/[0-9]{1,8}")
-        naver_music_pattern = re.compile("music[.]naver[.]com/album/index.nhn[?]albumId=[0-9]{1,8}")
-        melon_pattern = re.compile("melon[.]com/album/detail[.]htm[?]albumId=[0-9]{1,8}")
-        allmusic_pattern = re.compile("allmusic[.]com/album/.*mw[0-9]{10}")
-
-        # Check bugs pattern
-        match = bugs_pattern.search(url_input)
-
-        if match:
-            return "http://music." + match.group()
-
-        # Check naver_music_pattern
-        match = naver_music_pattern.search(url_input)
-
-        if match:
-            return "http://" + match.group()
-
-        # Check melon pattern.
-        match = melon_pattern.search(url_input)
-
-        if match:
-            return "http://www." + match.group()
-
-        # Check AllMusic pattern.
-        match = allmusic_pattern.search(url_input)
-
-        if match:
-            return "http://www." + match.group()
-
-        return None
-
     # Get JSON data from music sites.
-    @classmethod
-    def get_parsed_data(cls, input_url):
+    def get_parsed_data(self, input_url):
         bugs_pattern = re.compile("bugs[.]co[.]kr")
         naver_music_pattern = re.compile("music[.]naver[.]com")
         melon_pattern = re.compile("melon[.]com")
@@ -427,21 +404,21 @@ class MusicParser(object):
         # if Bugs URL, run get_bugs_data()
         match = bugs_pattern.search(input_url)
         if match:
-            return cls.get_bugs_data(input_url)
+            return self.get_bugs_data(input_url)
 
         # if Naver Music URL, run get_naver_music_data()
         match = naver_music_pattern.search(input_url)
         if match:
-            return cls.get_naver_music_data(input_url)
+            return self.get_naver_music_data(input_url)
 
         # if Melon URL, run get_melon_url()
         match = melon_pattern.search(input_url)
         if match:
-            return cls.get_melon_data(input_url)
+            return self.get_melon_data(input_url)
 
         # if AllMusic URL, run get_allmusic_data()
         match = allmusic_pattern.search(input_url)
         if match:
-            return cls.get_allmusic_data(input_url)
+            return self.get_allmusic_data(input_url)
 
         return None
