@@ -291,23 +291,6 @@ class AlbumDV(DetailView):
         return context
 
 
-class AlbumDeleteView(DeleteView):
-    """
-    Delete album information from database.
-    """
-    model = Album
-
-    # If delete completed, redirect to album list.
-    success_url = reverse_lazy('index')
-
-    def delete(self, request, *args, **kwargs):
-        # remove cover file from media directory.
-        self.get_object().album_cover_file.delete()
-
-        # remove instance of Album.
-        return super(AlbumDeleteView, self).delete(request, *args, **kwargs)
-
-
 class Error404View(TemplateView):
     """
     View for 404 error
