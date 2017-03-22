@@ -108,7 +108,7 @@ class UserCreateDoneTV(TemplateView):
     template_name = 'users/register_done.html'
 
 
-class UserDetailView(DetailView):
+class UserDetailView(LoginRequiredMixin, DetailView):
     """
     User's profile.
     """
@@ -149,7 +149,7 @@ class UserDetailView(DetailView):
         return context
 
 
-class UserMainView(LoginRequiredMixin, UserDetailView):
+class UserMainView(UserDetailView):
     """
     View to see current user's profile
     """
