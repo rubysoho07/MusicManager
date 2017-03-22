@@ -1,7 +1,7 @@
-from django.shortcuts import redirect, get_object_or_404
+from django.shortcuts import redirect, get_object_or_404, render
 from django.views.generic.base import TemplateView, View, RedirectView
 from django.views.generic.detail import DetailView
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 
@@ -12,6 +12,7 @@ from django.db.models import Q, Avg
 
 from manager_core.models import Album
 from manager_core.views import make_album_info, make_link_enable, make_user_add_delete_album, make_album_list
+from manager_core.forms import AlbumSearchForm
 
 from mm_user.forms import UserCreationForm, UserChangeForm
 from mm_user.models import MmUser, MmUserAlbum
@@ -296,3 +297,30 @@ class UserAbnormalRequestRV(LoginRequiredMixin, RedirectView):
     If the app get abnormal url, just redirect to user's main page.
     """
     url = reverse_lazy('user:main')
+
+
+class UserAlbumSearchFV(LoginRequiredMixin, FormView):
+    """
+    Search albums from user's album list. (by Artist/Album title)
+    """
+    form_class = AlbumSearchForm
+    template_name = "users/user_album_search.html"
+
+    def form_valid(self, form):
+        search_type = self.request.POST["search_type"]
+        keyword = self.request.POST["keyword"]
+        # Search album from database.
+        if search_type == "artist":
+            result = self.request.user.albums.filter(album_artist__icontains=keyword)
+        elif search_type == "album":
+            result = self.request.user.albums.filter(album_title__icontains=keyword)
+        else:
+            result = []
+
+        context = dict()
+        context['form'] = form
+        context['search_type'] = search_type
+        context['keyword'] = keyword
+        context['object_list'] = make_album_list(result, self.request.user)
+
+        return render(self.request, self.template_name, context)

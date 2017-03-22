@@ -1,0 +1,41 @@
+{% extends 'manager_core/page_base.html' %}
+
+{% load staticfiles %}
+
+{% block title %}
+MusicManager :: User's album Search
+{% endblock %}
+
+{% block additional_style %}
+<link rel="stylesheet" type="text/css" href="{% static 'mm_user/css/rating.css' %}">
+{% endblock %}
+
+{% block content %}
+{% load crispy_forms_tags %}
+<!-- Body start -->
+<h1>Search {% firstof user.get_short_name user.get_username %}'s Album</h1>
+
+<p>{% firstof user.get_short_name user.get_username %}님의 앨범 리스트에서 Artist/Album title 기준으로 검색 가능합니다.</p>
+
+<form class="form-inline" role="form" action="." method="POST">
+{% csrf_token %}
+    {{ form|crispy }}
+    <input class="btn btn-default" type="submit" value="검색" />
+</form>
+<div class="goni_padding"></div>
+
+<!-- Start of printing result -->
+{% if object_list %}
+    <h4>앨범 목록 ({{ object_list|length }} albums found) </h4>
+    <div class="goni_padding"></div>
+    {% for album in object_list %}
+        {% include "manager_core/album_item.html" with item=album %}
+    {% endfor %}
+{% elif keyword %}
+    <h4>Can't find album. </h4>
+{% endif %}
+<!-- End of printing result -->
+
+<div class="goni_padding"></div>
+<!-- Body end -->
+{% endblock content %}
