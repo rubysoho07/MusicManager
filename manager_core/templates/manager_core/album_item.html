@@ -31,7 +31,7 @@
     <div class="row">
     {% if item.show_average_rating == True %}
         <!-- Score -->
-        <div class="col-md-2 col-sm-2 col-xs-2">
+        <div title="이 앨범의 평균 평점(10점 만점)" class="col-md-2 col-sm-2 col-xs-2">
             <div class="stars" style="cursor:auto; color:black;">
                 <span class="full_star">&#xf005;</span> {{ item.album.average_rating }}
             </div>
@@ -48,8 +48,8 @@
     {% if user.is_authenticated %}
         {% if item.add_user_list == True %}
             <!-- Add album button -->
-            <div class="col-md-1 col-sm-1 col-xs-1">
-                <a title="내 앨범 리스트에 추가" href="{% url 'user:user_album_add_confirm' item.album.id %}">
+            <div title="내 앨범 리스트에 추가" class="col-md-1 col-sm-1 col-xs-1">
+                <a href="{% url 'user:user_album_add_confirm' item.album.id %}">
                     <span class="glyphicon glyphicon-plus"></span>
                 </a>
             </div>
