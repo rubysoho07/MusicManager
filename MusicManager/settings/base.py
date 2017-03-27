@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'manager_core.apps.ManagerCoreConfig',
     'mm_user.apps.MmUserConfig',
     'crispy_forms',
+    'django_cleanup',
 ]
 
 MIDDLEWARE_CLASSES = [
