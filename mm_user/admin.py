@@ -8,6 +8,7 @@ from mm_user.models import MmUser, MmUserAlbum
 # Register your models here.
 class MmUserAdmin(UserAdmin):
     """Forms to add and change user instance"""
+
     form = UserChangeForm
     add_form = UserCreationForm
 
@@ -36,6 +37,7 @@ class MmUserAdmin(UserAdmin):
 
 class MmUserAlbumAdmin(admin.ModelAdmin):
     """Admin for User Album"""
+
     list_display = ("user", "album", "add_time", "score")
 
 # Now register admin page for user-related models.

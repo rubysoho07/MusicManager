@@ -10,6 +10,7 @@ class UserCreationForm(forms.ModelForm):
     Form for creating new users. Includes all the required fields,
     plus a repeated password.
     """
+
     password1 = forms.CharField(label='Password', widget=forms.PasswordInput)
     password2 = forms.CharField(label='Password Confirmation', widget=forms.PasswordInput)
 
@@ -19,6 +20,7 @@ class UserCreationForm(forms.ModelForm):
 
     def clean_password2(self):
         """Check that the two password entries match"""
+
         password1 = self.cleaned_data.get("password1")
         password2 = self.cleaned_data.get("password2")
         if password1 and password2 and password1 != password2:
@@ -27,6 +29,7 @@ class UserCreationForm(forms.ModelForm):
 
     def save(self, commit=True):
         """Save the provided password in hashed format"""
+
         user = super(UserCreationForm, self).save(commit=False)
         user.set_password(self.cleaned_data["password1"])
 
@@ -40,6 +43,7 @@ class UserChangeForm(forms.ModelForm):
     A form for updating users. Includes all the fields on the user,
     but replaces the password field with admin's password hash display field.
     """
+
     email = forms.CharField()
     password = ReadOnlyPasswordHashField()
 
@@ -56,4 +60,5 @@ class UserChangeForm(forms.ModelForm):
         This is done here, rather than on the field,
         Because the field does not have access to the initial value.
         """
+
         return self.initial["password"]

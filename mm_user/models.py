@@ -22,6 +22,7 @@ class MmUserManager(BaseUserManager):
         :param password: Password of a user
         :return: user
         """
+
         if not email:
             raise ValueError('User must have an email address')
 
@@ -50,6 +51,7 @@ class MmUserManager(BaseUserManager):
 @python_2_unicode_compatible
 class MmUser(AbstractBaseUser, PermissionsMixin):
     """Model for a MusicManager user."""
+
     email = models.EmailField(max_length=255, verbose_name='E-mail address', unique=True)
     name = models.CharField(max_length=255, null=False)
     nickname = models.CharField(max_length=255, null=False, unique=True)
@@ -64,10 +66,12 @@ class MmUser(AbstractBaseUser, PermissionsMixin):
 
     def get_full_name(self):
         """Return the user's nickname."""
+
         return self.nickname
 
     def get_short_name(self):
         """Return the user's nickname."""
+
         return self.nickname
 
     def __str__(self):
@@ -78,6 +82,7 @@ class MmUser(AbstractBaseUser, PermissionsMixin):
         Does the user have a specific permission?
         :return: True
         """
+
         return True
 
     def has_module_perms(self, app_label):
@@ -86,22 +91,24 @@ class MmUser(AbstractBaseUser, PermissionsMixin):
         :param app_label:
         :return: True
         """
+
         return True
 
     @property
     def is_staff(self):
         """ Is the user a member or staff? """
+
         return self.is_admin
 
 
 class MmUserAlbum(models.Model):
     """Album of an MusicManager user."""
+
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     album = models.ForeignKey(Album, on_delete=models.CASCADE)
     add_time = models.DateTimeField(auto_now_add=True)
     score = models.PositiveSmallIntegerField(null=True, default=None)
 
-    # Order by add_time in reverse.
     class Meta:
         ordering = ['-add_time']
 

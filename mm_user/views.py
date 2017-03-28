@@ -20,6 +20,7 @@ from mm_user.models import MmUser, MmUserAlbum
 
 def make_user_album_list(album_score_list, user, authenticated_user):
     """Manipulate user's album list."""
+
     user_album_list = list()
 
     for item in album_score_list:
@@ -37,6 +38,7 @@ def make_user_album_list(album_score_list, user, authenticated_user):
 
 def make_user_rating_form(album_info, my_score):
     """Make rating form for an item from user's album list."""
+
     album_info['rating_form'] = True
     album_info['my_score'] = my_score
     album_info['score_iterator'] = range(1, 11)
@@ -45,6 +47,7 @@ def make_user_rating_form(album_info, my_score):
 
 def get_album_intersection_two_users(user1, user2):
     """Get album intersection between 2 users."""
+
     user1_album = user1.albums.all()
     user2_album = user2.albums.all()
     return user1_album.filter(id__in=user2_album)
@@ -52,6 +55,7 @@ def get_album_intersection_two_users(user1, user2):
 
 class UserIntersectionView(LoginRequiredMixin, DetailView):
     """Get intersection of albums between two users."""
+
     template_name = 'users/user_intersection.html'
     model = MmUser
 
@@ -87,6 +91,7 @@ class UserIntersectionView(LoginRequiredMixin, DetailView):
 
 class UserCreateView(CreateView):
     """View to create an user."""
+
     template_name = 'users/register.html'
     form_class = UserCreationForm
     success_url = reverse_lazy('user:create_done')
@@ -94,6 +99,7 @@ class UserCreateView(CreateView):
 
 class UserCreateDoneTV(TemplateView):
     """Redirect to 'register done' page after succeeding to adding an user."""
+
     template_name = 'users/register_done.html'
 
 
@@ -142,6 +148,7 @@ class UserMainView(UserDetailView):
 
     def get_object(self, queryset=None):
         """Get current user without primary key."""
+
         return self.request.user
 
 
@@ -166,10 +173,12 @@ class UserDeleteView(LoginRequiredMixin, DeleteView):
 
     def get_object(self, queryset=None):
         """Get current user without primary key."""
+
         return self.request.user
 
     def delete(self, request, *args, **kwargs):
         """Extend delete() method to reduce count of album owners."""
+
         # Get album list.
         albums = self.get_object().albums.all()
 
@@ -272,11 +281,13 @@ class UserAlbumRatingView(LoginRequiredMixin, View):
 
 class UserAbnormalRequestRV(LoginRequiredMixin, RedirectView):
     """Redirect to user's main page after getting abnormal request."""
+
     url = reverse_lazy('user:main')
 
 
 class UserAlbumSearchFV(LoginRequiredMixin, FormView):
     """Search albums from user's album list. (by Artist/Album title)"""
+
     form_class = AlbumSearchForm
     template_name = "users/user_album_search.html"
 
