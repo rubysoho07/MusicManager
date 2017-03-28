@@ -10,6 +10,8 @@ from django.conf import settings
 
 
 class MmUserManager(BaseUserManager):
+    """User manager class for MusicManager user."""
+
     def create_user(self, email, name, nickname, password):
         """
         Creates and saves a User with given information below
@@ -45,9 +47,9 @@ class MmUserManager(BaseUserManager):
         return user
 
 
-# MusicManager user model.
 @python_2_unicode_compatible
 class MmUser(AbstractBaseUser, PermissionsMixin):
+    """Model for a MusicManager user."""
     email = models.EmailField(max_length=255, verbose_name='E-mail address', unique=True)
     name = models.CharField(max_length=255, null=False)
     nickname = models.CharField(max_length=255, null=False, unique=True)
@@ -61,11 +63,11 @@ class MmUser(AbstractBaseUser, PermissionsMixin):
     REQUIRED_FIELDS = ['name', 'nickname']
 
     def get_full_name(self):
-        """ Return the user's nickname. """
+        """Return the user's nickname."""
         return self.nickname
 
     def get_short_name(self):
-        """ Return the user's nickname. """
+        """Return the user's nickname."""
         return self.nickname
 
     def __str__(self):
@@ -92,8 +94,8 @@ class MmUser(AbstractBaseUser, PermissionsMixin):
         return self.is_admin
 
 
-# MusicManager user's album list.
 class MmUserAlbum(models.Model):
+    """Album of an MusicManager user."""
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     album = models.ForeignKey(Album, on_delete=models.CASCADE)
     add_time = models.DateTimeField(auto_now_add=True)

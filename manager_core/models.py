@@ -8,6 +8,8 @@ from django.conf import settings
 # Create your models here.
 @python_2_unicode_compatible
 class Album(models.Model):
+    """Album consists of artist, title, cover image, URL, and some information."""
+
     album_artist = models.CharField(max_length=200)
     album_title = models.CharField(max_length=200)
     album_cover_file = models.ImageField(
@@ -18,25 +20,27 @@ class Album(models.Model):
     owner_count = models.IntegerField(default=0, blank=True)
     average_rating = models.FloatField(default=None, null=True, blank=True)
 
-    # Override __unicode__ method to display album artist and title.
     def __str__(self):
         return self.album_artist + " - " + self.album_title
 
 
 @python_2_unicode_compatible
 class AlbumTrack(models.Model):
+    """Album track related with an album."""
+
     album = models.ForeignKey(Album, on_delete=models.CASCADE)
     disk = models.IntegerField()
     track_num = models.IntegerField()
     track_title = models.CharField(max_length=200)
     track_artist = models.CharField(max_length=200)
 
-    # Override __unicode__ method to display song artist and title.
     def __str__(self):
         return self.track_artist + " - " + self.track_title
 
 
 class AlbumComment(models.Model):
+    """Comment for an album."""
+
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     album = models.ForeignKey(Album, on_delete=models.CASCADE)
     comment = models.CharField(max_length=500)

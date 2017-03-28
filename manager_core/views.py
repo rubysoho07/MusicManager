@@ -22,9 +22,8 @@ from io import BytesIO
 
 # Create your views here.
 def make_base_album_info(album, cover_url):
-    """
-    Make single view for album information.
-    """
+    """Make single view for album information."""
+
     album_info = dict()
 
     album_info['album'] = album
@@ -34,10 +33,7 @@ def make_base_album_info(album, cover_url):
 
 
 def make_album_info(album, cover_url):
-    """
-    If user want to get album information from database,
-    attach additional information for an album.
-    """
+    """Make single view for an album, count of owners, and average ratings."""
     album_info = make_base_album_info(album, cover_url)
 
     album_info['show_owner_count'] = True
@@ -47,34 +43,29 @@ def make_album_info(album, cover_url):
 
 
 def make_link_enable(album_info):
-    """
-    If the link for an album needs to be enabled, make link enabled.
-    """
+    """Make link to detail page for an album enabled."""
     album_info['link'] = True
     return album_info
 
 
 def make_user_add_album(album_info):
-    """
-    Make link of adding album to the list for an user.
-    """
+    """Make link of adding album to the list for an user."""
+
     album_info['add_user_list'] = True
     return album_info
 
 
 def make_user_delete_album(album_info, user_album_id):
-    """
-    Make link of deleting album from the list for an user.
-    """
+    """Make link to delete album from the list for an user."""
+
     album_info['delete_user_list'] = True
     album_info['user_album_id'] = user_album_id
     return album_info
 
 
 def make_user_add_delete_album(album_info, album, user):
-    """
-    Check whether making add to list or delete from list button.
-    """
+    """Make add to list or delete from list button."""
+
     if user.is_authenticated():
         my_album = album.mmuseralbum_set.filter(Q(user=user))
         if len(my_album) == 0:
@@ -86,9 +77,8 @@ def make_user_add_delete_album(album_info, album, user):
 
 
 def make_album_list(object_list, user):
-    """
-    Make album list for album list views.
-    """
+    """Make album list for album list views."""
+
     album_list = list()
 
     for item in object_list:
@@ -103,9 +93,8 @@ def make_album_list(object_list, user):
 
 
 class AlbumLV(ListView):
-    """
-    List of all albums.
-    """
+    """List of all albums."""
+
     model = Album
     paginate_by = 10
     queryset = Album.objects.all().order_by('-id')
@@ -124,9 +113,8 @@ class AlbumLV(ListView):
 
 
 class SearchFV(FormView):
-    """
-    Search albums from database. (by Artist/Album title)
-    """
+    """Search albums from database by title or artist."""
+
     form_class = AlbumSearchForm
     template_name = "manager_core/album_search.html"
 
@@ -151,9 +139,8 @@ class SearchFV(FormView):
 
 
 class AlbumParseView(FormView):
-    """
-    Parse album information to add album.
-    """
+    """Parse album information to add album."""
+
     form_class = AlbumParseRequestForm
     template_name = 'manager_core/album_parse.html'
 
@@ -206,9 +193,7 @@ class AlbumParseView(FormView):
 
 
 class AlbumCreateView(View):
-    """
-    Add album to database.
-    """
+    """View to add album to database."""
 
     def post(self, request, *args, **kwargs):
         # Get JSON data
@@ -255,9 +240,8 @@ class AlbumCreateView(View):
 
 
 class AlbumDV(DetailView):
-    """
-    Detailed album information.
-    """
+    """View to show detailed album information."""
+
     model = Album
 
     def get_context_data(self, **kwargs):
@@ -292,23 +276,20 @@ class AlbumDV(DetailView):
 
 
 class Error404View(TemplateView):
-    """
-    View for 404 error
-    """
+    """View for 404 error"""
+
     template_name = "manager_core/404.html"
 
 
 class Error500View(TemplateView):
-    """
-    View for 500 error
-    """
+    """View for 500 error"""
+
     template_name = "manager_core/500.html"
 
 
 class AlbumCommentAddView(View):
-    """
-    Add comments
-    """
+    """Add comments for an album to database."""
+
     def post(self, request, *args, **kwargs):
         # Get user, album, comment
         user = request.user
@@ -324,18 +305,18 @@ class AlbumCommentAddView(View):
 
 
 class AlbumCommentDeleteView(DeleteView):
-    """
-    Delete comments
-    """
+    """Delete comments for an album from database."""
+
     model = AlbumComment
 
-    # Save success_url to redirect to album detail page.
     def get_success_url(self):
+        """Save success_url to redirect to album detail page."""
         return reverse_lazy('manager_core:album', kwargs={'pk': self.get_object().album.id})
 
-    # To delete without confirmation.
     def get(self, *args, **kwargs):
+        """Call post() to delete without confirmation."""
         return self.post(*args, **kwargs)
 
     def delete(self, request, *args, **kwargs):
+        """Delete a comment."""
         return super(AlbumCommentDeleteView, self).delete(request, *args, **kwargs)

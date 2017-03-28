@@ -19,9 +19,7 @@ from mm_user.models import MmUser, MmUserAlbum
 
 
 def make_user_album_list(album_score_list, user, authenticated_user):
-    """
-    Manipulate user's album list.
-    """
+    """Manipulate user's album list."""
     user_album_list = list()
 
     for item in album_score_list:
@@ -38,9 +36,7 @@ def make_user_album_list(album_score_list, user, authenticated_user):
 
 
 def make_user_rating_form(album_info, my_score):
-    """
-    Make rating form for an item from user's album list.
-    """
+    """Make rating form for an item from user's album list."""
     album_info['rating_form'] = True
     album_info['my_score'] = my_score
     album_info['score_iterator'] = range(1, 11)
@@ -48,18 +44,14 @@ def make_user_rating_form(album_info, my_score):
 
 
 def get_album_intersection_two_users(user1, user2):
-    """
-    Get album intersection between 2 users.
-    """
+    """Get album intersection between 2 users."""
     user1_album = user1.albums.all()
     user2_album = user2.albums.all()
     return user1_album.filter(id__in=user2_album)
 
 
 class UserIntersectionView(LoginRequiredMixin, DetailView):
-    """
-    Get intersection of albums between two users.
-    """
+    """Get intersection of albums between two users."""
     template_name = 'users/user_intersection.html'
     model = MmUser
 
@@ -94,25 +86,20 @@ class UserIntersectionView(LoginRequiredMixin, DetailView):
 
 
 class UserCreateView(CreateView):
-    """
-    User creation form.
-    """
+    """View to create an user."""
     template_name = 'users/register.html'
     form_class = UserCreationForm
     success_url = reverse_lazy('user:create_done')
 
 
 class UserCreateDoneTV(TemplateView):
-    """
-    After creating a user, redirect to 'register done' page.
-    """
+    """Redirect to 'register done' page after succeeding to adding an user."""
     template_name = 'users/register_done.html'
 
 
 class UserDetailView(LoginRequiredMixin, DetailView):
-    """
-    User's profile.
-    """
+    """Display user's album list and count."""
+
     template_name = 'users/user_main.html'
     model = MmUser
 
@@ -151,19 +138,16 @@ class UserDetailView(LoginRequiredMixin, DetailView):
 
 
 class UserMainView(UserDetailView):
-    """
-    View to see current user's profile
-    """
+    """Display current user's album list and count."""
 
-    # Get current user without primary key.
     def get_object(self, queryset=None):
+        """Get current user without primary key."""
         return self.request.user
 
 
 class UserUpdateView(LoginRequiredMixin, UpdateView):
-    """
-    Modify user's profile.
-    """
+    """Modify user's profile."""
+
     form_class = UserChangeForm
     template_name = 'users/modify.html'
     success_url = reverse_lazy('user:main')
@@ -174,19 +158,18 @@ class UserUpdateView(LoginRequiredMixin, UpdateView):
 
 
 class UserDeleteView(LoginRequiredMixin, DeleteView):
-    """
-    Delete user.
-    """
+    """Delete user."""
+
     model = MmUser
     success_url = reverse_lazy('index')
     template_name = 'users/user_confirm_delete.html'
 
-    # Get current user without primary key.
     def get_object(self, queryset=None):
+        """Get current user without primary key."""
         return self.request.user
 
-    # Reduce album owners count.
     def delete(self, request, *args, **kwargs):
+        """Extend delete() method to reduce count of album owners."""
         # Get album list.
         albums = self.get_object().albums.all()
 
@@ -200,9 +183,8 @@ class UserDeleteView(LoginRequiredMixin, DeleteView):
 
 
 class UserAlbumAddConfirmView(LoginRequiredMixin, DetailView):
-    """
-    Confirm before adding an album to user's album list.
-    """
+    """Confirm before adding an album to user's album list."""
+
     model = Album
     template_name = 'users/user_add_album.html'
 
@@ -213,9 +195,8 @@ class UserAlbumAddConfirmView(LoginRequiredMixin, DetailView):
 
 
 class UserAlbumAddView(LoginRequiredMixin, View):
-    """
-    Add album to user's album list.
-    """
+    """Add album to user's album list."""
+
     def post(self, request, *args, **kwargs):
         # Get album data
         album_to_add = get_object_or_404(Album, pk=request.POST['album_id'])
@@ -237,9 +218,8 @@ class UserAlbumAddView(LoginRequiredMixin, View):
 
 
 class UserAlbumDeleteView(LoginRequiredMixin, DeleteView):
-    """
-    Delete album from user's album list.
-    """
+    """Delete album from user's album list."""
+
     model = MmUserAlbum
     template_name = 'users/user_delete_album.html'
     success_url = reverse_lazy('user:main')
@@ -269,9 +249,7 @@ class UserAlbumDeleteView(LoginRequiredMixin, DeleteView):
 
 
 class UserAlbumRatingView(LoginRequiredMixin, View):
-    """
-    Rating album from user's album list.
-    """
+    """Set score for an album from user's album list."""
 
     def post(self, request, *args, **kwargs):
         # Get MmUserAlbum object.
@@ -293,16 +271,12 @@ class UserAlbumRatingView(LoginRequiredMixin, View):
 
 
 class UserAbnormalRequestRV(LoginRequiredMixin, RedirectView):
-    """
-    If the app get abnormal url, just redirect to user's main page.
-    """
+    """Redirect to user's main page after getting abnormal request."""
     url = reverse_lazy('user:main')
 
 
 class UserAlbumSearchFV(LoginRequiredMixin, FormView):
-    """
-    Search albums from user's album list. (by Artist/Album title)
-    """
+    """Search albums from user's album list. (by Artist/Album title)"""
     form_class = AlbumSearchForm
     template_name = "users/user_album_search.html"
 

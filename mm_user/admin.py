@@ -7,13 +7,12 @@ from mm_user.models import MmUser, MmUserAlbum
 
 # Register your models here.
 class MmUserAdmin(UserAdmin):
-    # The forms to add and change user instances
+    """Forms to add and change user instance"""
     form = UserChangeForm
     add_form = UserCreationForm
 
     # The fields to be used in displaying the User model.
-    # These override the definitions on the base UserAdmin
-    # that reference specific fields on auth.User
+    # These override the definitions on the base UserAdmin that reference specific fields on auth.User.
     list_display = ('email', 'name', 'nickname', 'is_admin')
     list_filter = ('is_admin',)
     fieldsets = (
@@ -22,8 +21,8 @@ class MmUserAdmin(UserAdmin):
         ('Permissions', {'fields': ('is_admin',)}),
     )
 
-    # add_fieldsets is not a standard ModelAdmin attribute. UserAdmin
-    # overrides get_fieldsets to user this attributes when creating a user
+    # add_fieldsets is not a standard ModelAdmin attribute.
+    # UserAdmin overrides get_fieldsets to user this attributes when creating a user.
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
@@ -35,8 +34,8 @@ class MmUserAdmin(UserAdmin):
     filter_horizontal = ()
 
 
-# User Album Admin
 class MmUserAlbumAdmin(admin.ModelAdmin):
+    """Admin for User Album"""
     list_display = ("user", "album", "add_time", "score")
 
 # Now register admin page for user-related models.
