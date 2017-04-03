@@ -20,11 +20,6 @@ class MusicParser(object):
     @staticmethod
     def check_album_cover_pattern(original_url):
         """Check album cover file pattern."""
-        # Example pattern.
-        # Naver: http://musicmeta.phinf.naver.net/album/000/645/645112.jpg?type=r204Fll&v=20160623150347
-        # Melon: http://cdnimg.melon.co.kr/cm/album/images/006/23/653/623653.jpg
-        # Bugs: http://image.bugsm.co.kr/album/images/200/5712/571231.jpg
-        # AllMusic: http://cps-static.rovicorp.com/3/JPG_500/MI0002/416/MI0002416076.jpg?partner=allrovi.com
         naver_pattern = re.compile('http://musicmeta[.]phinf[.]naver[.]net/album/.*[.]jpg[?].*')
         melon_pattern = re.compile('http://cdnimg[.]melon[.]co[.]kr/cm/album/images/.*[.]jpg')
         bugs_pattern = re.compile('http://image[.]bugsm[.]co[.]kr/album/images/.*[.]jpg')
@@ -56,7 +51,7 @@ class MusicParser(object):
         }
         data = requests.get(album_url, headers=headers)
 
-        return BeautifulSoup(data.text, "html.parser", from_encoding="utf-8")
+        return BeautifulSoup(data.text, "html.parser")
 
     @staticmethod
     def check_input(url_input):
@@ -67,33 +62,26 @@ class MusicParser(object):
         allmusic_pattern = re.compile("allmusic[.]com/album/.*mw[0-9]{10}")
 
         match = bugs_pattern.search(url_input)
-
         if match:
             return "http://music." + match.group()
 
         match = naver_music_pattern.search(url_input)
-
         if match:
             return "http://" + match.group()
 
         match = melon_pattern.search(url_input)
-
         if match:
             return "http://www." + match.group()
 
         match = allmusic_pattern.search(url_input)
-
         if match:
             return "http://www." + match.group()
 
         return None
 
-    def get_naver_music_data(self, album_url):
-        """Get album data from Naver Music and return JSON data."""
-        soup = self.get_original_data(album_url)
-
-        # Get artist information.
-        artist_data = soup.find('dd', class_='artist')
+    @staticmethod
+    def get_naver_artist(artist_data):
+        """Get artist name from Naver Music."""
         if artist_data.find('a'):
             artist_list = artist_data.find_all('a')
             if len(artist_list) == 1:
@@ -103,17 +91,24 @@ class MusicParser(object):
         else:
             artist = artist_data.find('span').text
 
-        album_title = soup.find('div', class_='info_txt').h2.text
-        album_cover = soup.find('div', class_='thumb').img['src']
+        return artist
 
-        disk_num = 1
+    @staticmethod
+    def get_naver_track(track_data, disk_num):
+        """Get a track information from Naver Music."""
+        track = dict()
+        track['disk'] = disk_num
+        track['track_num'] = int(track_data.find('td', class_='order').text)
+        track['track_title'] = track_data.find('td', class_='name').find('span', class_='ellipsis').text
+        track['track_artist'] = track_data.find('td', class_='artist').text.strip()
+        return track
+
+    def get_naver_track_list(self, track_row_list):
+        """Get track list from Naver Music."""
+        disk_num = 1    # Set default disk number.
 
         tracks = []
-        track_list = soup.find('tbody')
-
-        table_row_list = track_list.find_all('tr')
-
-        for row in table_row_list:
+        for row in track_row_list:
             if row.find('td', class_='cd_divide'):
                 disk = row.find('td', class_='cd_divide')
                 disk_num = int(disk.text.split(' ')[1])
@@ -121,218 +116,230 @@ class MusicParser(object):
                 if row.find('td', class_='order').text == "{TRACK_NUM}":
                     continue
 
-                track_num = row.find('td', class_='order')
-                track_title = row.find('td', class_='name')
-                track_artist = row.find('td', class_='artist')
+                tracks.append(self.get_naver_track(row, disk_num))
 
-                tracks.append({"disk": disk_num, "track_num": int(track_num.text),
-                               "track_title": track_title.find('span', class_='ellipsis').text,
-                               "track_artist": track_artist.text.strip()})
+        return tracks
 
-        return json.dumps({"artist": artist,
-                           "album_title": album_title,
-                           "album_cover": album_cover,
-                           "tracks": tracks},
-                          ensure_ascii=False)
+    def get_naver_music_data(self, album_url):
+        """Get album data from Naver Music and return JSON data."""
+        soup = self.get_original_data(album_url)
+
+        album_data = dict()
+        album_data['artist'] = self.get_naver_artist(soup.find('dd', class_='artist'))
+        album_data['album_title'] = soup.find('div', class_='info_txt').h2.text
+        album_data['album_cover'] = soup.find('div', class_='thumb').img['src']
+        album_data['tracks'] = self.get_naver_track_list(soup.find('tbody').find_all('tr'))
+
+        return json.dumps(album_data, ensure_ascii=False)
+
+    @staticmethod
+    def get_bugs_artist(artist_data):
+        """Get artist data from Bugs."""
+        if artist_data.find('a'):
+            artist_list = artist_data.find('td').find_all('a')
+            if len(artist_list) == 1:
+                artist = artist_list[0].text
+            else:
+                artist = ", ".join(item.text for item in artist_list)
+        else:
+            artist = artist_data.find('td').text.strip()
+
+        return artist
+
+    @staticmethod
+    def get_bugs_track(track_data, disk_num):
+        """Get information for a track from Bugs."""
+        track = dict()
+
+        track['disk'] = disk_num
+        track['track_num'] = int(track_data.find('p', class_='trackIndex').em.text)
+        track_title_data = track_data.find('p', class_='title')
+
+        if track_title_data.find('a'):
+            track['track_title'] = track_title_data.a.text
+        else:
+            track['track_title'] = track_title_data.span.text
+
+        track_artist_tag = track_data.find('p', class_='artist')
+        track_artists = track_artist_tag.find('a', class_='more')
+
+        if track_artists:
+            onclick_text = track_artists['onclick'].split(",")[1].split("||")
+            artist_list = []
+            for i in range(len(onclick_text)):
+                if i % 2 == 0:
+                    continue
+                else:
+                    artist_list.append(onclick_text[i])
+
+            track['track_artist'] = ", ".join(artist_list)
+        else:
+            track['track_artist'] = track_artist_tag.a.text
+
+        return track
+
+    def get_bugs_track_list(self, track_row_list):
+        """Get track list from Bugs."""
+        disk_num = 1    # Set default disk number.
+
+        tracks = []
+
+        for row in track_row_list:
+            if row.find('th', attrs={'scope': 'col'}):
+                # Get disk number
+                disk = row.find('th', attrs={'scope': 'col'})
+                disk_num = int(disk.text.split(' ')[1])
+            else:
+                tracks.append(self.get_bugs_track(row, disk_num))
+
+        return tracks
 
     def get_bugs_data(self, album_url):
         """Get album data from Bugs and returns JSON data."""
         soup = self.get_original_data(album_url)
 
         # Get artist information.
-        basic_info = soup.find('table', class_='info').tr
+        album_data = dict()
+        album_data['artist'] = self.get_bugs_artist(soup.find('table', class_='info').tr)
+        album_data['album_title'] = soup.find('header', class_='pgTitle').h1.text
+        album_data['album_cover'] = soup.find('div', class_='photos').img['src']
 
-        if basic_info.find('a'):
-            artist_list = basic_info.find('td').find_all('a')
+        # For supporting multiple disks
+        table_row_list = soup.find('table', class_='trackList').find('tbody').find_all('tr')
+        album_data['tracks'] = self.get_bugs_track_list(table_row_list)
+
+        return json.dumps(album_data, ensure_ascii=False)
+
+    @staticmethod
+    def get_melon_artist(artist_data):
+        """ Get artist name from Melon. """
+        if artist_data.find('span'):
+            artist_list = artist_data.find_all('span', class_=None)
             if len(artist_list) == 1:
                 artist = artist_list[0].text
             else:
                 artist = ", ".join(item.text for item in artist_list)
         else:
-            artist = basic_info.find('td').text.strip()
+            artist = artist_data.find('dd').text.strip()
 
-        album_title = soup.find('header', class_='pgTitle').h1.text
-        album_cover = soup.find('div', class_='photos').img['src']
+        return artist
 
-        disk_num = 1
+    @staticmethod
+    def get_melon_track(track_data, disk_num):
+        """Get information of a track from Melon."""
+        track = dict()
+        track['disk'] = disk_num
+        track['track_num'] = int(track_data.find('td', class_='no').div.text)
+        track_title_data = track_data.find('div', class_='ellipsis')
+        check_track_info = track_title_data.find_all('a')
 
+        if len(check_track_info) == 2:
+            # Song you can play.
+            track['track_title'] = check_track_info[-1].text
+        else:
+            # Song you can't play.
+            track['track_title'] = track_title_data.find_all('span')[-1].text
+
+        # Get track artist
+        track_artist_list = track_data.find('div', id='artistName').find('span', class_="checkEllipsis").find_all('a')
+
+        if len(track_artist_list) == 1:
+            track['track_artist'] = track_artist_list[0].text
+        else:
+            track['track_artist'] = ", ".join(item.text for item in track_artist_list)
+
+        return track
+
+    def get_melon_track_list(self, track_row_list):
+        """Get track list from Melon."""
         tracks = []
 
-        # For supporting multiple disks
-        track_list_table = soup.find('table', class_='trackList')
-        track_list_body = track_list_table.find('tbody')
-        table_row_list = track_list_body.find_all('tr')
+        for disk in track_row_list:
+            disk_num = int(disk.find('caption').text.split(" ")[0][2:])
+            track_rows = disk.find('tbody').find_all('tr')
 
-        for row in table_row_list:
-            if row.find('th', attrs={'scope': 'col'}):
-                # Get disk number
-                disk = row.find('th', attrs={'scope': 'col'})
-                disk_num = int(disk.text.split(' ')[1])
-            else:
-                track_num = row.find('p', class_='trackIndex')
-                track_title_data = row.find('p', class_='title')
+            for row in track_rows:
+                tracks.append(self.get_melon_track(row, disk_num))
 
-                # Check track_title_data has an link for the title of album.
-                if track_title_data.find('a'):
-                    track_title = track_title_data.a.text
-                else:
-                    track_title = track_title_data.span.text
-
-                # Get track artist
-                track_artist_tag = row.find('p', class_='artist')
-
-                # Check to have more artists.
-                more_artist = track_artist_tag.find('a', class_='more')
-
-                if more_artist:
-                    onclick_text = more_artist['onclick'].split(",")[1].split("||")
-                    artist_list = []
-                    for i in range(len(onclick_text)):
-                        if i % 2 == 0:
-                            continue
-                        else:
-                            artist_list.append(onclick_text[i])
-
-                    track_artist = ", ".join(artist_list)
-                else:
-                    track_artist = track_artist_tag.a.text
-
-                tracks.append({"disk": disk_num, "track_num": int(track_num.em.text),
-                               "track_title": track_title,
-                               "track_artist": track_artist})
-
-        return json.dumps({"artist": artist,
-                           "album_title": album_title,
-                           "album_cover": album_cover,
-                           "tracks": tracks},
-                          ensure_ascii=False)
+        return tracks
 
     def get_melon_data(self, album_url):
         """Get album data from Melon and returns JSON data."""
         soup = self.get_original_data(album_url)
 
-        # Get artist name.
-        basic_info = soup.find('dl', class_='song_info clfix')
+        album_data = dict()
+        album_data['artist'] = self.get_melon_artist(soup.find('dl', class_='song_info clfix'))
+        # Exclude strong and span tag when getting album title.
+        album_data['album_title'] = soup.find('p', class_='albumname').find_all(text=True)[-1].strip()
+        album_data['album_cover'] = soup.find('div', class_='wrap_thumb').find('img')['src']
+        album_data['tracks'] = self.get_melon_track_list(soup.find_all('table', attrs={'border': '1'}))
 
-        if basic_info.find('span'):
-            artist_list = basic_info.find_all('span', class_=None)
+        return json.dumps(album_data, ensure_ascii=False)
+
+    @staticmethod
+    def get_allmusic_artist(artist_data):
+        """Get artist information from AllMusic."""
+        if artist_data.find('a'):
+            artist_list = artist_data.find_all('a')
             if len(artist_list) == 1:
-                artist = artist_list[0].text
+                artist = artist_list[0].text.strip()
             else:
-                artist = ", ".join(item.text for item in artist_list)
+                artist = ", ".join(item.text.strip() for item in artist_list)
         else:
-            artist = basic_info.find('dd').text.strip()
+            artist = artist_data.find('span').text.strip()
 
-        # Get album title. (Exclude strong and span tag)
-        album_title = soup.find('p', class_='albumname').find_all(text=True)[-1].strip()
+        return artist
 
-        album_cover_thumb = soup.find('div', class_='wrap_thumb')
-        album_cover = album_cover_thumb.find('img')['src']
+    @staticmethod
+    def get_allmusic_track(track_data, disk_num):
+        """Get track information from AllMusic."""
+        track = dict()
+        track['disk'] = disk_num
+        track['track_num'] = track_data.find('td', class_='tracknum').text
+        track['track_title'] = track_data.find('div', class_='title').find('a').text
+        track_artist_list = track_data.find('td', class_='performer').find_all('a')
 
-        # Get track list
+        if len(track_artist_list) == 1:
+            track['track_artist'] = track_artist_list[0].text
+        else:
+            track['track_artist'] = ", ".join(item.text for item in track_artist_list)
+
+        return track
+
+    def get_allmusic_track_list(self, track_row_list):
+        """Get track list from AllMusic."""
         tracks = []
 
-        # To support multiple disks
-        track_list_table = soup.find_all('table', attrs={'border': '1'})
+        for disk in track_row_list:
+            if len(track_row_list) == 1:
+                disk_num = 1
+            else:
+                disk_num = int(disk.find('div', class_='headline').h3.text.strip().split(" ")[-1])
 
-        for disk in track_list_table:
-            disk_num = int(disk.find('caption').text.split(" ")[0][2:])
-
-            track_list_body = disk.find('tbody')
-            table_row_list = track_list_body.find_all('tr')
+            table_row_list = disk.find('tbody').find_all('tr')
 
             for row in table_row_list:
-                track_num = row.find('td', class_='no').div.text
-                track_title_data = row.find('div', class_='ellipsis')
-                check_track_info = track_title_data.find_all('a')
+                tracks.append(self.get_allmusic_track(row, disk_num))
 
-                if len(check_track_info) == 2:
-                    # Song you can play.
-                    track_title = check_track_info[-1].text
-                else:
-                    # Song you can't play.
-                    track_title = track_title_data.find_all('span')[-1].text
-
-                # Get track artist
-                track_artist_list = row.find('div', id='artistName').find('span', class_="checkEllipsis").find_all('a')
-
-                if len(track_artist_list) == 1:
-                    track_artist = track_artist_list[0].text
-                else:
-                    track_artist = ", ".join(item.text for item in track_artist_list)
-
-                tracks.append({"disk": disk_num, "track_num": int(track_num),
-                               "track_title": track_title,
-                               "track_artist": track_artist})
-
-        return json.dumps({"artist": artist,
-                           "album_title": album_title,
-                           "album_cover": album_cover,
-                           "tracks": tracks},
-                          ensure_ascii=False)
+        return tracks
 
     def get_allmusic_data(self, album_url):
         """Get album data from AllMusic and return JSON data."""
         soup = self.get_original_data(album_url)
 
-        # Get sidebar. (To get album cover)
-        sidebar = soup.find('div', class_='sidebar')
+        album_data = dict()
 
-        # Get contents. (To get artist, album title, track lists)
-        content = soup.find('div', class_='content')
+        sidebar = soup.find('div', class_='sidebar')        # To get album cover.
+        content = soup.find('div', class_='content')        # To get artist, album title, track lists.
 
-        # Get album artist from content.
-        artist_tag = content.find('h2', class_='album-artist')
+        album_data['artist'] = self.get_allmusic_artist(content.find('h2', class_='album-artist'))
+        album_data['album_title'] = content.find('h1', class_='album-title').text.strip()
+        album_data['album_cover'] = sidebar.find('div', class_='album-contain').find(
+            'img', class_='media-gallery-image'
+        )['src']
+        album_data['tracks'] = self.get_allmusic_track_list(content.find_all('div', class_='disc'))
 
-        if artist_tag.find('a'):
-            artist_list = artist_tag.find_all('a')
-            if len(artist_list) == 1:
-                artist = artist_list[0].text
-            else:
-                artist = ", ".join(item.text for item in artist_list)
-        else:
-            artist = artist_tag.find('span').text
-
-        album_title = content.find('h1', class_='album-title').text
-
-        album_cover_thumb = sidebar.find('div', class_='album-contain')
-        album_cover = album_cover_thumb.find('img', class_='media-gallery-image')['src']
-
-        # Get track list
-        tracks = []
-
-        # For supporting multiple disks
-        track_list_table = content.find_all('div', class_='disc')
-
-        for disk in track_list_table:
-            # Get disk number.
-            if len(track_list_table) == 1:
-                disk_num = 1
-            else:
-                disk_num = int(disk.find('div', class_='headline').h3.text.strip().split(" ")[-1])
-
-            track_list_body = disk.find('tbody')
-            table_row_list = track_list_body.find_all('tr')
-
-            for row in table_row_list:
-                track_num = row.find('td', class_='tracknum').text
-                track_title = row.find('div', class_='title').find('a').text
-                track_artist_list = row.find('td', class_='performer').find_all('a')
-
-                if len(track_artist_list) == 1:
-                    track_artist = track_artist_list[0].text
-                else:
-                    track_artist = ", ".join(item.text for item in track_artist_list)
-
-                tracks.append({"disk": disk_num, "track_num": int(track_num),
-                               "track_title": track_title,
-                               "track_artist": track_artist})
-
-        return json.dumps({"artist": artist,
-                           "album_title": album_title,
-                           "album_cover": album_cover,
-                           "tracks": tracks},
-                          ensure_ascii=False)
+        return json.dumps(album_data, ensure_ascii=False)
 
     def get_parsed_data(self, input_url):
         """Get JSON data from music sites."""
