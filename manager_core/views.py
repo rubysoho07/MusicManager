@@ -1,4 +1,5 @@
 import json
+import warnings
 
 from django.shortcuts import render, redirect, get_object_or_404
 
@@ -21,13 +22,22 @@ from io import BytesIO
 
 
 # Create your views here.
-def make_base_album_info(album, cover_url):
+def make_base_album_info(album, cover_file):
     """Make single view for album information."""
 
     album_info = dict()
 
     album_info['album'] = album
-    album_info['cover_url'] = cover_url
+
+    # Check file is Null
+    if bool(cover_file) is False:
+        album_info['cover_file'] = None
+    else:
+        if hasattr(cover_file, 'url'):
+            album_info['cover_file'] = cover_file.url
+        else:
+            # Use external cover file.
+            album_info['cover_file'] = cover_file
 
     return album_info
 
@@ -83,7 +93,7 @@ def make_album_list(object_list, user):
 
     for item in object_list:
         # Make album information.
-        item_dict = make_album_info(item, item.album_cover_file.url)
+        item_dict = make_album_info(item, item.album_cover_file)
         item_dict = make_link_enable(item_dict)
         item_dict = make_user_add_delete_album(item_dict, item, user)
 
@@ -248,7 +258,7 @@ class AlbumDV(DetailView):
         context = super(AlbumDV, self).get_context_data(**kwargs)
 
         # Get album information.
-        context_album = make_album_info(self.object, self.object.album_cover_file.url)
+        context_album = make_album_info(self.object, self.object.album_cover_file)
         context_album = make_user_add_delete_album(context_album, self.object, self.request.user)
 
         context['album'] = context_album

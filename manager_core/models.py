@@ -14,7 +14,7 @@ class Album(models.Model):
     album_title = models.CharField(max_length=200)
     album_cover_file = models.ImageField(
         upload_to='manager_core/cover_files', max_length=200, null=True, blank=True,
-        default="manager_core/cover_files/no_cover.jpg"
+        default=None
     )
     album_url = models.CharField(max_length=200, null=True, default=None, blank=True)
     owner_count = models.IntegerField(default=0, blank=True)

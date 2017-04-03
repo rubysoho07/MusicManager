@@ -24,7 +24,7 @@ def make_user_album_list(album_score_list, user, authenticated_user):
     user_album_list = list()
 
     for item in album_score_list:
-        album_dict = make_album_info(item.album, item.album.album_cover_file.url)
+        album_dict = make_album_info(item.album, item.album.album_cover_file)
         album_dict = make_link_enable(album_dict)
         # For current authenticated user.
         album_dict = make_user_add_delete_album(album_dict, item.album, authenticated_user)
@@ -199,7 +199,7 @@ class UserAlbumAddConfirmView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(UserAlbumAddConfirmView, self).get_context_data(**kwargs)
-        context['object'] = make_album_info(self.object, self.object.album_cover_file.url)
+        context['object'] = make_album_info(self.object, self.object.album_cover_file)
         return context
 
 
@@ -235,7 +235,7 @@ class UserAlbumDeleteView(LoginRequiredMixin, DeleteView):
 
     def get_context_data(self, **kwargs):
         context = super(UserAlbumDeleteView, self).get_context_data(**kwargs)
-        context['album'] = make_album_info(self.object.album, self.object.album.album_cover_file.url)
+        context['album'] = make_album_info(self.object.album, self.object.album.album_cover_file)
         return context
 
     def delete(self, request, *args, **kwargs):
