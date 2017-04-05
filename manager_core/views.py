@@ -1,5 +1,5 @@
 import json
-import warnings
+import re
 
 from django.shortcuts import render, redirect, get_object_or_404
 
@@ -43,9 +43,10 @@ def make_base_album_info(album, cover_file):
 
 
 def make_album_info(album, cover_url):
-    """Make single view for an album, count of owners, and average ratings."""
+    """Make single view for an album, link for an artist, count of owners, and average ratings."""
     album_info = make_base_album_info(album, cover_url)
 
+    album_info['artist_link'] = True
     album_info['show_owner_count'] = True
     album_info['show_average_rating'] = True
 
@@ -330,3 +331,33 @@ class AlbumCommentDeleteView(DeleteView):
     def delete(self, request, *args, **kwargs):
         """Delete a comment."""
         return super(AlbumCommentDeleteView, self).delete(request, *args, **kwargs)
+
+
+class ArtistAlbumListView(AlbumLV):
+    """Show list of albums which made by an artist."""
+    template_name = 'manager_core/album_artist_list.html'
+
+    def get_artist_name(self):
+        """Get artist name from an album and exclude artist name in brackets."""
+        pattern = re.compile("(?P<artist>.+)\((?P<foreign_language>.+)\)")
+        artist_name = Album.objects.filter(id=self.kwargs['pk'])[0].album_artist
+
+        match = pattern.search(artist_name)
+
+        if match:
+            return match.group('artist').strip()
+        else:
+            return artist_name.strip()
+
+    def get_queryset(self):
+        """Get album list which made by an artist."""
+        return Album.objects.filter(album_artist__icontains=self.get_artist_name())
+
+    def get_context_data(self, **kwargs):
+        """Override get_context_data method and get artist name and count of albums."""
+        context = super(ArtistAlbumListView, self).get_context_data(**kwargs)
+
+        context['artist_name'] = self.get_artist_name()
+        context['artist_album_count'] = self.get_queryset().count()
+
+        return context

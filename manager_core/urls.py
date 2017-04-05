@@ -1,6 +1,6 @@
 from django.conf.urls import url
 
-from views import AlbumDV, SearchFV, AlbumParseView, AlbumCreateView
+from views import AlbumDV, SearchFV, AlbumParseView, AlbumCreateView, ArtistAlbumListView
 from views import AlbumCommentAddView, AlbumCommentDeleteView
 
 # Register application namespace
@@ -25,4 +25,7 @@ urlpatterns = [
 
     # Delete comment for an album from database.
     url(r'^delete_comment/(?P<pk>[0-9]+)/$', AlbumCommentDeleteView.as_view(), name='delete_comment'),
+
+    # Show list of albums for an artist.
+    url(r'^artist/(?P<pk>[0-9]+)/$', ArtistAlbumListView.as_view(), name='artist'),
 ]
