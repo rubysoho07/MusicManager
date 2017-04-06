@@ -11,7 +11,8 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q, Avg
 
 from manager_core.models import Album
-from manager_core.views import make_album_info, make_link_enable, make_user_add_delete_album, make_album_list
+from manager_core.views import make_album_info, make_link_enable, make_user_add_delete_album, make_album_list, \
+    make_pagination_range
 from manager_core.forms import AlbumSearchForm
 
 from mm_user.forms import UserCreationForm, UserChangeForm
@@ -120,24 +121,26 @@ class UserDetailView(LoginRequiredMixin, DetailView):
         page = self.request.GET.get('page')
 
         try:
-            original_list = album_list_paginator.page(page)
+            user_album_page = album_list_paginator.page(page)
         except PageNotAnInteger:
             # If page is not an integer, deliver first page.
-            original_list = album_list_paginator.page(1)
+            user_album_page = album_list_paginator.page(1)
         except EmptyPage:
             # If page is out of range, deliver last page of results.
-            original_list = album_list_paginator.page(album_list_paginator.num_pages)
+            user_album_page = album_list_paginator.page(album_list_paginator.num_pages)
 
         # Manipulate user's album list after getting only album and score field.
-        album_score_list = original_list.object_list.only("album", "score")
+        album_score_list = user_album_page.object_list.only("album", "score")
         context['user_object_list'] = make_user_album_list(album_score_list, self.object, self.request.user)
-        context['user_album_list'] = original_list
+        context['page_obj'] = user_album_page
+        context['paginator'] = album_list_paginator
+        context['show_first'], context['page_range'], context['show_last'] = \
+            make_pagination_range(user_album_page.number, album_list_paginator.num_pages)
 
         # Get count of intersection for user's albums between certain user and user logged in.
         if self.object != self.request.user:
             context['intersection_count'] = len(get_album_intersection_two_users(self.object, self.request.user))
 
-        context['pages'] = album_list_paginator.page_range
         context['user_album_count'] = self.object.albums.count()
 
         return context

@@ -36,26 +36,8 @@ MusicManager :: {% firstof user.get_short_name user.get_username %}'s album
 
 <!-- End of user's album list -->
 <!-- Page selector. -->
-{% if pages|length > 1 %}
-    <ul class="pagination">
-        {% if user_album_list.has_previous %}
-            <li><a href="?page={{ user_album_list.previous_page_number }}">&laquo;</a></li>
-        {% else %}
-            <li class="disabled"><span>&laquo;</span></li>
-        {% endif %}
-        {% for i in pages %}
-            {% if user_album_list.number == i %}
-                <li class="active"><span>{{ i }}</span></li>
-            {% else %}
-                <li><a href="?page={{ i }}">{{ i }}</a></li>
-            {% endif %}
-        {% endfor %}
-        {% if user_album_list.has_next %}
-            <li><a href="?page={{ user_album_list.next_page_number }}">&raquo;</a></li>
-        {% else %}
-            <li class="disabled"><span>&raquo;</span></li>
-        {% endif %}
-    </ul>
+{% if paginator.num_pages > 1 %}
+{% include 'manager_core/paginator.html' %}
 {% endif %}
 <!-- End of page selector. -->
 
