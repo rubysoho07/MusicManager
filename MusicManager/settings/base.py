@@ -139,3 +139,4 @@ EMAIL_USE_SSL = True
 # The people who will get code error notifications. (When DEBUG=False)
 
 ADMINS = [('Yungon', 'hahafree12@gmail.com')]
+SERVER_EMAIL = get_secret("DEFAULT_FROM_EMAIL")

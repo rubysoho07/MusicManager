@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
-from manager_core.views import Error404View, Error500View, AlbumLV
+from manager_core.views import AlbumLV
 
 from django.conf import settings
 from django.conf.urls.static import static
@@ -28,6 +28,3 @@ urlpatterns = [
     # Add URLs for authentication
     url(r'^user/', include('mm_user.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
-handler404 = Error404View.as_view()
-handler500 = Error500View.as_view()

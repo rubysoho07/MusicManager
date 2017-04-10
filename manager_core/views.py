@@ -5,7 +5,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 
 from django.db.models import Q
 
-from django.views.generic.base import TemplateView, View
+from django.views.generic.base import View
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import DeleteView, FormView
@@ -177,6 +177,21 @@ class AlbumParseView(FormView):
     form_class = AlbumParseRequestForm
     template_name = 'manager_core/album_parse.html'
 
+    @staticmethod
+    def make_disks(tracks):
+        """Dividing all tracks per disk."""
+        disk_num = 1
+        disks = []
+
+        track_list = list(track for track in tracks if track['disk'] == disk_num)
+
+        while len(track_list) != 0:
+            disks.append(track_list)
+            disk_num += 1
+            track_list = list(track for track in tracks if track['disk'] == disk_num)
+
+        return disks
+
     def form_valid(self, form):
         context = dict()
         original_url = self.request.POST['album_url']
@@ -201,23 +216,7 @@ class AlbumParseView(FormView):
         context['parsed_album'] = make_base_album_info(Album(album_title=json_data['album_title'],
                                                              album_artist=json_data['artist']),
                                                        json_data['album_cover'])
-
-        # Album track: a list.
-        # (A track of track list is to an dict, because a track is JSON object.)
-        tracks = json_data['tracks']
-
-        # Dividing all tracks per disk.
-        disk_num = 1
-        disks = []
-
-        track_list = list(track for track in tracks if track['disk'] == disk_num)
-
-        while len(track_list) != 0:
-            disks.append(track_list)
-            disk_num += 1
-            track_list = list(track for track in tracks if track['disk'] == disk_num)
-
-        context['disks'] = disks
+        context['disks'] = self.make_disks(json_data['tracks'])
         context['parsed_data'] = parsed_data
         context['original_url'] = original_url
         context['form'] = form
@@ -306,18 +305,6 @@ class AlbumDV(DetailView):
         users = self.object.mmuseralbum_set.all()
         context['users'] = users
         return context
-
-
-class Error404View(TemplateView):
-    """View for 404 error"""
-
-    template_name = "manager_core/404.html"
-
-
-class Error500View(TemplateView):
-    """View for 500 error"""
-
-    template_name = "manager_core/500.html"
 
 
 class AlbumCommentAddView(View):
