@@ -6,6 +6,7 @@ MusicManager :: Add album
 
 {% block content %}
 {% load crispy_forms_tags %}
+{% load manager_core_tags %}
 <!-- Body start -->
 <h1>Add Album</h1>
 <p>주소를 입력하세요 (네이버 뮤직/벅스/멜론/AllMusic 지원)</p>
@@ -24,7 +25,7 @@ MusicManager :: Add album
 {% endif %}
 
 {% if success == True %}
-    {% include "manager_core/album_item.html" with item=parsed_album %}
+    {% album_info_external %}
 
     <!-- Track list -->
     {% for disk in disks %}

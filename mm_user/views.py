@@ -11,29 +11,10 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q, Avg
 
 from manager_core.models import Album
-from manager_core.views import make_album_info, make_link_enable, make_user_add_delete_album, make_album_list
 from manager_core.forms import AlbumSearchForm
 
 from mm_user.forms import UserCreationForm, UserChangeForm
 from mm_user.models import MmUser, MmUserAlbum
-
-
-def make_user_album_list(album_score_list, user, authenticated_user):
-    """Manipulate user's album list."""
-
-    user_album_list = list()
-
-    for item in album_score_list:
-        album_dict = make_album_info(item.album, item.album.album_cover_file)
-        album_dict = make_link_enable(album_dict)
-        # For current authenticated user.
-        album_dict = make_user_add_delete_album(album_dict, item.album, authenticated_user)
-        if user == authenticated_user:
-            album_dict = make_user_rating_form(album_dict, item.score)
-
-        user_album_list.append(album_dict)
-
-    return user_album_list
 
 
 def make_user_rating_form(album_info, my_score):
@@ -70,19 +51,18 @@ class UserIntersectionView(LoginRequiredMixin, DetailView):
         page = self.request.GET.get('page')
 
         try:
-            original_list = album_list_paginator.page(page)
+            intersection_page = album_list_paginator.page(page)
         except PageNotAnInteger:
             # If page is not an integer, deliver first page.
-            original_list = album_list_paginator.page(1)
+            intersection_page = album_list_paginator.page(1)
         except EmptyPage:
             # If page is out of range, deliver last page of results.
-            original_list = album_list_paginator.page(album_list_paginator.num_pages)
+            intersection_page = album_list_paginator.page(album_list_paginator.num_pages)
 
-        # Manipulate user's album list after getting only album and score field.
-        context['intersection_list'] = make_album_list(original_list, self.request.user)
-        context['intersection_list_page'] = original_list
+        context['object_list'] = intersection_page.object_list  # Album list
+        context['page_obj'] = intersection_page
+        context['paginator'] = album_list_paginator
         context['intersection_count'] = len(user_album_list)
-        context['pages'] = album_list_paginator.page_range
 
         return context
 
@@ -126,9 +106,8 @@ class UserDetailView(LoginRequiredMixin, DetailView):
             # If page is out of range, deliver last page of results.
             user_album_page = album_list_paginator.page(album_list_paginator.num_pages)
 
-        # Manipulate user's album list after getting only album and score field.
-        album_score_list = user_album_page.object_list.only("album", "score")
-        context['user_object_list'] = make_user_album_list(album_score_list, self.object, self.request.user)
+        context['object_list'] = user_album_page.object_list
+        context['view_owner'] = self.object
         context['page_obj'] = user_album_page
         context['paginator'] = album_list_paginator
 
@@ -197,7 +176,6 @@ class UserAlbumAddConfirmView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(UserAlbumAddConfirmView, self).get_context_data(**kwargs)
-        context['object'] = make_album_info(self.object, self.object.album_cover_file)
         return context
 
 
@@ -233,7 +211,7 @@ class UserAlbumDeleteView(LoginRequiredMixin, DeleteView):
 
     def get_context_data(self, **kwargs):
         context = super(UserAlbumDeleteView, self).get_context_data(**kwargs)
-        context['album'] = make_album_info(self.object.album, self.object.album.album_cover_file)
+        context['album'] = self.object.album
         return context
 
     def delete(self, request, *args, **kwargs):
@@ -304,6 +282,6 @@ class UserAlbumSearchFV(LoginRequiredMixin, FormView):
         context['form'] = form
         context['search_type'] = search_type
         context['keyword'] = keyword
-        context['object_list'] = make_album_list(result, self.request.user)
+        context['object_list'] = result
 
         return render(self.request, self.template_name, context)

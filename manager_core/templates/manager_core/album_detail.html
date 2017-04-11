@@ -12,10 +12,11 @@ MusicManager :: {{ object.album_artist }} - {{ object.album_title }}
 
 {% block content %}
 <!-- Body start -->
+{% load manager_core_tags %}
 <h1>앨범 확인하기</h1>
 <div class="goni_padding"></div>
 <!-- Start of printing result -->
-{% include "manager_core/album_item.html" with item=album %}
+{% album_info album_link=False add_delete_button=True %}
 
 <!-- Track list. -->
 {% for disk in disks %}

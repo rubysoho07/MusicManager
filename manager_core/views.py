@@ -3,8 +3,6 @@ import re
 
 from django.shortcuts import render, redirect, get_object_or_404
 
-from django.db.models import Q
-
 from django.views.generic.base import View
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
@@ -22,105 +20,12 @@ from io import BytesIO
 
 
 # Create your views here.
-def make_base_album_info(album, cover_file):
-    """Make single view for album information."""
-
-    album_info = dict()
-
-    album_info['album'] = album
-
-    # Check file is Null
-    if bool(cover_file) is False:
-        album_info['cover_file'] = None
-    else:
-        if hasattr(cover_file, 'url'):
-            album_info['cover_file'] = cover_file.url
-        else:
-            # Use external cover file.
-            album_info['cover_file'] = cover_file
-
-    return album_info
-
-
-def make_album_info(album, cover_url):
-    """Make single view for an album, link for an artist, count of owners, and average ratings."""
-    album_info = make_base_album_info(album, cover_url)
-
-    album_info['artist_link'] = True
-    album_info['show_owner_count'] = True
-    album_info['show_average_rating'] = True
-
-    return album_info
-
-
-def make_link_enable(album_info):
-    """Make link to detail page for an album enabled."""
-    album_info['link'] = True
-    return album_info
-
-
-def make_user_add_album(album_info):
-    """Make link of adding album to the list for an user."""
-
-    album_info['add_user_list'] = True
-    return album_info
-
-
-def make_user_delete_album(album_info, user_album_id):
-    """Make link to delete album from the list for an user."""
-
-    album_info['delete_user_list'] = True
-    album_info['user_album_id'] = user_album_id
-    return album_info
-
-
-def make_user_add_delete_album(album_info, album, user):
-    """Make add to list or delete from list button."""
-
-    if user.is_authenticated():
-        my_album = album.mmuseralbum_set.filter(Q(user=user))
-        if len(my_album) == 0:
-            album_info = make_user_add_album(album_info)
-        else:
-            album_info = make_user_delete_album(album_info, my_album[0].id)
-
-    return album_info
-
-
-def make_album_list(object_list, user):
-    """Make album list for album list views."""
-
-    album_list = list()
-
-    for item in object_list:
-        # Make album information.
-        item_dict = make_album_info(item, item.album_cover_file)
-        item_dict = make_link_enable(item_dict)
-        item_dict = make_user_add_delete_album(item_dict, item, user)
-
-        album_list.append(item_dict)
-
-    return album_list
-
-
 class AlbumLV(ListView):
     """List of all albums."""
 
     model = Album
     paginate_by = 10
     queryset = Album.objects.all().order_by('-id')
-
-    def get_context_data(self, **kwargs):
-        context = super(AlbumLV, self).get_context_data(**kwargs)
-
-        # Get count for all albums.
-        context['albums_number'] = self.get_queryset().count()
-
-        # Manipulate object list.
-        paginator, page, page_object_list, _ = self.paginate_queryset(self.get_queryset(), self.paginate_by)
-        context['object_list'] = make_album_list(page_object_list, self.request.user)
-
-        return context
 
 
 class SearchFV(FormView):
@@ -144,7 +49,7 @@ class SearchFV(FormView):
         context['form'] = form
         context['search_type'] = search_type
         context['keyword'] = keyword
-        context['object_list'] = make_album_list(result, self.request.user)
+        context['object_list'] = result
 
         return render(self.request, self.template_name, context)
 
@@ -191,9 +96,8 @@ class AlbumParseView(FormView):
         json_data = json.loads(parsed_data)
 
         # Album title, cover, artist: unicode data.
-        context['parsed_album'] = make_base_album_info(Album(album_title=json_data['album_title'],
-                                                             album_artist=json_data['artist']),
-                                                       json_data['album_cover'])
+        context['album'] = Album(album_title=json_data['album_title'], album_artist=json_data['artist'])
+        context['external_cover'] = json_data['album_cover']
         context['disks'] = self.make_disks(json_data['tracks'])
         context['parsed_data'] = parsed_data
         context['original_url'] = original_url
@@ -257,11 +161,6 @@ class AlbumDV(DetailView):
     def get_context_data(self, **kwargs):
         context = super(AlbumDV, self).get_context_data(**kwargs)
 
-        # Get album information.
-        context_album = make_album_info(self.object, self.object.album_cover_file)
-        context_album = make_user_add_delete_album(context_album, self.object, self.request.user)
-
-        context['album'] = context_album
         # Get track list (per disk).
         disk_num = 1
         disks = []

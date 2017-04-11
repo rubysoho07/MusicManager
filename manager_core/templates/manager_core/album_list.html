@@ -17,10 +17,10 @@ MusicManager
     <h1>No album information uploaded.</h1>
 {% else %}
     <h1>전체 앨범 목록</h1>
-    <p>MusicManager는 현재 {{ albums_number }} 장의 앨범을 관리하고 있습니다.</p>
+    <p>MusicManager는 현재 {{ paginator.count }} 장의 앨범을 관리하고 있습니다.</p>
     <div class="goni_padding"></div>
-    {% for album in object_list %}
-        {% include "manager_core/album_item.html" with item=album %}
+    {% for object in object_list %}
+        {% album_info album_link=True add_delete_button=True %}
     {% endfor %}
 
     <!-- Page selector. -->
