@@ -11,8 +11,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q, Avg
 
 from manager_core.models import Album
-from manager_core.views import make_album_info, make_link_enable, make_user_add_delete_album, make_album_list, \
-    make_pagination_range
+from manager_core.views import make_album_info, make_link_enable, make_user_add_delete_album, make_album_list
 from manager_core.forms import AlbumSearchForm
 
 from mm_user.forms import UserCreationForm, UserChangeForm
@@ -134,8 +133,6 @@ class UserDetailView(LoginRequiredMixin, DetailView):
         context['user_object_list'] = make_user_album_list(album_score_list, self.object, self.request.user)
         context['page_obj'] = user_album_page
         context['paginator'] = album_list_paginator
-        context['show_first'], context['page_range'], context['show_last'] = \
-            make_pagination_range(user_album_page.number, album_list_paginator.num_pages)
 
         # Get count of intersection for user's albums between certain user and user logged in.
         if self.object != self.request.user:

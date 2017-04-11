@@ -13,6 +13,7 @@ MusicManager :: {% firstof user.get_short_name user.get_username %}'s album
 
 {% block content %}
 {% load crispy_forms_tags %}
+{% load manager_core_tags %}
 <!-- Rating form -->
 {% if user == object %}
 {% include "users/rating_form.html" %}
@@ -37,7 +38,7 @@ MusicManager :: {% firstof user.get_short_name user.get_username %}'s album
 <!-- End of user's album list -->
 <!-- Page selector. -->
 {% if paginator.num_pages > 1 %}
-{% include 'manager_core/paginator.html' %}
+    {% pagination %}
 {% endif %}
 <!-- End of page selector. -->
 

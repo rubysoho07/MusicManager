@@ -103,26 +103,6 @@ def make_album_list(object_list, user):
     return album_list
 
 
-def make_pagination_range(page_num, pages_count):
-    """Get page range to omit pages far away from current page."""
-    show_first = False
-    show_last = False
-
-    # Minimum pages: 5 pages(current page +- 2 pages)
-    if pages_count <= 5:
-        return show_first, range(1, pages_count+1), show_last
-
-    page_range = [x for x in range(page_num - 2, page_num + 3) if 1 <= x <= pages_count]
-
-    if 1 not in page_range:
-        show_first = True
-
-    if pages_count not in page_range:
-        show_last = True
-
-    return show_first, page_range, show_last
-
-
 class AlbumLV(ListView):
     """List of all albums."""
 
@@ -139,8 +119,6 @@ class AlbumLV(ListView):
         # Manipulate object list.
         paginator, page, page_object_list, _ = self.paginate_queryset(self.get_queryset(), self.paginate_by)
         context['object_list'] = make_album_list(page_object_list, self.request.user)
-        context['show_first'], context['page_range'], context['show_last'] = \
-            make_pagination_range(page.number, paginator.num_pages)
 
         return context
 
