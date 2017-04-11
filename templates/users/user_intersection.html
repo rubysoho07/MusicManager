@@ -12,6 +12,7 @@ MusicManager :: Intersection
 {% endblock %}
 
 {% block content %}
+{% load manager_core_tags %}
 <!-- Body start -->
 <h1>Main</h1>
 
@@ -23,32 +24,14 @@ MusicManager :: Intersection
 {% endif %}
 <div class="goni_padding"></div>
 <!-- User's album list -->
-{% for album in intersection_list %}
-    {% include "manager_core/album_item.html" with item=album %}
+{% for object in object_list %}
+    {% album_info album_link=True add_delete_button=True %}
 {% endfor %}
 
 <!-- End of user's album list -->
 <!-- Page selector. -->
-{% if pages|length > 1 %}
-    <ul class="pagination">
-        {% if intersection_list_page.has_previous %}
-            <li><a href="?page={{ intersection_list_page.previous_page_number }}">&laquo;</a></li>
-        {% else %}
-            <li class="disabled"><span>&laquo;</span></li>
-        {% endif %}
-        {% for i in pages %}
-            {% if intersection_list_page.number == i %}
-                <li class="active"><span>{{ i }}</span></li>
-            {% else %}
-                <li><a href="?page={{ i }}">{{ i }}</a></li>
-            {% endif %}
-        {% endfor %}
-        {% if intersection_list_page.has_next %}
-            <li><a href="?page={{ intersection_list_page.next_page_number }}">&raquo;</a></li>
-        {% else %}
-            <li class="disabled"><span>&raquo;</span></li>
-        {% endif %}
-    </ul>
+{% if paginator.num_pages > 1 %}
+    {% pagination %}
 {% endif %}
 <!-- End of page selector. -->
 

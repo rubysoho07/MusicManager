@@ -12,6 +12,7 @@ MusicManager :: User's album Search
 
 {% block content %}
 {% load crispy_forms_tags %}
+{% load manager_core_tags %}
 <!-- Body start -->
 <h1>Search {% firstof user.get_short_name user.get_username %}'s Album</h1>
 
@@ -28,11 +29,11 @@ MusicManager :: User's album Search
 {% if object_list %}
     <h4>앨범 목록 ({{ object_list|length }} albums found) </h4>
     <div class="goni_padding"></div>
-    {% for album in object_list %}
-        {% include "manager_core/album_item.html" with item=album %}
+    {% for object in object_list %}
+        {% album_info album_link=True add_delete_button=True %}
     {% endfor %}
 {% elif keyword %}
-    <h4>Can't find album. </h4>
+    <h4>Album Not Found from your list.</h4>
 {% endif %}
 <!-- End of printing result -->
 

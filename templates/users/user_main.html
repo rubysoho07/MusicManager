@@ -31,8 +31,8 @@ MusicManager :: {% firstof user.get_short_name user.get_username %}'s album
 {% endif %}
 <div class="goni_padding"></div>
 <!-- User's album list -->
-{% for album in user_object_list %}
-    {% include "manager_core/album_item.html" with item=album %}
+{% for user_album in object_list %}
+    {% user_album_info %}
 {% endfor %}
 
 <!-- End of user's album list -->
