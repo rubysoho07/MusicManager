@@ -45,7 +45,7 @@ def make_user_rating_form(album_info, my_score):
     return album_info
 
 
-def get_album_intersection_two_users(user1, user2):
+def get_album_intersection(user1, user2):
     """Get album intersection between 2 users."""
 
     user1_album = user1.albums.all()
@@ -63,7 +63,7 @@ class UserIntersectionView(LoginRequiredMixin, DetailView):
         context = super(UserIntersectionView, self).get_context_data(**kwargs)
 
         # Get intersection.
-        user_album_list = get_album_intersection_two_users(self.object, self.request.user)
+        user_album_list = get_album_intersection(self.object, self.request.user)
 
         # Pagination for user_album_list (for 10 albums)
         album_list_paginator = Paginator(user_album_list, 10)
@@ -81,9 +81,7 @@ class UserIntersectionView(LoginRequiredMixin, DetailView):
         # Manipulate user's album list after getting only album and score field.
         context['intersection_list'] = make_album_list(original_list, self.request.user)
         context['intersection_list_page'] = original_list
-
         context['intersection_count'] = len(user_album_list)
-
         context['pages'] = album_list_paginator.page_range
 
         return context
@@ -136,7 +134,7 @@ class UserDetailView(LoginRequiredMixin, DetailView):
 
         # Get count of intersection for user's albums between certain user and user logged in.
         if self.object != self.request.user:
-            context['intersection_count'] = len(get_album_intersection_two_users(self.object, self.request.user))
+            context['intersection_count'] = len(get_album_intersection(self.object, self.request.user))
 
         context['user_album_count'] = self.object.albums.count()
 
