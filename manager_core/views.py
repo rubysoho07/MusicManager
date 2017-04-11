@@ -338,7 +338,7 @@ class ArtistAlbumListView(AlbumLV):
 
     def get_queryset(self):
         """Get album list which made by an artist."""
-        return Album.objects.filter(album_artist__icontains=self.get_artist_name())
+        return Album.objects.filter(album_artist__icontains=self.get_artist_name()).order_by('-id')
 
     def get_context_data(self, **kwargs):
         """Override get_context_data method and get artist name and count of albums."""
