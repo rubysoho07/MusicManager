@@ -8,7 +8,7 @@ app_name = 'user'
 # URL patterns for users.
 urlpatterns = [
     # Login and logout.
-    url(r'^login/$', auth_views.login, {'template_name': 'users/login.html'}, name='login'),
+    url(r'^login/$', auth_views.login, name='login'),
     url(r'^logout/$', auth_views.logout, name='logout'),
 
     # Create an user.
@@ -28,11 +28,9 @@ urlpatterns = [
     url(r'^delete/$', UserDeleteView.as_view(), name='delete'),
 
     # Change password for an user.
-    url(r'^change_pw/$', auth_views.password_change, {'post_change_redirect': 'user:password_change_done',
-                                                      'template_name': 'users/password_change.html'},
+    url(r'^change_pw/$', auth_views.password_change, {'post_change_redirect': 'user:password_change_done'},
         name='password_change'),
-    url(r'^change_pw/done/$', auth_views.password_change_done, {'template_name': 'users/password_change_done.html'},
-        name='password_change_done'),
+    url(r'^change_pw/done/$', auth_views.password_change_done, name='password_change_done'),
 
     # Reset password for an user.
     url(r'^pw_reset/$', auth_views.password_reset, {'post_reset_redirect': 'user:password_reset_done'},
