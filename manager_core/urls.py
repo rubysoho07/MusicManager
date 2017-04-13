@@ -1,7 +1,7 @@
 from django.conf.urls import url
 
-from views import AlbumDV, SearchFV, AlbumParseView, AlbumCreateView, ArtistAlbumListView
-from views import AlbumCommentAddView, AlbumCommentDeleteView
+from .views import AlbumDV, SearchFV, AlbumParseView, AlbumCreateView, ArtistAlbumListView
+from .views import AlbumCommentAddView, AlbumCommentDeleteView
 
 # Register application namespace
 app_name = 'manager_core'
