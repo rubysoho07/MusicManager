@@ -13,10 +13,6 @@ from bs4 import BeautifulSoup
 class MusicParser(object):
     """Base parser class for parsing album information from music sites."""
 
-    def __init__(self):
-        """Constructor for this class."""
-        pass
-
     @staticmethod
     def check_album_cover_pattern(original_url):
         """Check album cover file pattern."""
@@ -63,25 +59,48 @@ class MusicParser(object):
 
         match = bugs_pattern.search(url_input)
         if match:
-            return "http://music." + match.group()
+            return "http://music." + match.group(), BugsParser()
 
         match = naver_music_pattern.search(url_input)
         if match:
-            return "http://" + match.group()
+            return "http://" + match.group(), NaverMusicParser()
 
         match = melon_pattern.search(url_input)
         if match:
-            return "http://www." + match.group()
+            return "http://www." + match.group(), MelonParser()
 
         match = allmusic_pattern.search(url_input)
         if match:
-            return "http://www." + match.group()
+            return "http://www." + match.group(), AllMusicParser()
 
         return None
 
-    @staticmethod
-    def get_naver_artist(artist_data):
-        """Get artist name from Naver Music."""
+    def get_parsed_data(self, input_url):
+        """Get JSON data from music sites."""
+        pass
+
+    def get_artist(self, artist_data):
+        """Get artist information"""
+        pass
+
+    def get_track(self, track_data, disk_num):
+        """Get single track information from tag."""
+        pass
+
+    def get_track_list(self, track_row_list):
+        """Get track list from 'tr' tags."""
+        pass
+
+    def parse_album(self, album_url):
+        """Parse album data from music information site."""
+        pass
+
+
+class NaverMusicParser(MusicParser):
+    """ Parsing album information from Naver Music. """
+
+    def get_artist(self, artist_data):
+        """Get artist information"""
         if artist_data.find('a'):
             artist_list = artist_data.find_all('a')
             if len(artist_list) == 1:
@@ -93,9 +112,8 @@ class MusicParser(object):
 
         return artist
 
-    @staticmethod
-    def get_naver_track(track_data, disk_num):
-        """Get a track information from Naver Music."""
+    def get_track(self, track_data, disk_num):
+        """Get single track information from tag."""
         track = dict()
         track['disk'] = disk_num
         track['track_num'] = int(track_data.find('td', class_='order').text)
@@ -103,8 +121,8 @@ class MusicParser(object):
         track['track_artist'] = track_data.find('td', class_='artist').text.strip()
         return track
 
-    def get_naver_track_list(self, track_row_list):
-        """Get track list from Naver Music."""
+    def get_track_list(self, track_row_list):
+        """Get track list from 'tr' tags."""
         disk_num = 1    # Set default disk number.
 
         tracks = []
@@ -116,25 +134,38 @@ class MusicParser(object):
                 if row.find('td', class_='order').text == "{TRACK_NUM}":
                     continue
 
-                tracks.append(self.get_naver_track(row, disk_num))
+                tracks.append(self.get_track(row, disk_num))
 
         return tracks
 
-    def get_naver_music_data(self, album_url):
-        """Get album data from Naver Music and return JSON data."""
+    def parse_album(self, album_url):
+        """Parse album data from music information site."""
         soup = self.get_original_data(album_url)
 
         album_data = dict()
-        album_data['artist'] = self.get_naver_artist(soup.find('dd', class_='artist'))
+        album_data['artist'] = self.get_artist(soup.find('dd', class_='artist'))
         album_data['album_title'] = soup.find('div', class_='info_txt').h2.text
         album_data['album_cover'] = soup.find('div', class_='thumb').img['src']
-        album_data['tracks'] = self.get_naver_track_list(soup.find('tbody').find_all('tr'))
+        album_data['tracks'] = self.get_track_list(soup.find('tbody').find_all('tr'))
 
         return json.dumps(album_data, ensure_ascii=False)
 
-    @staticmethod
-    def get_bugs_artist(artist_data):
-        """Get artist data from Bugs."""
+    def get_parsed_data(self, input_url):
+        """Get parsed data and return JSON object."""
+        pattern = re.compile("music[.]naver[.]com")
+
+        match = pattern.search(input_url)
+        if match:
+            return self.parse_album(input_url)
+        else:
+            return None
+
+
+class BugsParser(MusicParser):
+    """ Parsing album information from Bugs. """
+
+    def get_artist(self, artist_data):
+        """Get artist information"""
         if artist_data.find('a'):
             artist_list = artist_data.find('td').find_all('a')
             if len(artist_list) == 1:
@@ -146,9 +177,8 @@ class MusicParser(object):
 
         return artist
 
-    @staticmethod
-    def get_bugs_track(track_data, disk_num):
-        """Get information for a track from Bugs."""
+    def get_track(self, track_data, disk_num):
+        """Get single track information from tag."""
         track = dict()
 
         track['disk'] = disk_num
@@ -178,8 +208,8 @@ class MusicParser(object):
 
         return track
 
-    def get_bugs_track_list(self, track_row_list):
-        """Get track list from Bugs."""
+    def get_track_list(self, track_row_list):
+        """Get track list from 'tr' tags."""
         disk_num = 1    # Set default disk number.
 
         tracks = []
@@ -190,29 +220,42 @@ class MusicParser(object):
                 disk = row.find('th', attrs={'scope': 'col'})
                 disk_num = int(disk.text.split(' ')[1])
             else:
-                tracks.append(self.get_bugs_track(row, disk_num))
+                tracks.append(self.get_track(row, disk_num))
 
         return tracks
 
-    def get_bugs_data(self, album_url):
-        """Get album data from Bugs and returns JSON data."""
+    def parse_album(self, album_url):
+        """Parse album data from music information site."""
         soup = self.get_original_data(album_url)
 
         # Get artist information.
         album_data = dict()
-        album_data['artist'] = self.get_bugs_artist(soup.find('table', class_='info').tr)
+        album_data['artist'] = self.get_artist(soup.find('table', class_='info').tr)
         album_data['album_title'] = soup.find('header', class_='pgTitle').h1.text
         album_data['album_cover'] = soup.find('div', class_='photos').img['src']
 
         # For supporting multiple disks
         table_row_list = soup.find('table', class_='trackList').find('tbody').find_all('tr')
-        album_data['tracks'] = self.get_bugs_track_list(table_row_list)
+        album_data['tracks'] = self.get_track_list(table_row_list)
 
         return json.dumps(album_data, ensure_ascii=False)
 
-    @staticmethod
-    def get_melon_artist(artist_data):
-        """ Get artist name from Melon. """
+    def get_parsed_data(self, input_url):
+        """Get parsed data and return JSON object."""
+        pattern = re.compile("bugs[.]co[.]kr")
+
+        match = pattern.search(input_url)
+        if match:
+            return self.parse_album(input_url)
+        else:
+            return None
+
+
+class MelonParser(MusicParser):
+    """ Parsing album information from Melon. """
+
+    def get_artist(self, artist_data):
+        """Get artist information"""
         if artist_data.find('span'):
             artist_list = artist_data.find_all('span', class_=None)
             if len(artist_list) == 1:
@@ -224,9 +267,8 @@ class MusicParser(object):
 
         return artist
 
-    @staticmethod
-    def get_melon_track(track_data, disk_num):
-        """Get information of a track from Melon."""
+    def get_track(self, track_data, disk_num):
+        """Get single track information from tag."""
         track = dict()
         track['disk'] = disk_num
         track['track_num'] = int(track_data.find('td', class_='no').div.text)
@@ -250,8 +292,8 @@ class MusicParser(object):
 
         return track
 
-    def get_melon_track_list(self, track_row_list):
-        """Get track list from Melon."""
+    def get_track_list(self, track_row_list):
+        """Get track list from 'tr' tags."""
         tracks = []
 
         for disk in track_row_list:
@@ -259,26 +301,39 @@ class MusicParser(object):
             track_rows = disk.find('tbody').find_all('tr')
 
             for row in track_rows:
-                tracks.append(self.get_melon_track(row, disk_num))
+                tracks.append(self.get_track(row, disk_num))
 
         return tracks
 
-    def get_melon_data(self, album_url):
-        """Get album data from Melon and returns JSON data."""
+    def parse_album(self, album_url):
+        """Parse album data from music information site."""
         soup = self.get_original_data(album_url)
 
         album_data = dict()
-        album_data['artist'] = self.get_melon_artist(soup.find('dl', class_='song_info clfix'))
+        album_data['artist'] = self.get_artist(soup.find('dl', class_='song_info clfix'))
         # Exclude strong and span tag when getting album title.
         album_data['album_title'] = soup.find('p', class_='albumname').find_all(text=True)[-1].strip()
         album_data['album_cover'] = soup.find('div', class_='wrap_thumb').find('img')['src']
-        album_data['tracks'] = self.get_melon_track_list(soup.find_all('table', attrs={'border': '1'}))
+        album_data['tracks'] = self.get_track_list(soup.find_all('table', attrs={'border': '1'}))
 
         return json.dumps(album_data, ensure_ascii=False)
 
-    @staticmethod
-    def get_allmusic_artist(artist_data):
-        """Get artist information from AllMusic."""
+    def get_parsed_data(self, input_url):
+        """Get parsed data and return JSON object."""
+        pattern = re.compile("melon[.]com")
+
+        match = pattern.search(input_url)
+        if match:
+            return self.parse_album(input_url)
+        else:
+            return None
+
+
+class AllMusicParser(MusicParser):
+    """ Parsing album information from AllMusic. """
+
+    def get_artist(self, artist_data):
+        """Get artist information"""
         if artist_data.find('a'):
             artist_list = artist_data.find_all('a')
             if len(artist_list) == 1:
@@ -290,9 +345,8 @@ class MusicParser(object):
 
         return artist
 
-    @staticmethod
-    def get_allmusic_track(track_data, disk_num):
-        """Get track information from AllMusic."""
+    def get_track(self, track_data, disk_num):
+        """Get single track information from tag."""
         track = dict()
         track['disk'] = disk_num
         track['track_num'] = track_data.find('td', class_='tracknum').text
@@ -306,8 +360,8 @@ class MusicParser(object):
 
         return track
 
-    def get_allmusic_track_list(self, track_row_list):
-        """Get track list from AllMusic."""
+    def get_track_list(self, track_row_list):
+        """Get track list from 'tr' tags."""
         tracks = []
 
         for disk in track_row_list:
@@ -319,12 +373,12 @@ class MusicParser(object):
             table_row_list = disk.find('tbody').find_all('tr')
 
             for row in table_row_list:
-                tracks.append(self.get_allmusic_track(row, disk_num))
+                tracks.append(self.get_track(row, disk_num))
 
         return tracks
 
-    def get_allmusic_data(self, album_url):
-        """Get album data from AllMusic and return JSON data."""
+    def parse_album(self, album_url):
+        """Parse album data from music information site."""
         soup = self.get_original_data(album_url)
 
         album_data = dict()
@@ -332,36 +386,21 @@ class MusicParser(object):
         sidebar = soup.find('div', class_='sidebar')        # To get album cover.
         content = soup.find('div', class_='content')        # To get artist, album title, track lists.
 
-        album_data['artist'] = self.get_allmusic_artist(content.find('h2', class_='album-artist'))
+        album_data['artist'] = self.get_artist(content.find('h2', class_='album-artist'))
         album_data['album_title'] = content.find('h1', class_='album-title').text.strip()
         album_data['album_cover'] = sidebar.find('div', class_='album-contain').find(
             'img', class_='media-gallery-image'
         )['src']
-        album_data['tracks'] = self.get_allmusic_track_list(content.find_all('div', class_='disc'))
+        album_data['tracks'] = self.get_track_list(content.find_all('div', class_='disc'))
 
         return json.dumps(album_data, ensure_ascii=False)
 
     def get_parsed_data(self, input_url):
-        """Get JSON data from music sites."""
-        bugs_pattern = re.compile("bugs[.]co[.]kr")
-        naver_music_pattern = re.compile("music[.]naver[.]com")
-        melon_pattern = re.compile("melon[.]com")
-        allmusic_pattern = re.compile("allmusic[.]com")
+        """Get parsed data and return JSON object."""
+        pattern = re.compile("allmusic[.]com")
 
-        match = bugs_pattern.search(input_url)
+        match = pattern.search(input_url)
         if match:
-            return self.get_bugs_data(input_url)
-
-        match = naver_music_pattern.search(input_url)
-        if match:
-            return self.get_naver_music_data(input_url)
-
-        match = melon_pattern.search(input_url)
-        if match:
-            return self.get_melon_data(input_url)
-
-        match = allmusic_pattern.search(input_url)
-        if match:
-            return self.get_allmusic_data(input_url)
-
-        return None
+            return self.parse_album(input_url)
+        else:
+            return None

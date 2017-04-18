@@ -78,10 +78,7 @@ class AlbumParseView(FormView):
     def form_valid(self, form):
         context = dict()
         original_url = self.request.POST['album_url']
-        music_parser = MusicParser()
-
-        # Parse URL and make JSON values.
-        new_url = music_parser.check_input(original_url)
+        new_url, parser = MusicParser.check_input(original_url)
 
         if new_url is None:
             # Error on parsing URL.
@@ -90,7 +87,7 @@ class AlbumParseView(FormView):
             context['error'] = True
             return render(self.request, self.template_name, context=context)
         else:
-            parsed_data = music_parser.get_parsed_data(new_url)
+            parsed_data = parser.get_parsed_data(new_url)
 
         # JSON data -> Data for user.
         json_data = json.loads(parsed_data)
