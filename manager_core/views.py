@@ -1,7 +1,13 @@
 import json
 import re
+import traceback
+
+from django.core.mail import EmailMessage
+
+from django.conf import settings
 
 from django.shortcuts import render, redirect, get_object_or_404
+from django.template.loader import get_template
 
 from django.views.generic.base import View
 from django.views.generic.list import ListView
@@ -60,6 +66,9 @@ class AlbumParseView(FormView):
     form_class = AlbumParseRequestForm
     template_name = 'manager_core/album_parse.html'
 
+    ERR_INVALID_URL = "유효하지 않은 URL 입니다. 다시 입력해 주세요."
+    ERR_ON_PARSING = "앨범 정보를 가져오는 중 오류가 발생했습니다."
+
     @staticmethod
     def make_disks(tracks):
         """Dividing all tracks per disk."""
@@ -78,28 +87,52 @@ class AlbumParseView(FormView):
     def form_valid(self, form):
         context = dict()
         original_url = self.request.POST['album_url']
-        new_url, parser = MusicParser.check_input(original_url)
 
-        if new_url is None:
-            # Error on parsing URL.
+        try:
+            new_url, parser = MusicParser.check_input(original_url)
+
+            if new_url is None:
+                # Error on parsing URL.
+                context['form'] = form
+                context['success'] = False
+                context['error'] = self.ERR_INVALID_URL
+                return render(self.request, self.template_name, context=context)
+            else:
+                parsed_data = parser.get_parsed_data(new_url)
+
+            # JSON data -> Data for user.
+            json_data = json.loads(parsed_data)
+
+            # Album title, cover, artist: unicode data.
+            context['album'] = Album(album_title=json_data['album_title'], album_artist=json_data['artist'])
+            context['external_cover'] = json_data['album_cover']
+            context['disks'] = self.make_disks(json_data['tracks'])
+            context['parsed_data'] = parsed_data
+            context['original_url'] = original_url
+            context['form'] = form
+            context['success'] = True
+        except Exception as e:
             context['form'] = form
             context['success'] = False
-            context['error'] = True
+            context['error'] = self.ERR_ON_PARSING
+
+            # Send email to report error.
+            if settings.DEBUG is False:
+                email_context = {
+                    'site': original_url,
+                    'exception': e,
+                    'traceback': traceback.format_exc()
+                }
+                message = get_template('manager_core/error_report_parsing.html').render(email_context)
+                error_email = EmailMessage('[MusicManager] Parsing Error Report',
+                                           message,
+                                           settings.SERVER_EMAIL,
+                                           settings.ADMINS)
+                error_email.content_subtype = 'html'
+                error_email.send(fail_silently=True)
+
             return render(self.request, self.template_name, context=context)
-        else:
-            parsed_data = parser.get_parsed_data(new_url)
 
-        # JSON data -> Data for user.
-        json_data = json.loads(parsed_data)
-
-        # Album title, cover, artist: unicode data.
-        context['album'] = Album(album_title=json_data['album_title'], album_artist=json_data['artist'])
-        context['external_cover'] = json_data['album_cover']
-        context['disks'] = self.make_disks(json_data['tracks'])
-        context['parsed_data'] = parsed_data
-        context['original_url'] = original_url
-        context['form'] = form
-        context['success'] = True
         return render(self.request, self.template_name, context=context)
 
 

@@ -73,7 +73,7 @@ class MusicParser(object):
         if match:
             return "http://www." + match.group(), AllMusicParser()
 
-        return None
+        return None, None
 
     def get_parsed_data(self, input_url):
         """Get JSON data from music sites."""

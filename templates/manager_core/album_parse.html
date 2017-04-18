@@ -18,9 +18,9 @@ MusicManager :: Add album
 </form>
 <div class="goni_padding"></div>
 <!-- Start of printing result -->
-{% if error == True %}
+{% if error is not None %}
     <div class="alert alert-danger" role="alert">
-        <strong>Parsing 실패!</strong> 유효하지 않은 URL 입니다. 다시 입력해 주세요.
+        <strong>Parsing 실패!</strong> {{ error }}
     </div>
 {% endif %}
 
