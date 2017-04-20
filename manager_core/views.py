@@ -25,6 +25,23 @@ import requests
 from io import BytesIO
 
 
+def send_error_report(url, exception, trace):
+    """Send email when an error occurs."""
+    if settings.DEBUG is False:
+        email_context = {
+            'site': url,
+            'exception': exception,
+            'traceback': trace
+        }
+        message = get_template('manager_core/error_report_parsing.html').render(email_context)
+        error_email = EmailMessage('[MusicManager] Parsing Error Report',
+                                   message,
+                                   settings.SERVER_EMAIL,
+                                   settings.ADMINS)
+        error_email.content_subtype = 'html'
+        error_email.send(fail_silently=False)
+
+
 # Create your views here.
 class AlbumLV(ListView):
     """List of all albums."""
@@ -117,19 +134,7 @@ class AlbumParseView(FormView):
             context['error'] = self.ERR_ON_PARSING
 
             # Send email to report error.
-            if settings.DEBUG is False:
-                email_context = {
-                    'site': original_url,
-                    'exception': e,
-                    'traceback': traceback.format_exc()
-                }
-                message = get_template('manager_core/error_report_parsing.html').render(email_context)
-                error_email = EmailMessage('[MusicManager] Parsing Error Report',
-                                           message,
-                                           settings.SERVER_EMAIL,
-                                           settings.ADMINS)
-                error_email.content_subtype = 'html'
-                error_email.send(fail_silently=True)
+            send_error_report(original_url, e, traceback.format_exc())
 
             return render(self.request, self.template_name, context=context)
 
