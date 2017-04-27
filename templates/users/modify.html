@@ -13,27 +13,23 @@ MusicManager :: Modify User Info
 
 <form method="post" action=".">
     {% csrf_token %}
-
     {% if form.errors %}
     <p>아래 입력에서 에러가 난 부분을 확인하세요.</p>
     {% endif %}
-
     {{ form|crispy }}
-
-    <input class="btn btn-default" type="submit" value="등록" />
-
+    <p>&nbsp;</p>
+    <input class="btn btn-primary" type="submit" value="정보 수정" />
 </form>
-
 <div class="goni_padding"></div>
 
+<div class="col-md-6 col-sm-6">
 <p>비밀번호 변경을 원하시면 다음 링크로 이동하십시오.</p>
 <a href="{% url 'user:password_change' %}" class="btn btn-default">Change Password</a>
-
-<div class="goni_padding"></div>
-
+</div>
+<div class="col-md-6 col-sm-6">
 <p>탈퇴를 원하시면 다음 링크로 이동하십시오.</p>
 <a href="{% url 'user:delete' %}" class="btn btn-danger">Remove Account</a>
-
+</div>
 <div class="goni_padding"></div>
 <!-- Body end -->
 {% endblock content %}

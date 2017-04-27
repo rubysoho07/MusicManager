@@ -7,23 +7,28 @@ MusicManager :: Register
 {% block content %}
 {% load crispy_forms_tags %}
 <!-- Body start -->
-<h1>Register</h1>
+<div class="col-md-1 col-sm-1 col-xs-1"></div>
+<div class="col-md-10 col-sm-10 col-xs-10">
+    <h1 class="text-center">
+    <img style="height: 80px; width: 80px;" src="https://s3.ap-northeast-2.amazonaws.com/musicmanager-statics/manager_core/images/favicon.ico"><br>
+    Register
+    </h1>
 
-<p>아래 양식을 채워 사용자 등록을 해 주시기 바랍니다.</p>
+    <p class="text-center">아래 양식을 채워 사용자 등록을 해 주시기 바랍니다.</p>
+    <p>&nbsp;</p>
+    <form method="post" action=".">
+        {% csrf_token %}
 
-<form method="post" action=".">
-    {% csrf_token %}
+        {% if form.errors %}
+        <p>아래 입력에서 에러가 난 부분을 확인하세요.</p>
+        {% endif %}
 
-    {% if form.errors %}
-    <p>아래 입력에서 에러가 난 부분을 확인하세요.</p>
-    {% endif %}
+        {{ form|crispy }}
 
-    {{ form|crispy }}
-
-    <input class="btn btn-default" type="submit" value="등록" />
-
-</form>
-
-<div class="goni_padding"></div>
+        <input class="btn btn-default" type="submit" value="등록" />
+    </form>
+</div>
+<div class="col-md-2 col-sm-2 col-xs-1"></div>
+<div style="height: 50px; clear: both;"></div>
 <!-- Body end -->
 {% endblock content %}

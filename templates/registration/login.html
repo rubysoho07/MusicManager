@@ -7,31 +7,39 @@ MusicManager :: Login
 {% block content %}
 {% load crispy_forms_tags %}
 <!-- Body start -->
-<h1>Login</h1>
+<div style="height: 40px; clear: both;">
+</div>
+<div class="col-md-2 col-sm-2 col-xs-1"></div>
+<div class="col-md-8 col-sm-8 col-xs-10">
+    <h1 class="text-center">
+        <img style="height: 80px; width: 80px;" src="https://s3.ap-northeast-2.amazonaws.com/musicmanager-statics/manager_core/images/favicon.ico"><br>
+        Login
+    </h1>
 
 {% if next %}
     {% if user.is_authenticated %}
-    <p>이 페이지를 볼 수 있는 권한이 없습니다. 진행하려면 권한이 있는 계정으로 로그인하세요.</p>
+    <p class="text-center">이 페이지를 볼 수 있는 권한이 없습니다. 진행하려면 권한이 있는 계정으로 로그인하세요.</p>
     {% else %}
-    <p>로그인을 해 주세요.</p>
+    <p class="text-center">로그인을 해 주세요.</p>
     {% endif %}
 {% endif %}
+    <p>&nbsp;</p>
+    <form method="post" action=".">
+        {% csrf_token %}
 
-<form method="post" action=".">
-    {% csrf_token %}
+        {% if form.errors %}
+        <p>입력하신 이메일 주소와 비밀번호가 맞지 않습니다.</p>
+        {% endif %}
+        {{ form|crispy }}
+        <div>
+            <input class="btn btn-primary" type="submit" value="로그인" />
+            &nbsp;
+            <a class="btn btn-default" href="{% url 'user:password_reset' %}">비밀번호 초기화</a>
+        </div>
 
-    {% if form.errors %}
-    <p>입력하신 이메일 주소와 비밀번호가 맞지 않습니다.</p>
-    {% endif %}
-    {{ form|crispy }}
-    <div>
-        <input class="btn btn-primary" type="submit" value="로그인" />
-        &nbsp;
-        <a class="btn btn-default" href="{% url 'user:password_reset' %}">비밀번호 초기화</a>
-    </div>
-
-</form>
-
-<div class="goni_padding"></div>
+    </form>
+</div>
+<div class="col-md-2 col-sm-2 col-xs-1"></div>
+<div style="height: 80px; clear: both;"></div>
 <!-- Body end -->
 {% endblock content %}
