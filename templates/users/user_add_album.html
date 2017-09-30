@@ -22,7 +22,7 @@ MusicManager :: Add album for user
 <p>이 앨범을 {% firstof user.get_short_name user.get_username %}님의 리스트에 등록하시겠습니까?</p>
 <form class="form-inline" role="form" action="{% url 'user:user_album_add'%}" method="POST">
 {% csrf_token %}
-    <input type="hidden" name="album_id" id="album_id" value="{{ object.album.id }}" />
+    <input type="hidden" name="album_id" id="album_id" value="{{ object.id }}" />
     <input class="btn btn-success" type="submit" value="등록" />
     <a class="btn btn-default" href="{% url 'user:main' %}">취소</a>
 </form>
