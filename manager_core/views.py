@@ -40,6 +40,8 @@ def send_error_report(url, exception, trace):
                                    settings.ADMINS)
         error_email.content_subtype = 'html'
         error_email.send(fail_silently=False)
+    else:
+        raise exception
 
 
 # Create your views here.
