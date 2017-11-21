@@ -215,9 +215,9 @@ class BugsParser(MusicParser):
         tracks = []
 
         for row in track_row_list:
-            if row.find('th', attrs={'scope': 'col'}):
+            if row.find('th', attrs={'scope': 'colgroup'}):
                 # Get disk number
-                disk = row.find('th', attrs={'scope': 'col'})
+                disk = row.find('th', attrs={'scope': 'colgroup'})
                 disk_num = int(disk.text.split(' ')[1])
             else:
                 tracks.append(self.get_track(row, disk_num))
@@ -234,8 +234,8 @@ class BugsParser(MusicParser):
         album_data['album_title'] = soup.find('header', class_='pgTitle').h1.text
         album_data['album_cover'] = soup.find('div', class_='photos').img['src']
 
-        # For supporting multiple disks
-        table_row_list = soup.find('table', class_='trackList').find('tbody').find_all('tr')
+        # For supporting multiple disks (And try to parse except first row)
+        table_row_list = soup.find('table', class_='trackList').find_all('tr')[1:]
         album_data['tracks'] = self.get_track_list(table_row_list)
 
         return json.dumps(album_data, ensure_ascii=False)
