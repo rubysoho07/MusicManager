@@ -18,8 +18,8 @@ class MusicParser(object):
         """Check album cover file pattern."""
         naver_pattern = re.compile('http://musicmeta[.]phinf[.]naver[.]net/album/.*[.]jpg[?].*')
         melon_pattern = re.compile('http://cdnimg[.]melon[.]co[.]kr/cm/album/images/.*[.]jpg')
-        bugs_pattern = re.compile('http://image[.]bugsm[.]co[.]kr/album/images/.*[.]jpg')
-        allmusic_pattern = re.compile('http://cps-static[.]rovicorp[.]com/.*[.]jpg.*')
+        bugs_pattern = re.compile('https://image[.]bugsm[.]co[.]kr/album/images/.*[.]jpg')
+        allmusic_pattern = re.compile('https://cps-static[.]rovicorp[.]com/.*[.]jpg.*')
 
         result = naver_pattern.search(original_url)
         if result:
