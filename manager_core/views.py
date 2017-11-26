@@ -170,7 +170,7 @@ class AlbumCreateView(View):
                                 BytesIO(requests.get(json_data['album_cover']).content)
                             )
         else:
-            album.album_cover_file = None
+            album.album_cover_file = 'manager_core/cover_files/no_cover.jpg'
 
         album.save()
 
