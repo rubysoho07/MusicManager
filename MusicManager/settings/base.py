@@ -4,20 +4,7 @@ import json
 from unipath import Path
 from django.core.exceptions import ImproperlyConfigured
 
-# Read JSON config file (From "Two Scoops of Django" book.)
-with open("settings.json") as f:
-    secrets = json.loads(f.read())
-
-
-def get_secret(setting, secret=secrets):
-    """ Get secret variables, or return exception. """
-    try:
-        return secret[setting]
-    except KeyError:
-        error_msg = "Set the {0} environment variable".format(setting)
-        raise ImproperlyConfigured(error_msg)
-
-SECRET_KEY = get_secret("SECRET_KEY")
+SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = Path(__file__).ancestor(3)
@@ -129,14 +116,14 @@ LOGOUT_REDIRECT_URL = LOGIN_URL
 
 # Settings related with sending email.
 
-EMAIL_HOST = str(get_secret("EMAIL_HOST"))
-EMAIL_PORT = int(get_secret("EMAIL_PORT"))
-EMAIL_HOST_USER = str(get_secret("EMAIL_HOST_USER"))
-EMAIL_HOST_PASSWORD = str(get_secret("EMAIL_HOST_PASSWORD"))
-DEFAULT_FROM_EMAIL = get_secret("DEFAULT_FROM_EMAIL")
+EMAIL_HOST = str(os.environ.get("EMAIL_HOST"))
+EMAIL_PORT = int(os.environ.get("EMAIL_PORT"))
+EMAIL_HOST_USER = str(os.environ.get("EMAIL_HOST_USER"))
+EMAIL_HOST_PASSWORD = str(os.environ.get("EMAIL_HOST_PASSWORD"))
+DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL")
 EMAIL_USE_SSL = True
 
 # The people who will get code error notifications. (When DEBUG=False)
 
 ADMINS = [('Yungon', 'hahafree12@gmail.com')]
-SERVER_EMAIL = get_secret("DEFAULT_FROM_EMAIL")
+SERVER_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL")
