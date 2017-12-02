@@ -1,0 +1,31 @@
+language: python
+
+python:
+  - "2.7"
+  - "3.5"
+  - "3.6"
+
+sudo: enabled
+
+# Command to install dependencies
+install:
+  - pip install -r requirements.txt
+  - pip install coveralls
+
+# Add databases.
+#services:
+#  - postgresql
+
+# Environment variables.
+#env:
+#  - DATABASE_URL=postgres:///$(whoami)
+
+# Build for master branch only.
+branches:
+  only:
+    - master
+
+# Command to run tests
+script: coverage run --source=manager_core manage.py test -v 2 --settings=MusicManager.settings.local
+
+after_success: coveralls
