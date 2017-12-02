@@ -271,23 +271,26 @@ class MelonParser(MusicParser):
         """Get single track information from tag."""
         track = dict()
         track['disk'] = disk_num
-        track['track_num'] = int(track_data.find('td', class_='no').div.text)
+        track['track_num'] = int(track_data.find('span', class_='rank').text)
         track_title_data = track_data.find('div', class_='ellipsis')
-        check_track_info = track_title_data.find_all('a')
+        check_track_info = track_title_data.find('a')
 
-        if len(check_track_info) == 2:
+        if check_track_info:
             # Song you can play.
-            track['track_title'] = check_track_info[-1].text
+            track['track_title'] = check_track_info.text
         else:
             # Song you can't play.
-            track['track_title'] = track_title_data.find_all('span')[-1].text
+            track['track_title'] = track_title_data.find('span', class_='disabled').text
 
         # Get track artist
-        track_artist_list = track_data.find('div', id='artistName').find('span', class_="checkEllipsis").find_all('a')
+        track_artist_list = track_data.find('div', class_='rank02') \
+                                      .find('span', class_='checkEllipsis') \
+                                      .find_all('a')
 
         if len(track_artist_list) == 1:
             track['track_artist'] = track_artist_list[0].text
         else:
+            # Support multiple artists for one song.
             track['track_artist'] = ", ".join(item.text for item in track_artist_list)
 
         return track
@@ -295,12 +298,16 @@ class MelonParser(MusicParser):
     def get_track_list(self, track_row_list):
         """Get track list from 'tr' tags."""
         tracks = []
+        disk_num = 1
 
         for disk in track_row_list:
-            disk_num = int(disk.find('caption').text.split(" ")[0][2:])
-            track_rows = disk.find('tbody').find_all('tr')
+            track_list = disk.find_all('tr')[1:]
 
-            for row in track_rows:
+            for row in track_list:
+                if 'class' in row.attrs:
+                    disk_num = int(row.find('strong').text[2:])
+                    continue
+
                 tracks.append(self.get_track(row, disk_num))
 
         return tracks
@@ -310,11 +317,12 @@ class MelonParser(MusicParser):
         soup = self.get_original_data(album_url)
 
         album_data = dict()
-        album_data['artist'] = self.get_artist(soup.find('dl', class_='song_info clfix'))
+        album_data['artist'] = self.get_artist(soup.find('div', class_='artist'))
         # Exclude strong and span tag when getting album title.
-        album_data['album_title'] = soup.find('p', class_='albumname').find_all(text=True)[-1].strip()
-        album_data['album_cover'] = soup.find('div', class_='wrap_thumb').find('img')['src']
-        album_data['tracks'] = self.get_track_list(soup.find_all('table', attrs={'border': '1'}))
+        album_data['album_title'] = soup.find('div', class_='song_name').find_all(text=True)[-1].strip()
+        album_data['album_cover'] = soup.find('div', class_='thumb').find('img')['src']
+        album_data['tracks'] = self.get_track_list(soup.find('div', class_='d_song_list').
+                                                   find_all('table'))
 
         return json.dumps(album_data, ensure_ascii=False)
 
