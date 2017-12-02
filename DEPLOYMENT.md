@@ -28,14 +28,12 @@ pip install -r requirement.txt
 </pre>
 
 ## Setting Configuration
-I store password settings with `settings.json` file. Write this file and save it project root directory.
-For example:
-``` json
-{
-  "SECRET_KEY": "SECRET_KEY",
-  "DB_PASSWORD": "PostgreSQL DB Password",
-  "PORT": "5432"
-}
+I store password settings in environment variables. Below are examples: 
+
+``` 
+$ export SECRET_KEY="SECRET_KEY"
+$ export DB_PASSWORD="PostgreSQL DB Password"
+$ export DB_PORT="5432"
 ```
 You can generate your `SECRET_KEY` with http://www.miniwebtool.com/django-secret-key-generator/.
 
