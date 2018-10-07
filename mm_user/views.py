@@ -5,7 +5,7 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormVi
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-from django.core.urlresolvers import reverse_lazy
+from django.urls import reverse_lazy
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from django.db.models import Q, Avg
