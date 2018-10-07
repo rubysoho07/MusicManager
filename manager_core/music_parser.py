@@ -169,9 +169,9 @@ class BugsParser(MusicParser):
         if artist_data.find('a'):
             artist_list = artist_data.find('td').find_all('a')
             if len(artist_list) == 1:
-                artist = artist_list[0].text
+                artist = artist_list[0].text.strip()
             else:
-                artist = ", ".join(item.text for item in artist_list)
+                artist = ", ".join(item.text.strip() for item in artist_list)
         else:
             artist = artist_data.find('td').text.strip()
 
