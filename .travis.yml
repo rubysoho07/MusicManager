@@ -1,7 +1,6 @@
 language: python
 
 python:
-  - "3.5"
   - "3.6"
   - "3.7"
 
@@ -22,10 +21,11 @@ install:
 #env:
 #  - DATABASE_URL=postgres:///$(whoami)
 
-# Build for master branch only.
+# Build for master & dev branch only.
 branches:
   only:
     - master
+    - dev
 
 # Command to run tests
 script: coverage run --source=manager_core manage.py test -v 2 --settings=MusicManager.settings.local
