@@ -53,7 +53,7 @@ def album_info(context, album_link, add_delete_button):
     information['user'] = context['user']
 
     # Make add/delete button.
-    if add_delete_button is True and information['user'].is_authenticated():
+    if add_delete_button is True and information['user'].is_authenticated:
         my_album = information['album'].mmuseralbum_set.filter(Q(user=information['user']))
         if len(my_album) == 0:
             information['add_user_album'] = True
