@@ -14,12 +14,13 @@ install:
   - pip install coveralls
 
 # Add databases.
-#services:
-#  - postgresql
+services:
+  - postgresql
 
-# Environment variables.
-#env:
-#  - DATABASE_URL=postgres:///$(whoami)
+# Database configuration
+before_script:
+  - psql -c 'CREATE USER musicmanager WITH PASSWORD 'testdbpw';' -U postgres
+  - psql -c 'CREATE DATABASE musicmanager OWNER musicmanager;' -U postgres
 
 # Build for master & dev branch only.
 branches:
@@ -28,6 +29,6 @@ branches:
     - dev
 
 # Command to run tests
-script: coverage run --source=manager_core manage.py test -v 2 --settings=MusicManager.settings.local
+script: coverage run --source=manager_core manage.py test -v 2 --settings=MusicManager.settings.dev
 
 after_success: coveralls
