@@ -20,6 +20,7 @@ services:
 # Database configuration
 before_script:
   - psql -c "CREATE USER musicmanager WITH ENCRYPTED PASSWORD 'testdbpw';" -U postgres
+  - psql -c 'ALTER USER musicmanager CREATEDB;' -U postgres
   - psql -c 'CREATE DATABASE musicmanager OWNER musicmanager;' -U postgres
   - psql -c 'GRANT ALL PRIVILEGES ON DATABASE musicmanager TO musicmanager;' -U postgres
 
