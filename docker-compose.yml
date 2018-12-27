@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+  mm_db:
+    image: postgres:10
+    environment:
+      - POSTGRES_PASSWORD=testdbpw
+      - POSTGRES_USER=musicmanager
+      - POSTGRES_DB=musicmanager
+
+  mm_web:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    environment:
+      - DB_HOST=mm_db
+      - DB_PASSWORD=testdbpw
+      - DB_PORT=5432
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mm_db
+    command: ["./wait-for-it.sh", "mm_db:5432", "--", "./docker_dev_entrypoint.sh"]
+
+
+
