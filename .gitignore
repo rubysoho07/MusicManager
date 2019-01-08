@@ -15,3 +15,6 @@ MusicManager.log
 
 # Ignore database file for local development.
 db.sqlite3
+
+# Environment variables for Docker Images.
+.env
