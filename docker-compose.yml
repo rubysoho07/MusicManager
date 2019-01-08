@@ -7,6 +7,8 @@ services:
       - POSTGRES_PASSWORD=testdbpw
       - POSTGRES_USER=musicmanager
       - POSTGRES_DB=musicmanager
+    volumes:
+      - ./data:/var/lib/postgresql/data
 
   mm_web:
     build:
