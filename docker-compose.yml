@@ -32,7 +32,7 @@ services:
       - "8000:8000"
     depends_on:
       - mm_db
-    command: ["./wait-for-it.sh", "mm_db:5432", "--", "./docker_dev_entrypoint.sh"]
+    command: ["./wait-for-it.sh", "mm_db:5432", "--", "./docker_entrypoint.sh", "dev"]
 
 
 
