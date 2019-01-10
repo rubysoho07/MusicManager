@@ -28,11 +28,18 @@ services:
       - EMAIL_HOST_USER=${EMAIL_HOST_USER}
       - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD}
       - DEFAULT_FROM_EMAIL=${DEFAULT_FROM_EMAIL}
-    ports:
-      - "8000:8000"
+      - DJANGO_SETTINGS_MODULE=MusicManager.settings.dev
+    expose:
+      - "8000"
     depends_on:
       - mm_db
     command: ["./wait-for-it.sh", "mm_db:5432", "--", "./docker_entrypoint.sh", "dev"]
 
-
-
+  mm_nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx_conf/dev/:/etc/nginx/conf.d/
+    depends_on:
+      - mm_web
