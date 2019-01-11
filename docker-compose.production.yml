@@ -1,0 +1,46 @@
+version: '3'
+
+services:
+  mm_db:
+    image: postgres:10
+    environment:
+      - POSTGRES_PASSWORD=testdbpw
+      - POSTGRES_USER=musicmanager
+      - POSTGRES_DB=musicmanager
+    volumes:
+      - ./data:/var/lib/postgresql/data
+
+  mm_web:
+    image: hahafree12/musicmanager:1.2.0
+    environment:
+      - DB_HOST=mm_db
+      - DB_PASSWORD=testdbpw
+      - DB_PORT=5432
+      - SECRET_KEY=${SECRET_KEY}
+      - AWS_STORAGE_BUCKET_NAME=${AWS_STORAGE_BUCKET_NAME}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_S3_REGION_NAME=${AWS_S3_REGION_NAME}
+      - EMAIL_HOST=${EMAIL_HOST}
+      - EMAIL_PORT=${EMAIL_PORT}
+      - EMAIL_HOST_USER=${EMAIL_HOST_USER}
+      - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD}
+      - DEFAULT_FROM_EMAIL=${DEFAULT_FROM_EMAIL}
+      - DJANGO_SETTINGS_MODULE=MusicManager.settings.production
+    expose:
+      - "8000"
+    depends_on:
+      - mm_db
+    command: ["./wait-for-it.sh", "mm_db:5432", "--", "./docker_entrypoint.sh", "production"]
+
+  mm_nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx_conf/production/:/etc/nginx/conf.d/
+      - /etc/letsencrypt/live/musicmanager.gonigoni.kr/fullchain.pem:/etc/letsencrypt/live/musicmanager.gonigoni.kr/fullchain.pem
+      - /etc/letsencrypt/live/musicmanager.gonigoni.kr/privkey.pem:/etc/letsencrypt/live/musicmanager.gonigoni.kr/privkey.pem
+    depends_on:
+      - mm_web
