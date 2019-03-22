@@ -1,0 +1,11 @@
+# Exclude data directory
+data/
+
+# Exclude unnecessary directory and files
+.vscode/
+.idea/
+.git/
+nginx_conf/
+*.yml
+Dockerfile
+README.md
