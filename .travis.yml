@@ -13,9 +13,10 @@ install:
   - pip install -r requirements.txt
   - pip install coveralls
 
-# Add databases.
+# Add database & Docker
 services:
   - postgresql
+  - docker
 
 # Database configuration
 before_script:
@@ -33,4 +34,9 @@ branches:
 # Command to run tests
 script: coverage run --source=manager_core manage.py test -v 2 --settings=MusicManager.settings.dev
 
-after_success: coveralls
+# Build and push Docker image and check coverage of all codes
+after_success:
+  - docker login --username $(DOCKERHUB_USERNAME) --password-stdin
+  - docker build -t $(DOCKERHUB_USERNAME)/musicmanager -t $(DOCKERHUB_USERNAME)/musicmanager:$(git describe --tags) .
+  - docker push $(DOCKERHUB_USERNAME)/musicmanager $(DOCKERHUB_USERNAME)/musicmanager:$(git describe --tags)
+  - coveralls
