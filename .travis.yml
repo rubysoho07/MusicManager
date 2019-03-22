@@ -36,7 +36,7 @@ script: coverage run --source=manager_core manage.py test -v 2 --settings=MusicM
 
 # Build and push Docker image and check coverage of all codes
 after_success:
-  - docker login --username $(DOCKERHUB_USERNAME) --password-stdin
-  - docker build -t $(DOCKERHUB_USERNAME)/musicmanager -t $(DOCKERHUB_USERNAME)/musicmanager:$(git describe --tags) .
-  - docker push $(DOCKERHUB_USERNAME)/musicmanager $(DOCKERHUB_USERNAME)/musicmanager:$(git describe --tags)
+  - echo $DOCKERHUB_PASSWORD | docker login --username $DOCKERHUB_USERNAME --password-stdin
+  - docker build -t $DOCKERHUB_USERNAME/musicmanager -t $DOCKERHUB_USERNAME/musicmanager:$(git describe --tag --abbrev=0) .
+  - docker push $DOCKERHUB_USERNAME/musicmanager $DOCKERHUB_USERNAME/musicmanager:$(git describe --tag --abbrev=0)
   - coveralls
