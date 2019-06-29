@@ -1,6 +1,6 @@
 beautifulsoup4==4.6.3
 boto3==1.9.96
-Django==2.1.7
+Django==2.2.2
 django-cleanup==2.1.0
 django-crispy-forms==1.7.2
 django-storages==1.7.1
