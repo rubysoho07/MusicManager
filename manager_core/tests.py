@@ -85,7 +85,7 @@ class MusicParserTestCase(TestCase):
         """Check parsing from Naver Music."""
         result1 = self.naver_music_parser.parse_album(self.naver_music_example_1)
         result1_json = json.loads(result1)
-        self.assertEqual(result1_json['artist'], "크라잉 넛, 노브레인")
+        self.assertEqual(result1_json['artist'], "크라잉넛(CRYING NUT), 노브레인")
         self.assertEqual(result1_json['album_title'], "96")
 
         result2 = self.naver_music_parser.parse_album(self.naver_music_example_2)
@@ -97,7 +97,7 @@ class MusicParserTestCase(TestCase):
         """Check parsing from Melon."""
         result1 = self.melon_parser.parse_album(self.melon_example_1)
         result1_json = json.loads(result1)
-        self.assertEqual(result1_json['artist'], "크라잉 넛, 노브레인")
+        self.assertEqual(result1_json['artist'], "크라잉넛 (CRYING NUT), 노브레인")
         self.assertEqual(result1_json['album_title'], "96")
 
         result2 = self.melon_parser.parse_album(self.melon_example_2)
