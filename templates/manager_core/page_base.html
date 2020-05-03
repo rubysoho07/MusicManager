@@ -72,7 +72,7 @@
 		<!-- Footer -->
         <div class="col-md-12 gonifooter">
 		    <div class="container">
-				<p style="padding-top:5px;">2016~2017 April Station Lab(Yungon Park). All rights reserved.</p>
+                <p style="padding-top:5px;">2016~<span id="year"></span> April Station Lab(Yungon Park). All rights reserved.</p>
 			</div>
 		</div>
 
@@ -83,4 +83,8 @@
 		{% block addtional_scripts %}
 		{% endblock %}
 	</body>
+
+    <script>
+        document.getElementById("year").innerHTML = (new Date().getFullYear()).toString();
+    </script>
 </html>
