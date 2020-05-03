@@ -1,0 +1,10 @@
+{
+    "dev": {
+        "aws_region": "ap-northeast-2",
+        "django_settings": "MusicManager.settings.dev",
+        "profile_name": "default",
+        "project_name": "musicmanager",
+        "runtime": "python3.7",
+        "s3_bucket": "musicmanager-deployment"
+    }
+}
