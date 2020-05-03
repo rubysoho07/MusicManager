@@ -1,8 +1,5 @@
 # MusicManager
 
-[![Build Status](https://travis-ci.org/rubysoho07/MusicManager.svg?branch=master)](https://travis-ci.org/rubysoho07/MusicManager.svg?branch=master)
-[![Coverage Status](https://coveralls.io/repos/github/rubysoho07/MusicManager/badge.svg?branch=master)](https://coveralls.io/github/rubysoho07/MusicManager?branch=master)
-
 MusicManager와 함께 자신의 음반을 관리하고 취향을 공유해 보세요!
 
 아래와 같은 사항을 지원합니다.
