@@ -1,12 +1,10 @@
 from __future__ import unicode_literals
-from django.utils.encoding import python_2_unicode_compatible
 
 from django.db import models
 from django.conf import settings
 
 
 # Create your models here.
-@python_2_unicode_compatible
 class Album(models.Model):
     """Album consists of artist, title, cover image, URL, and some information."""
 
@@ -24,7 +22,6 @@ class Album(models.Model):
         return self.album_artist + " - " + self.album_title
 
 
-@python_2_unicode_compatible
 class AlbumTrack(models.Model):
     """Album track related with an album."""
 

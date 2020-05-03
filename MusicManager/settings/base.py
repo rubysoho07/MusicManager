@@ -115,12 +115,12 @@ LOGOUT_REDIRECT_URL = LOGIN_URL
 
 # Settings related with sending email.
 
-EMAIL_HOST = str(os.environ.get("EMAIL_HOST"))
-EMAIL_PORT = int(os.environ.get("EMAIL_PORT"))
-EMAIL_HOST_USER = str(os.environ.get("EMAIL_HOST_USER"))
-EMAIL_HOST_PASSWORD = str(os.environ.get("EMAIL_HOST_PASSWORD"))
-DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL")
-EMAIL_USE_SSL = True
+# EMAIL_HOST = str(os.environ.get("EMAIL_HOST"))
+# EMAIL_PORT = int(os.environ.get("EMAIL_PORT"))
+# EMAIL_HOST_USER = str(os.environ.get("EMAIL_HOST_USER"))
+# EMAIL_HOST_PASSWORD = str(os.environ.get("EMAIL_HOST_PASSWORD"))
+# DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL")
+# EMAIL_USE_SSL = True
 
 # The people who will get code error notifications. (When DEBUG=False)
 
