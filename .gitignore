@@ -21,3 +21,6 @@ db.sqlite3
 
 # Temporary data for Docker Compose.
 data/
+
+# Environment variables for Zappa.
+environment.json

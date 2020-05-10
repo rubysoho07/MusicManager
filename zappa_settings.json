@@ -1,10 +1,21 @@
 {
-    "dev": {
+    "production": {
         "aws_region": "ap-northeast-2",
-        "django_settings": "MusicManager.settings.dev",
+        "django_settings": "MusicManager.settings.production",
         "profile_name": "default",
         "project_name": "musicmanager",
         "runtime": "python3.7",
-        "s3_bucket": "musicmanager-deployment"
+        "s3_bucket": "musicmanager-deployment",
+        "environment_variables": {
+            "AWS_S3_REGION_NAME": "ap-northeast-2"
+        },
+        "remote_env": "s3://musicmanager-deployment/environment.json",
+        "vpc_config": {
+            "SubnetIds": ["subnet-038c6c6a", "subnet-24b3916e"],
+            "SecurityGroupIds": ["sg-0bf185eb024b72f38"]
+        },
+        "keep_warm": false,
+        "timeout_seconds": 240,
+        "memory_size": 2048
     }
 }
