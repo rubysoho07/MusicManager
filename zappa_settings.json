@@ -11,7 +11,7 @@
         },
         "remote_env": "s3://musicmanager-deployment/environment.json",
         "vpc_config": {
-            "SubnetIds": ["subnet-038c6c6a", "subnet-24b3916e"],
+            "SubnetIds": ["subnet-019ad6d70a5041388", "subnet-03a707a8c30952378"],
             "SecurityGroupIds": ["sg-0bf185eb024b72f38"]
         },
         "keep_warm": false,
