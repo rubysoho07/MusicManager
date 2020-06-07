@@ -1,6 +1,5 @@
 from __future__ import unicode_literals
 
-from django.utils.encoding import python_2_unicode_compatible
 from django.contrib.auth.models import PermissionsMixin
 from django.db import models
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
@@ -48,7 +47,6 @@ class MmUserManager(BaseUserManager):
         return user
 
 
-@python_2_unicode_compatible
 class MmUser(AbstractBaseUser, PermissionsMixin):
     """Model for a MusicManager user."""
 

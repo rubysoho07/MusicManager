@@ -7,30 +7,12 @@ DEBUG = True
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'musicmanager',
-        'USER': 'musicmanager',
-        'PASSWORD': os.environ.get("DB_PASSWORD"),
-        'HOST': os.environ.get("DB_HOST"),
-        'PORT': os.environ.get("DB_PORT"),
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
 
-# Static & Media files. (Use AWS S3)
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/1.9/howto/static-files/
 
-DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-
-STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-
-AWS_STORAGE_BUCKET_NAME = os.environ.get("AWS_STORAGE_BUCKET_NAME")
-AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID")
-AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY")
-
-# Caution: Some region only supports S3 Signature version 4. (e.g. Seoul, Frankfurt...)
-AWS_S3_REGION_NAME = os.environ.get("AWS_S3_REGION_NAME")
-AWS_S3_SIGNATURE_VERSION = 's3v4'
-AWS_QUERYSTRING_AUTH = False
-AWS_S3_FILE_OVERWRITE = True
-AWS_S3_HOST = 's3.%s.amazonaws.com' % AWS_S3_REGION_NAME
-
-MEDIA_URL = "https://%s/" % AWS_S3_HOST
+STATIC_ROOT = os.path.join(BASE_DIR, "static")

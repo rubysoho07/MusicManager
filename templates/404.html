@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-{% load staticfiles %}
+{% load static %}
 <html lang="en">
 	<head>
 		<meta charset="utf-8">
@@ -59,7 +59,11 @@
             </p>
             <p><a href="http://musicmanager.gonigoni.kr">MusicManager 홈으로 이동</a> </p>
             <hr style="border:none; height:1px; color: #6f6f6f; background-color: #6f6f6f;"/>
-            <p class="footer">2016~2017 April Station Lab / Yungon Park</p>
+            <p class="footer">2016~<span id="year"></span> April Station Lab / Yungon Park</p>
         </div>
     </body>
+
+    <script>
+        document.getElementById("year").innerHTML = (new Date().getFullYear()).toString();
+    </script>
 </html>

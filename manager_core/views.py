@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import json
 import re
 import traceback
@@ -18,15 +16,20 @@ from django.views.generic.edit import DeleteView, FormView
 
 from django.urls import reverse_lazy
 
+from zappa.asynchronous import task
+
 from .forms import AlbumSearchForm, AlbumParseRequestForm
 from .models import Album, AlbumTrack, AlbumComment
-from .music_parser import MusicParser
+
+from MusicParser.parser import MusicParser
+from MusicParser.parser import InvalidURLError
 
 # To save album cover image.
 import requests
 from io import BytesIO
 
 
+@task
 def send_error_report(url, exception, trace):
     """Send email when an error occurs."""
     if settings.DEBUG is False:
@@ -111,27 +114,21 @@ class AlbumParseView(FormView):
 
         try:
             new_url, parser = MusicParser.check_input(original_url)
-
-            if new_url is None:
-                # Error on parsing URL.
-                context['form'] = form
-                context['success'] = False
-                context['error'] = self.ERR_INVALID_URL
-                return render(self.request, self.template_name, context=context)
-            else:
-                parsed_data = parser.get_parsed_data(new_url)
-
-            # JSON data -> Data for user.
-            json_data = json.loads(parsed_data)
+            album_data = parser.to_dict(new_url)
 
             # Album title, cover, artist: unicode data.
-            context['album'] = Album(album_title=json_data['album_title'], album_artist=json_data['artist'])
-            context['external_cover'] = json_data['album_cover']
-            context['disks'] = self.make_disks(json_data['tracks'])
-            context['parsed_data'] = parsed_data
+            context['album'] = Album(album_title=album_data['album_title'], album_artist=album_data['artist'])
+            context['external_cover'] = album_data['album_cover']
+            context['disks'] = self.make_disks(album_data['tracks'])
+            context['parsed_data'] = json.dumps(album_data, ensure_ascii=False)
             context['original_url'] = original_url
             context['form'] = form
             context['success'] = True
+        except InvalidURLError:
+            context['form'] = form
+            context['success'] = False
+            context['error'] = self.ERR_INVALID_URL
+            return render(self.request, self.template_name, context=context)
         except Exception as e:
             context['form'] = form
             context['success'] = False
@@ -264,7 +261,7 @@ class ArtistAlbumListView(AlbumLV):
 
     def get_artist_name(self):
         """Get artist name from an album and exclude artist name in brackets."""
-        pattern = re.compile("(?P<artist>.+)\((?P<foreign_language>.+)\)")
+        pattern = re.compile(r"(?P<artist>.+)\((?P<foreign_language>.+)\)")
         artist_name = Album.objects.filter(id=self.kwargs['pk'])[0].album_artist
 
         match = pattern.search(artist_name)
