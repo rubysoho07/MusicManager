@@ -10,7 +10,13 @@ MusicManager와 함께 자신의 음반을 관리하고 취향을 공유해 보�
 * 별점 기능
 * 두 사용자 간 동일한 앨범 존재 여부 확인 기능
 
-테스트 사이트에서 MusicManager를 체험하고 싶으시면, GitHub 프로필에 있는 메일 주소로 메일을 보내 주시기 바랍니다.
+## 배포 가이드
+
+1. Zappa 환 초기화: `zappa init`
+2. 데이터베이스 설정: `zappa manage production migrate --settings=MusicManager.settings.production`
+3. 최초 배포 수행: `zappa deploy production`
+4. 업데이트 배포: `zappa update production`
+5. Lambda 함수 및 API Gateway 삭제: `zappa undeploy production`
 
 (English Version)
 
@@ -24,4 +30,10 @@ I support these below:
 * Star ratings
 * See similar interest between logged user and another user
 
-If you want to experience MusicManager in test site, send email to me. (My address is in my GitHub profile.)
+## Deployment Guide
+
+1. Initialize configuration: `zappa init`
+2. Configure database: `zappa manage production migrate --settings=MusicManager.settings.production`
+3. First deployment: `zappa deploy production`
+4. Update application: `zappa update production`
+5. Remove Lambda functions & API Gateway: `zappa undeploy production`
