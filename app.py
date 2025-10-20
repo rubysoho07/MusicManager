@@ -1,6 +1,6 @@
 import os
 import json
-from flask import Flask, Response
+from flask import Flask, Response, request
 from supabase import create_client, Client
 
 app = Flask(__name__)
@@ -16,7 +16,10 @@ def health_check():
 
 @app.route('/albums')
 def get_albums():
-    response = supabase.table('albums').select("*").limit(20).execute()
+    page = int(request.args.get('page', 1))
+    page_size = 20
+    offset = (page - 1) * page_size
+    response = supabase.table('albums').select("*").range(offset, offset + page_size - 1).execute()
     if response.data:
         return Response(json.dumps(response.data, ensure_ascii=False), mimetype='application/json')
     else:
