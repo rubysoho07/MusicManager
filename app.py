@@ -44,5 +44,45 @@ def search_albums():
         error_message = {"error": "No albums found or an error occurred."}
         return Response(json.dumps(error_message, ensure_ascii=False), mimetype='application/json', status=500)
 
+
+@app.route('/slash-command/albums/search', methods=['POST'])
+def slash_search_albums():
+    keyword = request.form.get('text')
+
+    if not keyword:
+        return Response("Keyword not provided", status=400)
+
+    response = supabase.table('albums').select('*').or_(f'artist.ilike.%{keyword}%,title.ilike.%{keyword}%').execute()
+
+    if response.data:
+        results = []
+        for album in response.data:
+            results.append(f"{album['artist']} / {album['title']} / {album['media']}")
+        
+        response_text = '\n'.join(results)
+    else:
+        response_text = "No albums found."
+
+    slack_response = {
+        "blocks": [
+            {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": ":cd: *검색 결과*"
+                }
+            },
+            {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": response_text
+                }
+            }
+        ]
+    }
+    return Response(json.dumps(slack_response, ensure_ascii=False), mimetype='application/json')
+
+
 if __name__ == '__main__':
     app.run(debug=True)
