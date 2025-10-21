@@ -1,9 +1,11 @@
 import os
 import json
 from flask import Flask, Response, request
+from flask_cors import CORS
 from supabase import create_client, Client
 
 app = Flask(__name__)
+CORS(app)
 
 # Supabase setup
 url: str = os.environ.get("SUPABASE_URL")
@@ -85,4 +87,4 @@ def slash_search_albums():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=8080, debug=True)
