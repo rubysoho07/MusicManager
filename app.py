@@ -123,5 +123,34 @@ def add_album():
             </form>
         """
 
+@app.route('/slash-command/albums/add', methods=['POST'])
+def slash_add_album_button():
+    domain = os.environ.get('DOMAIN')
+    slack_response = {
+        "blocks": [
+            {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": ":cd: *앨범을 추가하려면 아래 버튼을 클릭하세요*"
+                }
+            },
+            {
+                "type": "actions",
+                "elements": [
+                    {
+                        "type": "button",
+                        "text": {
+                            "type": "plain_text",
+                            "text": "앨범 추가"
+                        },
+                        "url": f'https://{domain}/add-album'
+                    }
+                ]
+            }
+        ]
+    }
+    return Response(json.dumps(slack_response, ensure_ascii=False), mimetype='application/json')
+
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=8080, debug=True)
