@@ -86,5 +86,42 @@ def slash_search_albums():
     return Response(json.dumps(slack_response, ensure_ascii=False), mimetype='application/json')
 
 
+@app.route('/add-album', methods=['GET', 'POST'])
+def add_album():
+    if request.method == 'POST':
+        artist = request.form.get('artist')
+        title = request.form.get('title')
+        media = request.form.get('media')
+
+        if not all([artist, title, media]):
+            return Response(json.dumps({"error": "All fields are required"}), mimetype='application/json', status=400)
+
+        response = supabase.table('albums').insert({
+            "artist": artist,
+            "title": title,
+            "media": media
+        }).execute()
+
+        if response.data:
+            return Response(json.dumps(response.data, ensure_ascii=False), mimetype='application/json')
+        else:
+            error_message = {"error": "Failed to add album."}
+            return Response(json.dumps(error_message, ensure_ascii=False), mimetype='application/json', status=500)
+    else:
+        return """
+            <form method="post">
+                <label for="artist">Artist:</label><br>
+                <input type="text" id="artist" name="artist"><br>
+                <label for="title">Title:</label><br>
+                <input type="text" id="title" name="title"><br>
+                <label for="media">Media:</label><br>
+                <select id="media" name="media">
+                    <option value="Tape">Tape</option>
+                    <option value="CD" selected>CD</option>
+                </select><br><br>
+                <input type="submit" value="Submit">
+            </form>
+        """
+
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=8080, debug=True)
