@@ -4,26 +4,5 @@
 # Ignore files made by PyCharm.
 .idea/
 
-# Ignore media(album cover) files.
-media/
-
-# Ignore static directory. (Static files are on AWS S3)
-/static/
-
-# Ignore log file.
-MusicManager.log
-
-# Ignore database file for local development.
-db.sqlite3
-
-# Environment variables for Docker Images.
-.env
-
-# Temporary data for Docker Compose.
-data/
-
-# Environment variables for Zappa.
-environment.json
-
-# Automatically created files from Zappa.
-*-template-*.json
+# Ignore virtual environment folders.
+.venv/
