@@ -1,0 +1,21 @@
+[tool.ruff]
+# Increase line length to 120 characters from the default of 88.
+line-length = 120
+
+# Same as Black.
+target-version = "py311"
+
+[tool.ruff.lint]
+# Enable the default set of rules, plus flake8-bugbear, and isort.
+# See https://docs.astral.sh/ruff/rules/ for a full list of rules.
+select = ["E", "F", "W", "B", "I"]
+
+# Never enforce `E501` (line-too-long), since we use `ruff format` for formatting.
+ignore = ["E501"]
+
+# Allow unused variables in `__init__.py` files.
+exclude = ["__init__.py"]
+
+[tool.ruff.format]
+# Like Black, use double quotes for strings.
+quote-style = "double"

@@ -1,8 +1,9 @@
-import os
 import json
+import os
+
 from flask import Flask, Response, request
 from flask_cors import CORS
-from supabase import create_client, Client
+from supabase import Client, create_client
 
 app = Flask(__name__)
 CORS(app)
@@ -60,7 +61,7 @@ def slash_search_albums():
         results = []
         for album in response.data:
             results.append(f"{album['artist']} / {album['title']} / {album['media']}")
-        
+
         response_text = '\n'.join(results)
     else:
         response_text = "No albums found."
