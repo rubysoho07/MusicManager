@@ -13,101 +13,94 @@ url: str = os.environ.get("SUPABASE_URL")
 key: str = os.environ.get("SUPABASE_KEY")
 supabase: Client = create_client(url, key)
 
-@app.route('/health')
+
+@app.route("/health")
 def health_check():
-    return 'OK'
+    return "OK, MusicManager is healthy!"
 
-@app.route('/albums')
+
+@app.route("/albums")
 def get_albums():
-    page = int(request.args.get('page', 1))
+    page = int(request.args.get("page", 1))
     page_size = 20
     offset = (page - 1) * page_size
-    response = supabase.table('albums').select("*").range(offset, offset + page_size - 1).execute()
+    response = supabase.table("albums").select("*").range(offset, offset + page_size - 1).execute()
     if response.data:
-        return Response(json.dumps(response.data, ensure_ascii=False), mimetype='application/json')
+        return Response(json.dumps(response.data, ensure_ascii=False), mimetype="application/json")
     else:
         error_message = {"error": "No albums found or an error occurred."}
-        return Response(json.dumps(error_message, ensure_ascii=False), mimetype='application/json', status=500)
+        return Response(json.dumps(error_message, ensure_ascii=False), mimetype="application/json", status=500)
 
-@app.route('/albums/search')
+
+@app.route("/albums/search")
 def search_albums():
-    keyword = request.args.get('keyword')
+    keyword = request.args.get("keyword")
     if not keyword:
-        return Response(json.dumps({"error": "Keyword not provided"}), mimetype='application/json', status=400)
+        return Response(json.dumps({"error": "Keyword not provided"}), mimetype="application/json", status=400)
 
-    page = int(request.args.get('page', 1))
+    page = int(request.args.get("page", 1))
     page_size = 20
     offset = (page - 1) * page_size
 
-    response = supabase.table('albums').select('*').or_(f'artist.ilike.%{keyword}%,title.ilike.%{keyword}%').range(offset, offset + page_size - 1).execute()
+    response = (
+        supabase.table("albums")
+        .select("*")
+        .or_(f"artist.ilike.%{keyword}%,title.ilike.%{keyword}%")
+        .range(offset, offset + page_size - 1)
+        .execute()
+    )
 
     if response.data:
-        return Response(json.dumps(response.data, ensure_ascii=False), mimetype='application/json')
+        return Response(json.dumps(response.data, ensure_ascii=False), mimetype="application/json")
     else:
         error_message = {"error": "No albums found or an error occurred."}
-        return Response(json.dumps(error_message, ensure_ascii=False), mimetype='application/json', status=500)
+        return Response(json.dumps(error_message, ensure_ascii=False), mimetype="application/json", status=500)
 
 
-@app.route('/slash-command/albums/search', methods=['POST'])
+@app.route("/slash-command/albums/search", methods=["POST"])
 def slash_search_albums():
-    keyword = request.form.get('text')
+    keyword = request.form.get("text")
 
     if not keyword:
         return Response("Keyword not provided", status=400)
 
-    response = supabase.table('albums').select('*').or_(f'artist.ilike.%{keyword}%,title.ilike.%{keyword}%').execute()
+    response = supabase.table("albums").select("*").or_(f"artist.ilike.%{keyword}%,title.ilike.%{keyword}%").execute()
 
     if response.data:
         results = []
         for album in response.data:
             results.append(f"{album['artist']} / {album['title']} / {album['media']}")
 
-        response_text = '\n'.join(results)
+        response_text = "\n".join(results)
     else:
         response_text = "No albums found."
 
     slack_response = {
         "blocks": [
-            {
-                "type": "section",
-                "text": {
-                    "type": "mrkdwn",
-                    "text": ":cd: *검색 결과*"
-                }
-            },
-            {
-                "type": "section",
-                "text": {
-                    "type": "mrkdwn",
-                    "text": response_text
-                }
-            }
+            {"type": "section", "text": {"type": "mrkdwn", "text": ":cd: *검색 결과*"}},
+            {"type": "section", "text": {"type": "mrkdwn", "text": response_text}},
         ]
     }
-    return Response(json.dumps(slack_response, ensure_ascii=False), mimetype='application/json')
+    return Response(json.dumps(slack_response, ensure_ascii=False), mimetype="application/json")
 
 
-@app.route('/add-album', methods=['GET', 'POST'])
+@app.route("/add-album", methods=["GET", "POST"])
 def add_album():
-    if request.method == 'POST':
-        artist = request.form.get('artist')
-        title = request.form.get('title')
-        media = request.form.get('media')
+    if request.method == "POST":
+        artist = request.form.get("artist")
+        title = request.form.get("title")
+        media = request.form.get("media")
 
         if not all([artist, title, media]):
-            return Response(json.dumps({"error": "All fields are required"}), mimetype='application/json', status=400)
+            return Response(json.dumps({"error": "All fields are required"}), mimetype="application/json", status=400)
 
-        response = supabase.table('albums').insert({
-            "artist": artist,
-            "title": title,
-            "media": media
-        }).execute()
+        response = supabase.table("albums").insert({"artist": artist, "title": title, "media": media}).execute()
 
         if response.data:
-            return Response(json.dumps(response.data, ensure_ascii=False), mimetype='application/json')
+            return Response(json.dumps(response.data, ensure_ascii=False), mimetype="application/json")
         else:
             error_message = {"error": "Failed to add album."}
-            return Response(json.dumps(error_message, ensure_ascii=False), mimetype='application/json', status=500)
+            return Response(json.dumps(error_message, ensure_ascii=False), mimetype="application/json", status=500)
     else:
         return """
             <form method="post">
@@ -124,34 +117,27 @@ def add_album():
             </form>
         """
 
-@app.route('/slash-command/albums/add', methods=['POST'])
+
+@app.route("/slash-command/albums/add", methods=["POST"])
 def slash_add_album_button():
-    domain = os.environ.get('DOMAIN')
+    domain = os.environ.get("DOMAIN")
     slack_response = {
         "blocks": [
-            {
-                "type": "section",
-                "text": {
-                    "type": "mrkdwn",
-                    "text": ":cd: *앨범을 추가하려면 아래 버튼을 클릭하세요*"
-                }
-            },
+            {"type": "section", "text": {"type": "mrkdwn", "text": ":cd: *앨범을 추가하려면 아래 버튼을 클릭하세요*"}},
             {
                 "type": "actions",
                 "elements": [
                     {
                         "type": "button",
-                        "text": {
-                            "type": "plain_text",
-                            "text": "앨범 추가"
-                        },
-                        "url": f'https://{domain}/add-album'
+                        "text": {"type": "plain_text", "text": "앨범 추가"},
+                        "url": f"https://{domain}/add-album",
                     }
-                ]
-            }
+                ],
+            },
         ]
     }
-    return Response(json.dumps(slack_response, ensure_ascii=False), mimetype='application/json')
+    return Response(json.dumps(slack_response, ensure_ascii=False), mimetype="application/json")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8080, debug=True)
