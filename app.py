@@ -77,7 +77,7 @@ def slash_search_albums():
 
     slack_response = {
         "blocks": [
-            {"type": "section", "text": {"type": "mrkdwn", "text": f":cd: *'{keyword}'의 검색 결과*"}},
+            {"type": "section", "text": {"type": "mrkdwn", "text": f":cd: *{keyword}의 검색 결과*"}},
             {"type": "section", "text": {"type": "mrkdwn", "text": response_text}},
         ]
     }
