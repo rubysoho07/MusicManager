@@ -1,5 +1,6 @@
 import json
 import os
+import random
 
 from flask import Flask, Response, request
 from flask_cors import CORS
@@ -81,6 +82,45 @@ def slash_search_albums():
             {"type": "section", "text": {"type": "mrkdwn", "text": response_text}},
         ]
     }
+    return Response(json.dumps(slack_response, ensure_ascii=False), mimetype="application/json")
+
+
+@app.route("/slash-command/albums/random", methods=["POST"])
+def slash_random_album():
+    # Get the total number of albums
+    count_response = supabase.table("albums").select("id", count="exact").execute()
+    total_albums = count_response.count
+
+    if total_albums == 0:
+        slack_response = {
+            "blocks": [
+                {"type": "section", "text": {"type": "mrkdwn", "text": ":cd: *추천할 앨범이 없습니다.*"}},
+            ]
+        }
+        return Response(json.dumps(slack_response, ensure_ascii=False), mimetype="application/json")
+
+    # Generate a random offset
+    random_offset = random.randint(0, total_albums - 1)
+
+    # Fetch a random album
+    response = supabase.table("albums").select("artist, title").limit(1).offset(random_offset).execute()
+
+    if response.data:
+        album = response.data[0]
+        response_text = f"{album['artist']} / {album['title']}"
+        slack_response = {
+            "blocks": [
+                {"type": "section", "text": {"type": "mrkdwn", "text": ":cd: *오늘의 추천 앨범*"}},
+                {"type": "section", "text": {"type": "mrkdwn", "text": response_text}},
+            ]
+        }
+    else:
+        slack_response = {
+            "blocks": [
+                {"type": "section", "text": {"type": "mrkdwn", "text": ":cd: *앨범을 찾을 수 없습니다.*"}},
+            ]
+        }
+
     return Response(json.dumps(slack_response, ensure_ascii=False), mimetype="application/json")
 
 
