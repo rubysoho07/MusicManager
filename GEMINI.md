@@ -22,7 +22,6 @@
 -   `Dockerfile`: 애플리케이션을 컨테이너화하기 위한 설정 파일입니다.
 -   `pyproject.toml`: Ruff의 린팅 및 포매팅 규칙을 설정합니다.
 -   `README.md`: 프로젝트에 대한 일반적인 정보를 제공합니다.
--   `requirements.txt`: Python 의존성 목록입니다.
 
 ## 4. 개발 환경 설정
 
@@ -34,7 +33,7 @@
 
 2.  **의존성 설치**:
     ```bash
-    pip install -r requirements.txt
+    pip install .
     ```
 
 3.  **환경 변수 설정**:
