@@ -23,8 +23,10 @@ source .venv/bin/activate
 
 ### 3. 의존성 설치
 
+`uv`를 사용하여 의존성을 관리합니다. 다음 명령어로 의존성을 설치합니다.
+
 ```bash
-pip install -r requirements.txt
+uv pip install .
 ```
 
 ## 환경 변수

@@ -4,11 +4,11 @@ FROM python:3.13-slim
 # Set the working directory in the container
 WORKDIR /app
 
-# Copy the dependencies file to the working directory
-COPY requirements.txt .
+# Copy pyproject.toml
+COPY pyproject.toml .
 
-# Install any needed packages specified in requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt && pip install gunicorn
+# Install project dependencies and gunicorn
+RUN pip install --no-cache-dir . && pip install gunicorn
 
 # Copy the rest of the application
 COPY . .

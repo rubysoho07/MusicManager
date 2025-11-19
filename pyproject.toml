@@ -1,3 +1,18 @@
+[project]
+name = "musicmanager"
+version = "0.1.0"
+dependencies = [
+    "Flask==3.1.2",
+    "supabase==2.24.0",
+    "Flask-Cors==6.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff",
+    "pre-commit",
+]
+
 [tool.ruff]
 # Increase line length to 120 characters from the default of 88.
 line-length = 120
