@@ -13,6 +13,10 @@ RUN pip install --no-cache-dir . && pip install gunicorn
 # Copy the rest of the application
 COPY . .
 
+# Create a non-root user and switch to it
+RUN useradd -m -u 1000 musicmanager && chown -R musicmanager:musicmanager /app
+USER musicmanager
+
 # Make port 8080 available to the world outside this container
 EXPOSE 8080
 
