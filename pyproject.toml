@@ -3,7 +3,7 @@ name = "musicmanager"
 version = "0.1.0"
 requires-python = ">=3.14"
 dependencies = [
-    "Flask==3.1.2",
+    "flask==3.1.2",
     "supabase==2.24.0",
     "Flask-Cors==6.0.0",
 ]
