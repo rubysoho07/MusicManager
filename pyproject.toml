@@ -1,7 +1,7 @@
 [project]
 name = "musicmanager"
 version = "0.1.0"
-requires-python = ">=3.13"
+requires-python = ">=3.14"
 dependencies = [
     "Flask==3.1.2",
     "supabase==2.24.0",
@@ -19,7 +19,7 @@ dev = [
 line-length = 120
 
 # Same as Black.
-target-version = "py313"
+target-version = "py314"
 
 [tool.ruff.lint]
 # Enable the default set of rules, plus flake8-bugbear, and isort.
